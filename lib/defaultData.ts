@@ -1,0 +1,257 @@
+import { WorkoutDefinition } from './types';
+
+export const defaultWorkouts: WorkoutDefinition[] = [
+  {
+    id: 'legs',
+    name: 'IRON LEGS',
+    type: 'legs',
+    accentColor: '#ef4444',
+    tagline: 'Functional Strength · Size · Explosiveness',
+    duration: '75 min',
+    note: 'Lower-back safe — zero spinal compression loading',
+    phases: [
+      {
+        id: 'warmup',
+        label: 'WARM-UP',
+        color: '#f59e0b',
+        time: '10 min',
+        exercises: [
+          { id: 'l-w1', name: 'Bike / SkiErg', sets: '—', reps: '5 min easy', rest: '—', notes: 'Build blood flow, loosen hips', tag: 'Cardio' },
+          { id: 'l-w2', name: 'Leg Swings (front/side)', sets: '2', reps: '15 each direction', rest: '—', notes: 'Hip mobility', tag: 'Mobility' },
+          { id: 'l-w3', name: 'Bodyweight Squat → Squat Hold', sets: '2', reps: '10 + 5s hold', rest: '30s', notes: 'Prime quad/glute pattern', tag: 'Activation' },
+          { id: 'l-w4', name: 'Glute Bridge', sets: '2', reps: '15', rest: '30s', notes: 'Activate glutes before loading', tag: 'Activation' },
+        ],
+      },
+      {
+        id: 'strength',
+        label: 'STRENGTH BLOCK',
+        color: '#ef4444',
+        time: '35 min',
+        exercises: [
+          { id: 'l-s1', name: 'Pendulum Squat', sets: '5 working', reps: '6–8', rest: '2:30', intensity: '75–85% 1RM', warmupSets: 'Warm-up: 1×10 @ 40% → 1×6 @ 55% → 1×4 @ 65% → 1×2 @ 72% (then into working sets)', notes: 'Your anchor movement. 3s eccentric, explode up. Leave 1–2 reps in the tank on early sets; last set can go to failure. No spinal load.', tag: '💪 Main Lift' },
+          { id: 'l-s2', name: 'Hack Squat Machine', sets: '4 working', reps: '8–10', rest: '2 min', intensity: '70–78% 1RM', warmupSets: 'Warm-up: 1×8 @ 50% → 1×5 @ 62% (then into working sets)', notes: "Feet low & narrow for quad emphasis. 2s eccentric. You're pre-fatigued from pendulum — load slightly lighter than you think.", tag: 'Hypertrophy' },
+          { id: 'l-s3', name: 'Romanian Deadlift', sets: '3 working', reps: '10–12', rest: '90s', intensity: '60–70% 1RM — keep it LIGHT', warmupSets: 'Warm-up: 1×10 @ 40% (feel the hinge, no warm-up needed beyond that)', notes: "This is not a max effort move today — it's hamstring length-tension work. Hinge deep, squeeze glutes at top. Stop immediately if lower back fires up.", tag: 'Posterior Chain' },
+          { id: 'l-s4', name: 'Leg Press — Wide Stance', sets: '3 working', reps: '10–12', rest: '90s', intensity: '65–75% 1RM', warmupSets: "No extra warm-up needed — legs are well primed by now", notes: "High foot placement to load glutes/hamstrings. Full range — don't cut depth. Last set: strip 20% and rep out for a drop set burnout.", tag: 'Hypertrophy' },
+        ],
+      },
+      {
+        id: 'explosive',
+        label: 'EXPLOSIVENESS BLOCK',
+        color: '#8b5cf6',
+        time: '15 min',
+        exercises: [
+          { id: 'l-e1', name: 'Box Jump', sets: '4', reps: '5', rest: '90s', intensity: 'Bodyweight — pure speed', warmupSets: 'Warm-up: 2 low box jumps at 50% effort to prime the CNS before going full height', notes: "Max intent every single rep. Step down between reps — full reset. Pick a box height that challenges but doesn't risk the landing.", tag: '⚡ Power' },
+          { id: 'l-e2', name: 'Kettlebell Swing', sets: '4', reps: '8', rest: '90s', intensity: 'Moderate KB — RPE 7. Speed & snap, not heavy grind', warmupSets: 'Warm-up: 1×5 light KB to groove the hinge before going full power', notes: 'Hip hinge — not a squat. Drive hips through explosively, glutes fire at the top. Spine neutral throughout. Stop immediately if lower back fires up — go to Broad Jumps instead.', tag: '⚡ Power' },
+        ],
+      },
+      {
+        id: 'endurance',
+        label: 'ENDURANCE / BURNOUT',
+        color: '#10b981',
+        time: '10 min',
+        exercises: [
+          { id: 'l-b1', name: 'Walking Lunges', sets: '3', reps: '20 steps', rest: '60s', intensity: 'Bodyweight or light DBs — RPE 7', warmupSets: 'No warm-up needed at this stage', notes: 'Upright torso, controlled. Add light dumbbells if bodyweight feels too easy. Functional endurance finisher.', tag: 'Endurance' },
+          { id: 'l-b2', name: 'Leg Extension Machine', sets: '3', reps: '15–20', rest: '45s', intensity: '~50–60% machine max — moderate, focus on squeeze', warmupSets: 'No warm-up needed', notes: 'Slow 2s squeeze at top each rep. Short rest — this is a burnout. Last set: go to failure.', tag: 'Isolation' },
+          { id: 'l-b3', name: 'Seated Leg Curl Machine', sets: '3', reps: '15–20', rest: '45s', intensity: '~50–60% machine max', warmupSets: 'No warm-up needed', notes: 'Seated keeps the lower back fully out of it. Match the volume to leg extensions. Last set to failure.', tag: 'Isolation' },
+        ],
+      },
+      {
+        id: 'cooldown',
+        label: 'COOL-DOWN',
+        color: '#64748b',
+        time: '5 min',
+        exercises: [
+          { id: 'l-c1', name: 'Couch Stretch', sets: '—', reps: '60s each leg', rest: '—', notes: 'Hip flexor recovery', tag: 'Stretch' },
+          { id: 'l-c2', name: 'Pigeon Pose (floor)', sets: '—', reps: '60s each side', rest: '—', notes: 'Glute release', tag: 'Stretch' },
+          { id: 'l-c3', name: 'Lying Hamstring Stretch', sets: '—', reps: '45s each', rest: '—', notes: 'Keep lower back flat on floor', tag: 'Stretch' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'push',
+    name: 'IRON PUSH',
+    type: 'push',
+    accentColor: '#f97316',
+    tagline: 'Chest · Shoulders · Triceps',
+    duration: '70 min',
+    note: 'Rotator cuff warm-up is non-negotiable — protect the shoulders',
+    phases: [
+      {
+        id: 'warmup',
+        label: 'WARM-UP',
+        color: '#f59e0b',
+        time: '10 min',
+        exercises: [
+          { id: 'p-w1', name: 'Band Pull-Aparts', sets: '3', reps: '15', rest: '30s', notes: 'Activate rear delts and rotator cuff before any pressing', tag: 'Activation' },
+          { id: 'p-w2', name: 'Arm Circles (forward + backward)', sets: '2', reps: '15 each direction', rest: '—', notes: 'Shoulder joint mobility and blood flow', tag: 'Mobility' },
+          { id: 'p-w3', name: 'Chest Opener Stretch', sets: '2', reps: '30s hold', rest: '—', notes: 'Doorway or cable — open the pecs before loading', tag: 'Stretch' },
+          { id: 'p-w4', name: 'Light DB Lateral Raise', sets: '2', reps: '15', rest: '30s', notes: 'Prime the lateral head of the delt at very light load', tag: 'Activation' },
+        ],
+      },
+      {
+        id: 'strength',
+        label: 'STRENGTH BLOCK',
+        color: '#f97316',
+        time: '35 min',
+        exercises: [
+          { id: 'p-s1', name: 'Barbell Bench Press', sets: '5 working', reps: '4–6', rest: '3 min', intensity: '80–88% 1RM', warmupSets: 'Warm-up: 1×10 @ bar → 1×8 @ 40% → 1×5 @ 55% → 1×3 @ 65% → 1×2 @ 75% (then into working sets)', notes: 'Your anchor movement. Retract scapula, slight arch, bar path to lower chest. 3s eccentric, explosive press. Leave 1–2 reps in tank on sets 1–4; set 5 can go to technical failure.', tag: '💪 Main Lift' },
+          { id: 'p-s2', name: 'Overhead Press (Barbell)', sets: '4 working', reps: '6–8', rest: '2:30', intensity: '72–80% 1RM', warmupSets: 'Warm-up: 1×8 @ 50% → 1×5 @ 65% (then into working sets)', notes: 'Strict form — no leg drive. Core braced, slight posterior tilt. Full lockout at top. Elbows slightly in front of bar.', tag: '💪 Main Lift' },
+          { id: 'p-s3', name: 'Weighted Dips', sets: '3 working', reps: '6–8', rest: '2 min', intensity: 'Bodyweight + belt — RPE 8', warmupSets: 'Warm-up: 2 unweighted dips to groove the pattern', notes: 'Lean slightly forward for chest emphasis. Control the descent — 2–3s down. Skip if shoulder impingement is present; substitute with close-grip bench.', tag: 'Hypertrophy' },
+        ],
+      },
+      {
+        id: 'hypertrophy',
+        label: 'HYPERTROPHY BLOCK',
+        color: '#f59e0b',
+        time: '20 min',
+        exercises: [
+          { id: 'p-h1', name: 'Incline DB Press', sets: '3', reps: '10–12', rest: '90s', intensity: '65–72% 1RM', warmupSets: 'No extra warm-up needed after bench', notes: '30–45° incline. Dumbbells allow greater ROM than bar. Squeeze at top, full stretch at bottom. Upper chest emphasis.', tag: 'Hypertrophy' },
+          { id: 'p-h2', name: 'Lateral Raises (Cable or DB)', sets: '4', reps: '12–15', rest: '60s', intensity: 'Light-moderate — RPE 8, focus on form', warmupSets: 'No warm-up needed', notes: "Slight forward lean. Lead with elbow, not wrist. Don't shrug. Cable gives constant tension; preferred over DB if available.", tag: 'Hypertrophy' },
+          { id: 'p-h3', name: 'Cable Flyes (low to high)', sets: '3', reps: '12–15', rest: '60s', intensity: 'Moderate — constant tension throughout', warmupSets: 'No warm-up needed', notes: "Cross body slightly at top for full pec contraction. Elbows soft, not locked. Keep the movement arc, don't degrade into a press.", tag: 'Isolation' },
+        ],
+      },
+      {
+        id: 'burnout',
+        label: 'BURNOUT',
+        color: '#ef4444',
+        time: '10 min',
+        exercises: [
+          { id: 'p-b1', name: 'Tricep Pushdown (rope)', sets: '3', reps: '15–20', rest: '45s', intensity: 'Light-moderate — RPE 8–9, squeeze hard', warmupSets: 'No warm-up needed', notes: 'Spread rope at bottom for full contraction. Elbows pinned to sides. Short rest — metabolic stress is the goal. Last set to failure.', tag: 'Isolation' },
+          { id: 'p-b2', name: 'Overhead Tricep Extension (EZ bar)', sets: '3', reps: '12–15', rest: '45s', intensity: 'Moderate — stretch emphasis', warmupSets: 'No warm-up needed', notes: 'Full stretch overhead activates the long head maximally. Keep elbows from flaring. Drop set on final set.', tag: 'Isolation' },
+        ],
+      },
+      {
+        id: 'cooldown',
+        label: 'COOL-DOWN',
+        color: '#64748b',
+        time: '5 min',
+        exercises: [
+          { id: 'p-c1', name: 'Cross-Body Shoulder Stretch', sets: '—', reps: '45s each side', rest: '—', notes: 'Posterior deltoid and rotator cuff recovery', tag: 'Stretch' },
+          { id: 'p-c2', name: 'Chest Doorway Stretch', sets: '—', reps: '60s', rest: '—', notes: 'Open the pecs after heavy pressing volume', tag: 'Stretch' },
+          { id: 'p-c3', name: 'Tricep Overhead Stretch', sets: '—', reps: '30s each arm', rest: '—', notes: 'Long head release', tag: 'Stretch' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'pull',
+    name: 'IRON PULL',
+    type: 'pull',
+    accentColor: '#3b82f6',
+    tagline: 'Back · Biceps · Rear Delts',
+    duration: '70 min',
+    note: 'Keep ego in check on rows — scapular retraction beats heavy shrug-rowing',
+    phases: [
+      {
+        id: 'warmup',
+        label: 'WARM-UP',
+        color: '#f59e0b',
+        time: '10 min',
+        exercises: [
+          { id: 'pu-w1', name: 'Dead Hangs', sets: '3', reps: '30s', rest: '30s', notes: 'Decompress the spine and activate the lats from stretch', tag: 'Mobility' },
+          { id: 'pu-w2', name: 'Scapular Pull-Ups', sets: '3', reps: '8–10', rest: '30s', notes: 'Retract and depress scapula with arms straight — prime the lats', tag: 'Activation' },
+          { id: 'pu-w3', name: 'Face Pull (light)', sets: '2', reps: '15', rest: '30s', notes: 'Rear delt and external rotator warm-up', tag: 'Activation' },
+        ],
+      },
+      {
+        id: 'strength',
+        label: 'STRENGTH BLOCK',
+        color: '#3b82f6',
+        time: '35 min',
+        exercises: [
+          { id: 'pu-s1', name: 'Weighted Pull-Up', sets: '5 working', reps: '4–6', rest: '3 min', intensity: 'Bodyweight + belt load — RPE 8–9', warmupSets: 'Warm-up: 2 unweighted pull-ups → 1×3 @ +25% BW → 1×2 @ +40% BW (then into working sets)', notes: "Your anchor movement. Full dead hang start. Chest to bar. Slow 3s eccentric. If pull-up isn't your strength, substitute lat pulldown and build toward it.", tag: '💪 Main Lift' },
+          { id: 'pu-s2', name: 'Barbell Bent-Over Row', sets: '4 working', reps: '6–8', rest: '2:30', intensity: '72–80% 1RM', warmupSets: 'Warm-up: 1×8 @ 50% → 1×5 @ 65% (then into working sets)', notes: "Hinge to 45°, brace hard. Pull bar to lower chest/upper stomach. Scapula fully retracts at top. No hip drive — this isn't a deadlift.", tag: '💪 Main Lift' },
+          { id: 'pu-s3', name: 'Seated Cable Row (close grip)', sets: '3 working', reps: '8–10', rest: '2 min', intensity: '70–78% max', warmupSets: 'Warm-up: 1×10 @ 50% (then into working sets)', notes: "Full stretch forward — let scapula protract. Row to lower chest, squeeze mid-back at top. Don't round back on the stretch.", tag: 'Hypertrophy' },
+        ],
+      },
+      {
+        id: 'hypertrophy',
+        label: 'HYPERTROPHY BLOCK',
+        color: '#8b5cf6',
+        time: '15 min',
+        exercises: [
+          { id: 'pu-h1', name: 'Face Pull (moderate weight)', sets: '4', reps: '15', rest: '60s', intensity: 'Moderate — RPE 7–8, feel it in rear delts', warmupSets: 'No warm-up needed', notes: 'Pull to forehead, elbows high and wide. External rotation at end of movement. Essential for shoulder health and rear delt development.', tag: 'Hypertrophy' },
+          { id: 'pu-h2', name: 'Single-Arm DB Row', sets: '3', reps: '12 each side', rest: '60s', intensity: 'Moderate-heavy — RPE 8', warmupSets: 'No warm-up needed', notes: 'Brace on bench. Full ROM — elbow drives past torso. Squeeze at top. Heavier than you think you can handle with good form.', tag: 'Hypertrophy' },
+          { id: 'pu-h3', name: 'Hammer Curl (alternating)', sets: '3', reps: '12–14 each', rest: '60s', intensity: 'Moderate — RPE 8', warmupSets: 'No warm-up needed', notes: 'Neutral grip targets brachialis and brachioradialis. No swinging — strict form. Control the negative.', tag: 'Hypertrophy' },
+        ],
+      },
+      {
+        id: 'burnout',
+        label: 'BURNOUT',
+        color: '#10b981',
+        time: '10 min',
+        exercises: [
+          { id: 'pu-b1', name: 'Straight-Arm Lat Pulldown', sets: '3', reps: '15–20', rest: '45s', intensity: 'Light-moderate — lat isolation, no bicep', warmupSets: 'No warm-up needed', notes: 'Arms stay straight throughout. Pull bar to hips in an arc. Pure lat contraction. Great pump finisher.', tag: 'Isolation' },
+          { id: 'pu-b2', name: 'Incline DB Curl', sets: '3', reps: '12–15', rest: '45s', intensity: 'Light — stretch and peak contraction', warmupSets: 'No warm-up needed', notes: "Incline position puts long head of bicep on full stretch. Supinate at top. Brutally effective — you'll need lighter weight than expected. Last set to failure.", tag: 'Isolation' },
+        ],
+      },
+      {
+        id: 'cooldown',
+        label: 'COOL-DOWN',
+        color: '#64748b',
+        time: '5 min',
+        exercises: [
+          { id: 'pu-c1', name: 'Lat Stretch (kneeling)', sets: '—', reps: '45s each side', rest: '—', notes: 'Reach overhead and side — decompress the lats', tag: 'Stretch' },
+          { id: 'pu-c2', name: "Child's Pose", sets: '—', reps: '60s', rest: '—', notes: 'Full back decompression after heavy pulling volume', tag: 'Stretch' },
+          { id: 'pu-c3', name: 'Bicep Wall Stretch', sets: '—', reps: '30s each arm', rest: '—', notes: 'Forearm on wall, rotate away — full bicep lengthening', tag: 'Stretch' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'run',
+    name: 'IRON RUN',
+    type: 'run',
+    accentColor: '#10b981',
+    tagline: 'Aerobic Base · Tempo · Endurance',
+    duration: '55 min',
+    note: 'Heart rate zones are your guide — Zone 2 base, Zone 4 tempo',
+    phases: [
+      {
+        id: 'warmup',
+        label: 'DYNAMIC WARM-UP',
+        color: '#f59e0b',
+        time: '8 min',
+        exercises: [
+          { id: 'r-w1', name: 'Leg Swings (forward/backward)', sets: '2', reps: '15 each leg', rest: '—', notes: 'Hip flexor and hamstring mobility before running', tag: 'Mobility' },
+          { id: 'r-w2', name: 'Hip Circles', sets: '2', reps: '10 each direction', rest: '—', notes: 'Open up the hip joint — reduce injury risk', tag: 'Mobility' },
+          { id: 'r-w3', name: 'High Knees (easy)', sets: '2', reps: '20 steps', rest: '30s', notes: 'Activate hip flexors and start raising heart rate', tag: 'Cardio' },
+          { id: 'r-w4', name: 'Easy Jog', sets: '—', reps: '3 min easy', rest: '—', notes: 'Zone 1 — conversational pace, very light effort to prime the aerobic system', tag: 'Cardio' },
+        ],
+      },
+      {
+        id: 'aerobic',
+        label: 'AEROBIC BASE',
+        color: '#10b981',
+        time: '20 min',
+        exercises: [
+          { id: 'r-a1', name: 'Zone 2 Easy Run', sets: '—', reps: '20 min continuous', rest: '—', intensity: 'Zone 2 — 60–70% max HR. Conversational pace. RPE 4–5.', notes: "This is the foundation. You should be able to hold a full sentence while running. If you can't, slow down. Nasal breathing preferred.", tag: 'Cardio' },
+        ],
+      },
+      {
+        id: 'tempo',
+        label: 'TEMPO BLOCK',
+        color: '#ef4444',
+        time: '24 min',
+        exercises: [
+          { id: 'r-t1', name: 'Tempo Interval #1', sets: '1', reps: '8 min at threshold', rest: '2 min easy jog', intensity: 'Zone 4 — 80–90% max HR. Comfortably hard. RPE 7–8.', notes: "Threshold pace = the fastest pace you can sustain for ~60 minutes. Rhythmic breathing, controlled form. Don't sprint — sustain.", tag: 'Endurance' },
+          { id: 'r-t2', name: 'Tempo Interval #2', sets: '1', reps: '8 min at threshold', rest: '2 min easy jog', intensity: 'Zone 4 — same pace as interval 1', notes: "Second interval — maintain the same pace. Resist the urge to go faster. HR will be slightly higher due to drift — that's normal.", tag: 'Endurance' },
+          { id: 'r-t3', name: 'Tempo Interval #3', sets: '1', reps: '8 min at threshold', rest: '—', intensity: 'Zone 4 — push to hold the pace, RPE 8–9 by end', notes: "Final interval. Empty the tank while maintaining form. Quick feet, tall posture, relaxed arms. You should feel like you couldn't do much more.", tag: 'Endurance' },
+        ],
+      },
+      {
+        id: 'cooldown',
+        label: 'COOL-DOWN',
+        color: '#64748b',
+        time: '8 min',
+        exercises: [
+          { id: 'r-c1', name: 'Easy Cool-Down Jog', sets: '—', reps: '3 min very easy', rest: '—', notes: "Zone 1 — let heart rate drop gradually. Don't stop cold.", tag: 'Cardio' },
+          { id: 'r-c2', name: 'Standing Quad Stretch', sets: '—', reps: '45s each leg', rest: '—', notes: 'Balance on one leg, pull heel to glute — hip flexor release', tag: 'Stretch' },
+          { id: 'r-c3', name: 'Calf Stretch (wall)', sets: '—', reps: '45s each leg', rest: '—', notes: 'Straight leg then bent knee — gets both gastroc and soleus', tag: 'Stretch' },
+          { id: 'r-c4', name: 'Hip Flexor Lunge Stretch', sets: '—', reps: '45s each side', rest: '—', notes: 'Low lunge — essential after tempo running. Hold and breathe.', tag: 'Stretch' },
+        ],
+      },
+    ],
+  },
+];

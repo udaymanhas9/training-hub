@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,900;1,700&family=Barlow:wght@400;500&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #0a0a0a; color: #f1f5f9; }
+
+.phase-header:hover { filter: brightness(1.1); }
+.ex-row:hover { background: rgba(255,255,255,0.04) !important; }
+.check-btn { transition: all 0.15s; cursor: pointer; }
+.check-btn:hover { transform: scale(1.15); }
+.progress-bar { transition: width 0.5s cubic-bezier(.4,0,.2,1); }
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
+
+.animate-slide-in { animation: slideIn 0.3s ease forwards; }
+.animate-fade-in { animation: fadeIn 0.3s ease forwards; }
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type="number"] { -moz-appearance: textfield; }
