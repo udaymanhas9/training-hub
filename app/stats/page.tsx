@@ -105,6 +105,22 @@ export default function StatsPage() {
                   </select>
                 </div>
               </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" style={{ marginTop: 4 }}>
+                {[
+                  { label: 'GITHUB USERNAME', key: 'githubUsername', val: profileDraft.githubUsername ?? '' },
+                  { label: 'LEETCODE USERNAME', key: 'leetcodeUsername', val: profileDraft.leetcodeUsername ?? '' },
+                ].map(({ label, key, val }) => (
+                  <div key={key}>
+                    <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow', sans-serif", marginBottom: 6 }}>{label}</div>
+                    <input
+                      type="text"
+                      value={val}
+                      onChange={e => setProfileDraft(p => ({ ...p, [key]: e.target.value }))}
+                      style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#f1f5f9', padding: '8px 12px', fontSize: 14, fontFamily: "'Barlow', sans-serif" }}
+                    />
+                  </div>
+                ))}
+              </div>
               <button
                 onClick={handleSaveProfile}
                 style={{ alignSelf: 'flex-start', background: '#10b981', border: 'none', borderRadius: 6, color: '#000', fontSize: 13, fontWeight: 900, letterSpacing: 2, padding: '8px 20px', cursor: 'pointer', fontFamily: "'Barlow Condensed', sans-serif" }}
