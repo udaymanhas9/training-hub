@@ -1,15 +1,28 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 
-const NAV_ITEMS = [
+// ── Training nav ──────────────────────────────────────────────────────────────
+
+const TRAINING_NAV = [
   { href: '/', label: 'HOME', icon: HomeIcon },
   { href: '/calendar', label: 'CALENDAR', icon: CalendarIcon },
   { href: '/progress', label: 'PROGRESS', icon: ProgressIcon },
   { href: '/stats', label: 'STATS', icon: StatsIcon },
 ];
+
+// ── Lab nav ───────────────────────────────────────────────────────────────────
+
+const LAB_NAV = [
+  { href: '/lab', label: 'OVERVIEW', icon: GridIcon },
+  { href: '/lab/leetcode', label: 'LEETCODE', icon: CodeIcon },
+  { href: '/lab/quant', label: 'QUANT', icon: ChartIcon },
+  { href: '/lab/github', label: 'GITHUB', icon: GitIcon },
+];
+
+// ── Training icons ────────────────────────────────────────────────────────────
 
 function HomeIcon({ active }: { active: boolean }) {
   return (
@@ -49,28 +62,187 @@ function StatsIcon({ active }: { active: boolean }) {
   );
 }
 
+// ── Lab icons ─────────────────────────────────────────────────────────────────
+
+function GridIcon({ active }: { active: boolean }) {
+  const c = active ? '#FF2A2A' : '#4a4a4a';
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="7" height="7" />
+      <rect x="14" y="3" width="7" height="7" />
+      <rect x="3" y="14" width="7" height="7" />
+      <rect x="14" y="14" width="7" height="7" />
+    </svg>
+  );
+}
+
+function CodeIcon({ active }: { active: boolean }) {
+  const c = active ? '#FF2A2A' : '#4a4a4a';
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="16 18 22 12 16 6" />
+      <polyline points="8 6 2 12 8 18" />
+    </svg>
+  );
+}
+
+function ChartIcon({ active }: { active: boolean }) {
+  const c = active ? '#FF2A2A' : '#4a4a4a';
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="20" x2="18" y2="10" />
+      <line x1="12" y1="20" x2="12" y2="4" />
+      <line x1="6" y1="20" x2="6" y2="14" />
+      <path d="M3 20h18" />
+    </svg>
+  );
+}
+
+function GitIcon({ active }: { active: boolean }) {
+  const c = active ? '#FF2A2A' : '#4a4a4a';
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="18" cy="18" r="3" />
+      <circle cx="6" cy="6" r="3" />
+      <path d="M6 21V9a9 9 0 0 0 9 9" />
+    </svg>
+  );
+}
+
+// ── Main component ────────────────────────────────────────────────────────────
+
 export default function NavBar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { signOut } = useAuth();
 
+  const isLabMode = pathname.startsWith('/lab');
+  const navItems = isLabMode ? LAB_NAV : TRAINING_NAV;
+
   function isActive(href: string) {
-    if (href === '/') return pathname === '/';
+    if (href === '/' || href === '/lab') return pathname === href;
     return pathname.startsWith(href);
   }
 
+  // ── Mode pill bar (fixed top, both mobile + desktop) ──────────────────────
+  const ModePill = (
+    <div
+      style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200,
+        height: 32, background: isLabMode ? '#000000' : '#0d0d0d',
+        borderBottom: isLabMode ? '1px solid rgba(255,42,42,0.2)' : '1px solid rgba(255,255,255,0.06)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2,
+      }}
+    >
+      {/* Training HUB option */}
+      <button
+        onClick={() => router.push('/')}
+        style={{
+          padding: '0 14px', height: 22, borderRadius: 3,
+          border: !isLabMode ? '1px solid rgba(255,255,255,0.2)' : '1px solid transparent',
+          background: !isLabMode ? 'rgba(255,255,255,0.08)' : 'transparent',
+          color: !isLabMode ? '#f1f5f9' : '#4a4a4a',
+          fontSize: 9, fontWeight: 700, letterSpacing: 3,
+          cursor: 'pointer', fontFamily: "'Barlow Condensed', sans-serif",
+          transition: 'all 0.15s',
+        }}
+      >
+        TRAINING HUB
+      </button>
+
+      {/* Separator */}
+      <div style={{ width: 1, height: 14, background: 'rgba(255,255,255,0.08)' }} />
+
+      {/* THE LAB option */}
+      <button
+        onClick={() => router.push('/lab')}
+        style={{
+          padding: '0 14px', height: 22, borderRadius: 3,
+          border: isLabMode ? '1px solid rgba(255,42,42,0.5)' : '1px solid transparent',
+          background: isLabMode ? 'rgba(255,42,42,0.15)' : 'transparent',
+          color: isLabMode ? '#FF2A2A' : '#4a4a4a',
+          fontSize: 9, fontWeight: 700, letterSpacing: 3,
+          cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace",
+          transition: 'all 0.15s',
+        }}
+      >
+        THE LAB
+      </button>
+    </div>
+  );
+
+  // ── Lab sidebar sign out button ────────────────────────────────────────────
+  const labSignOut = (
+    <div style={{ padding: '12px 8px', borderTop: '1px solid rgba(255,42,42,0.15)' }}>
+      <button
+        onClick={signOut}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 12,
+          padding: '10px 8px', borderRadius: 4, background: 'none',
+          border: 'none', color: '#4a4a4a', cursor: 'pointer', width: '100%',
+          whiteSpace: 'nowrap', overflow: 'hidden',
+          fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
+          fontWeight: 700, letterSpacing: 2, transition: 'color 0.15s',
+        }}
+        onMouseEnter={e => (e.currentTarget.style.color = '#FF2A2A')}
+        onMouseLeave={e => (e.currentTarget.style.color = '#4a4a4a')}
+      >
+        <div style={{ flexShrink: 0, width: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+        </div>
+        <span>SIGN OUT</span>
+      </button>
+    </div>
+  );
+
+  // ── Training sidebar sign out button ──────────────────────────────────────
+  const trainingSignOut = (
+    <div style={{ padding: '12px 8px', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+      <button
+        onClick={signOut}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 12,
+          padding: '10px 8px', borderRadius: 8, background: 'none',
+          border: 'none', color: '#475569', cursor: 'pointer', width: '100%',
+          whiteSpace: 'nowrap', overflow: 'hidden',
+          fontFamily: "'Barlow Condensed', sans-serif", fontSize: 12,
+          fontWeight: 700, letterSpacing: 2, transition: 'color 0.15s',
+        }}
+        onMouseEnter={e => (e.currentTarget.style.color = '#f87171')}
+        onMouseLeave={e => (e.currentTarget.style.color = '#475569')}
+      >
+        <div style={{ flexShrink: 0, width: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+        </div>
+        <span>SIGN OUT</span>
+      </button>
+    </div>
+  );
+
   return (
     <>
-      {/* Mobile bottom tab bar */}
+      {ModePill}
+
+      {/* ── Mobile bottom tab bar ──────────────────────────────────────────── */}
       <nav
         className="md:hidden"
         style={{
           position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 100,
-          background: '#0d0d0d', borderTop: '1px solid rgba(255,255,255,0.08)',
+          background: isLabMode ? '#000000' : '#0d0d0d',
+          borderTop: isLabMode ? '1px solid rgba(255,42,42,0.2)' : '1px solid rgba(255,255,255,0.08)',
           display: 'flex', alignItems: 'stretch',
           paddingBottom: 'env(safe-area-inset-bottom)',
         }}
       >
-        {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+        {navItems.map(({ href, label, icon: Icon }) => {
           const active = isActive(href);
           return (
             <Link
@@ -79,17 +251,26 @@ export default function NavBar() {
               style={{
                 flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
                 justifyContent: 'center', padding: '10px 4px', textDecoration: 'none',
-                color: active ? '#f1f5f9' : '#475569', position: 'relative', gap: 4,
+                color: isLabMode
+                  ? (active ? '#FF2A2A' : '#4a4a4a')
+                  : (active ? '#f1f5f9' : '#475569'),
+                position: 'relative', gap: 4,
               }}
             >
               {active && (
                 <div style={{
                   position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
-                  width: 32, height: 2, background: '#3b82f6', borderRadius: '0 0 2px 2px',
+                  width: 32, height: 2,
+                  background: isLabMode ? '#FF2A2A' : '#3b82f6',
+                  borderRadius: '0 0 2px 2px',
                 }} />
               )}
               <Icon active={active} />
-              <span style={{ fontSize: 8, letterSpacing: 2, fontWeight: active ? 700 : 500, fontFamily: "'Barlow Condensed', sans-serif" }}>
+              <span style={{
+                fontSize: 8, letterSpacing: 2,
+                fontWeight: active ? 700 : 500,
+                fontFamily: isLabMode ? "'JetBrains Mono', monospace" : "'Barlow Condensed', sans-serif",
+              }}>
                 {label}
               </span>
             </Link>
@@ -97,18 +278,18 @@ export default function NavBar() {
         })}
       </nav>
 
-      {/* Desktop left sidebar */}
+      {/* ── Desktop left sidebar ──────────────────────────────────────────── */}
       <nav
         className="hidden md:flex"
         style={{
           flexDirection: 'column',
           width: 64,
-          background: '#0d0d0d',
-          borderRight: '1px solid rgba(255,255,255,0.07)',
+          background: isLabMode ? '#000000' : '#0d0d0d',
+          borderRight: isLabMode ? '1px solid rgba(255,42,42,0.15)' : '1px solid rgba(255,255,255,0.07)',
           flexShrink: 0,
           position: 'sticky',
-          top: 0,
-          height: '100vh',
+          top: 32, // account for mode pill
+          height: 'calc(100vh - 32px)',
           overflowX: 'hidden',
           overflowY: 'auto',
           transition: 'width 0.2s ease',
@@ -117,12 +298,28 @@ export default function NavBar() {
         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.width = '64px'; }}
       >
         {/* Logo */}
-        <div style={{ padding: '20px 0', display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: '1px solid rgba(255,255,255,0.07)', height: 64, overflow: 'hidden' }}>
-          <span style={{ fontSize: 18, fontWeight: 900, fontStyle: 'italic', color: '#f1f5f9', whiteSpace: 'nowrap', letterSpacing: -0.5 }}>T</span>
+        <div style={{
+          padding: '20px 0',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          borderBottom: isLabMode ? '1px solid rgba(255,42,42,0.15)' : '1px solid rgba(255,255,255,0.07)',
+          height: 64, overflow: 'hidden',
+        }}>
+          <span style={{
+            fontSize: isLabMode ? 14 : 18,
+            fontWeight: 700,
+            fontStyle: isLabMode ? 'normal' : 'italic',
+            color: isLabMode ? '#FF2A2A' : '#f1f5f9',
+            whiteSpace: 'nowrap',
+            letterSpacing: isLabMode ? 2 : -0.5,
+            fontFamily: isLabMode ? "'JetBrains Mono', monospace" : undefined,
+          }}>
+            {isLabMode ? 'LAB' : 'T'}
+          </span>
         </div>
 
+        {/* Nav items */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '12px 8px', flex: 1 }}>
-          {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+          {navItems.map(({ href, label, icon: Icon }) => {
             const active = isActive(href);
             return (
               <Link
@@ -130,50 +327,50 @@ export default function NavBar() {
                 href={href}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 12,
-                  padding: '10px 8px', borderRadius: 8, textDecoration: 'none',
-                  background: active ? 'rgba(59,130,246,0.12)' : 'transparent',
-                  color: active ? '#f1f5f9' : '#475569',
+                  padding: '10px 8px',
+                  borderRadius: isLabMode ? 2 : 8,
+                  textDecoration: 'none',
+                  background: active
+                    ? (isLabMode ? 'rgba(255,42,42,0.1)' : 'rgba(59,130,246,0.12)')
+                    : 'transparent',
+                  color: active
+                    ? (isLabMode ? '#FF2A2A' : '#f1f5f9')
+                    : (isLabMode ? '#4a4a4a' : '#475569'),
                   transition: 'background 0.15s, color 0.15s',
-                  borderLeft: active ? '2px solid #3b82f6' : '2px solid transparent',
+                  borderLeft: active
+                    ? (isLabMode ? '2px solid #FF2A2A' : '2px solid #3b82f6')
+                    : '2px solid transparent',
                   whiteSpace: 'nowrap', overflow: 'hidden',
                 }}
-                onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)'; }}
-                onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                onMouseEnter={e => {
+                  if (!active) {
+                    (e.currentTarget as HTMLElement).style.background = isLabMode
+                      ? 'rgba(255,42,42,0.06)'
+                      : 'rgba(255,255,255,0.04)';
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent';
+                }}
               >
                 <div style={{ flexShrink: 0, width: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Icon active={active} />
                 </div>
-                <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 2, overflow: 'hidden', opacity: 1 }}>{label}</span>
+                <span style={{
+                  fontSize: isLabMode ? 10 : 12,
+                  fontWeight: 700,
+                  letterSpacing: isLabMode ? 3 : 2,
+                  overflow: 'hidden', opacity: 1,
+                  fontFamily: isLabMode ? "'JetBrains Mono', monospace" : undefined,
+                }}>
+                  {label}
+                </span>
               </Link>
             );
           })}
         </div>
 
-        {/* Sign out */}
-        <div style={{ padding: '12px 8px', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
-          <button
-            onClick={signOut}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 12,
-              padding: '10px 8px', borderRadius: 8, background: 'none',
-              border: 'none', color: '#475569', cursor: 'pointer', width: '100%',
-              whiteSpace: 'nowrap', overflow: 'hidden',
-              fontFamily: "'Barlow Condensed', sans-serif", fontSize: 12,
-              fontWeight: 700, letterSpacing: 2, transition: 'color 0.15s',
-            }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#f87171')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#475569')}
-          >
-            <div style={{ flexShrink: 0, width: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <polyline points="16 17 21 12 16 7" />
-                <line x1="21" y1="12" x2="9" y2="12" />
-              </svg>
-            </div>
-            <span>SIGN OUT</span>
-          </button>
-        </div>
+        {isLabMode ? labSignOut : trainingSignOut}
       </nav>
     </>
   );

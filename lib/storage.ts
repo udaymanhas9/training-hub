@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { WorkoutDefinition, SessionLog, PersonalBest, HealthEntry, UserProfile } from './types';
+import { WorkoutDefinition, SessionLog, PersonalBest, HealthEntry, UserProfile, LeetCodeEntry, QuantEntry } from './types';
 import { defaultWorkouts } from './defaultData';
 
 async function getUserId(): Promise<string | null> {
@@ -197,6 +197,9 @@ export async function getProfile(): Promise<UserProfile> {
     heightCm: data.height_cm || 175,
     weightUnit: data.weight_unit || 'kg',
     dateOfBirth: data.date_of_birth,
+    githubUsername: data.github_username,
+    leetcodeUsername: data.leetcode_username,
+    leetcodeSession: data.leetcode_session,
   };
 }
 
@@ -209,5 +212,122 @@ export async function saveProfile(p: UserProfile): Promise<void> {
     height_cm: p.heightCm,
     weight_unit: p.weightUnit,
     date_of_birth: p.dateOfBirth,
+    github_username: p.githubUsername,
+    leetcode_username: p.leetcodeUsername,
+    leetcode_session: p.leetcodeSession,
   }, { onConflict: 'user_id' });
+}
+
+// ── LeetCode ──────────────────────────────────────────────────────────────────
+
+export async function getLeetCodeEntries(): Promise<LeetCodeEntry[]> {
+  const userId = await getUserId();
+  if (!userId) return [];
+  const { data, error } = await supabase
+    .from('leetcode_log')
+    .select('*')
+    .eq('user_id', userId)
+    .order('date', { ascending: false });
+  if (error) throw error;
+  return (data || []).map(row => ({
+    id: row.id,
+    problemNumber: row.problem_number,
+    problemName: row.problem_name,
+    difficulty: row.difficulty,
+    topics: row.topics || [],
+    status: row.status,
+    language: row.language,
+    timeTaken: row.time_taken,
+    notes: row.notes,
+    date: row.date,
+  }));
+}
+
+export async function saveLeetCodeEntry(entry: LeetCodeEntry): Promise<void> {
+  const userId = await getUserId();
+  if (!userId) return;
+  await supabase.from('leetcode_log').upsert({
+    id: entry.id,
+    user_id: userId,
+    problem_number: entry.problemNumber,
+    problem_name: entry.problemName,
+    difficulty: entry.difficulty,
+    topics: entry.topics,
+    status: entry.status,
+    language: entry.language,
+    time_taken: entry.timeTaken,
+    notes: entry.notes,
+    date: entry.date,
+  }, { onConflict: 'id,user_id' });
+}
+
+export async function deleteLeetCodeEntry(id: string): Promise<void> {
+  const userId = await getUserId();
+  if (!userId) return;
+  await supabase.from('leetcode_log').delete().eq('id', id).eq('user_id', userId);
+}
+
+// ── Quant ─────────────────────────────────────────────────────────────────────
+
+export async function getQuantEntries(): Promise<QuantEntry[]> {
+  const userId = await getUserId();
+  if (!userId) return [];
+  const { data, error } = await supabase
+    .from('quant_log')
+    .select('*')
+    .eq('user_id', userId)
+    .order('date', { ascending: false });
+  if (error) throw error;
+  return (data || []).map(row => ({
+    id: row.id,
+    name: row.name,
+    source: row.source,
+    topic: row.topic,
+    difficulty: row.difficulty,
+    notes: row.notes,
+    date: row.date,
+  }));
+}
+
+export async function saveQuantEntry(entry: QuantEntry): Promise<void> {
+  const userId = await getUserId();
+  if (!userId) return;
+  await supabase.from('quant_log').upsert({
+    id: entry.id,
+    user_id: userId,
+    name: entry.name,
+    source: entry.source,
+    topic: entry.topic,
+    difficulty: entry.difficulty,
+    notes: entry.notes,
+    date: entry.date,
+  }, { onConflict: 'id,user_id' });
+}
+
+export async function deleteQuantEntry(id: string): Promise<void> {
+  const userId = await getUserId();
+  if (!userId) return;
+  await supabase.from('quant_log').delete().eq('id', id).eq('user_id', userId);
+}
+
+// ── Quant custom topics ───────────────────────────────────────────────────────
+
+export async function getCustomTopics(): Promise<string[]> {
+  const userId = await getUserId();
+  if (!userId) return [];
+  const { data } = await supabase
+    .from('quant_custom_topics')
+    .select('topics')
+    .eq('user_id', userId)
+    .single();
+  return data?.topics || [];
+}
+
+export async function saveCustomTopics(topics: string[]): Promise<void> {
+  const userId = await getUserId();
+  if (!userId) return;
+  await supabase.from('quant_custom_topics').upsert(
+    { user_id: userId, topics },
+    { onConflict: 'user_id' }
+  );
 }

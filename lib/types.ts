@@ -73,4 +73,35 @@ export interface UserProfile {
   heightCm: number;
   weightUnit: "kg" | "lbs";
   dateOfBirth?: string;
+  githubUsername?: string;
+  leetcodeUsername?: string;
+  leetcodeSession?: string;
+}
+
+// ── THE LAB ───────────────────────────────────────────────────────────────────
+
+export type ProblemStatus = 'Solved' | 'Attempted' | 'Revisit';
+export type Difficulty = 'Easy' | 'Medium' | 'Hard';
+
+export interface LeetCodeEntry {
+  id: string;
+  problemNumber: number;
+  problemName: string;
+  difficulty: Difficulty;
+  topics: string[];
+  status: ProblemStatus;
+  language: string;
+  timeTaken?: number;   // minutes
+  notes?: string;
+  date: string;         // ISO yyyy-MM-dd
+}
+
+export interface QuantEntry {
+  id: string;
+  name: string;
+  source: string;
+  topic: string;
+  difficulty: Difficulty;
+  notes?: string;
+  date: string;
 }

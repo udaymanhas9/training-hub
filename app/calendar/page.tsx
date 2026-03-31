@@ -1,11 +1,29 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getSessions, getWorkouts, getProfile } from '@/lib/storage';
-import { SessionLog, WorkoutDefinition } from '@/lib/types';
+import { getSessions, getWorkouts, getProfile, getLeetCodeEntries, getQuantEntries } from '@/lib/storage';
+import { SessionLog, WorkoutDefinition, LeetCodeEntry, QuantEntry } from '@/lib/types';
 import MonthView from '@/components/calendar/MonthView';
 import WeekHeatmap from '@/components/calendar/WeekHeatmap';
 import DayDetailPanel from '@/components/calendar/DayDetailPanel';
+import UniversalHeatmap from '@/components/shared/UniversalHeatmap';
+
+async function fetchGitHubActivity(username: string): Promise<Record<string, number>> {
+  try {
+    const res = await fetch(`https://api.github.com/users/${username}/events/public?per_page=100`);
+    const events = await res.json();
+    const map: Record<string, number> = {};
+    events
+      .filter((e: { type: string }) => e.type === 'PushEvent')
+      .forEach((e: { payload: { commits: unknown[] }; created_at: string }) => {
+        const date = e.created_at.slice(0, 10);
+        map[date] = (map[date] || 0) + (e.payload.commits?.length || 1);
+      });
+    return map;
+  } catch {
+    return {};
+  }
+}
 
 export default function CalendarPage() {
   const [sessions, setSessions] = useState<SessionLog[]>([]);
@@ -13,6 +31,10 @@ export default function CalendarPage() {
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [view, setView] = useState<'month' | 'heatmap'>('month');
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
+  const [leetcode, setLeetcode] = useState<LeetCodeEntry[]>([]);
+  const [quant, setQuant] = useState<QuantEntry[]>([]);
+  const [github, setGithub] = useState<Record<string, number>>({});
+  const [labDataLoading, setLabDataLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
@@ -20,6 +42,20 @@ export default function CalendarPage() {
       setSessions(s);
       setWorkouts(w);
       setWeightUnit(p.weightUnit);
+
+      // Load lab data for universal heatmap
+      try {
+        const [lc, q] = await Promise.all([getLeetCodeEntries(), getQuantEntries()]);
+        setLeetcode(lc);
+        setQuant(q);
+        const uname = p.githubUsername;
+        if (uname) {
+          const ghData = await fetchGitHubActivity(uname);
+          setGithub(ghData);
+        }
+      } finally {
+        setLabDataLoading(false);
+      }
     }
     load();
   }, []);
@@ -80,6 +116,19 @@ export default function CalendarPage() {
             onClose={() => setSelectedDay(null)}
             weightUnit={weightUnit}
           />
+        )}
+
+        {/* Universal cross-discipline heatmap */}
+        {!labDataLoading && (
+          <div style={{ marginTop: 32 }}>
+            <UniversalHeatmap
+              sessions={sessions}
+              leetcode={leetcode}
+              quant={quant}
+              githubDays={github}
+              theme="training"
+            />
+          </div>
         )}
       </div>
     </div>
