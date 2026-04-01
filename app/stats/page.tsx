@@ -1,12 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getHealthEntries, saveHealthEntries, getProfile, saveProfile } from '@/lib/storage';
+import { getHealthEntries, saveHealthEntries, getProfile, saveProfile, getHealthMetrics, HealthMetric } from '@/lib/storage';
 import { HealthEntry, UserProfile } from '@/lib/types';
 import HealthEntryForm from '@/components/stats/HealthEntryForm';
 import StatsSummaryCard from '@/components/stats/StatsSummaryCard';
 import HealthChart from '@/components/stats/HealthChart';
 import { generateId, calculateBMI } from '@/lib/utils';
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  LineChart, Line, ReferenceLine,
+} from 'recharts';
 
 export default function StatsPage() {
   const [entries, setEntries] = useState<HealthEntry[]>([]);
@@ -14,13 +18,25 @@ export default function StatsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingProfile, setEditingProfile] = useState(false);
   const [profileDraft, setProfileDraft] = useState<UserProfile>({ name: '', heightCm: 175, weightUnit: 'kg' });
+  const [steps, setSteps] = useState<HealthMetric[]>([]);
+  const [restingHR, setRestingHR] = useState<HealthMetric[]>([]);
+  const [sleep, setSleep] = useState<HealthMetric[]>([]);
 
   useEffect(() => {
     async function load() {
-      const [e, p] = await Promise.all([getHealthEntries(), getProfile()]);
+      const [e, p, s, hr, sl] = await Promise.all([
+        getHealthEntries(),
+        getProfile(),
+        getHealthMetrics('HKQuantityTypeIdentifierStepCount', 14),
+        getHealthMetrics('HKQuantityTypeIdentifierRestingHeartRate', 14),
+        getHealthMetrics('HKCategoryTypeIdentifierSleepAnalysis', 14),
+      ]);
       setEntries(e);
       setProfile(p);
       setProfileDraft(p);
+      setSteps(s);
+      setRestingHR(hr);
+      setSleep(sl);
     }
     load();
   }, []);
@@ -213,6 +229,109 @@ export default function StatsPage() {
             <div style={{ fontSize: 13, color: '#334155', fontFamily: "'Barlow', sans-serif", marginTop: 8 }}>Log your first measurement to track body composition over time</div>
           </div>
         )}
+
+        {/* ── Apple Health ─────────────────────────────────────────────── */}
+        <div style={{ marginTop: 40 }}>
+          <div style={{ fontSize: 11, letterSpacing: 6, color: '#475569', fontFamily: "'Barlow', sans-serif", marginBottom: 20 }}>
+            APPLE HEALTH
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
+
+            {/* Steps */}
+            <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '20px 20px 12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
+                <div style={{ fontSize: 9, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>STEPS</div>
+                {steps.length > 0 && (
+                  <div style={{ fontSize: 20, fontWeight: 900, color: '#3b82f6' }}>
+                    {Math.round(steps[steps.length - 1].value).toLocaleString()}
+                    <span style={{ fontSize: 10, color: '#475569', marginLeft: 4, fontWeight: 400 }}>today</span>
+                  </div>
+                )}
+              </div>
+              {steps.length > 0 ? (
+                <ResponsiveContainer width="100%" height={90}>
+                  <BarChart data={steps.map(m => ({ d: m.date.slice(5), v: Math.round(m.value) }))} margin={{ top: 0, right: 0, left: -28, bottom: 0 }}>
+                    <XAxis dataKey="d" tick={{ fill: '#475569', fontSize: 9, fontFamily: "'Barlow', sans-serif" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={false} axisLine={false} tickLine={false} />
+                    <Tooltip
+                      contentStyle={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, fontSize: 11, fontFamily: "'Barlow', sans-serif" }}
+                      labelStyle={{ color: '#94a3b8' }}
+                      itemStyle={{ color: '#3b82f6' }}
+                      formatter={(v: number) => [v.toLocaleString(), 'steps']}
+                    />
+                    <Bar dataKey="v" fill="#3b82f6" radius={[2, 2, 0, 0]} />
+                    <ReferenceLine y={10000} stroke="rgba(59,130,246,0.25)" strokeDasharray="3 3" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ height: 90, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#334155', fontSize: 11, letterSpacing: 2 }}>NO DATA</div>
+              )}
+            </div>
+
+            {/* Resting HR */}
+            <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '20px 20px 12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
+                <div style={{ fontSize: 9, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>RESTING HR</div>
+                {restingHR.length > 0 && (
+                  <div style={{ fontSize: 20, fontWeight: 900, color: '#ef4444' }}>
+                    {Math.round(restingHR[restingHR.length - 1].value)}
+                    <span style={{ fontSize: 10, color: '#475569', marginLeft: 4, fontWeight: 400 }}>bpm</span>
+                  </div>
+                )}
+              </div>
+              {restingHR.length > 0 ? (
+                <ResponsiveContainer width="100%" height={90}>
+                  <LineChart data={restingHR.map(m => ({ d: m.date.slice(5), v: Math.round(m.value) }))} margin={{ top: 4, right: 0, left: -28, bottom: 0 }}>
+                    <XAxis dataKey="d" tick={{ fill: '#475569', fontSize: 9, fontFamily: "'Barlow', sans-serif" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={false} axisLine={false} tickLine={false} domain={['auto', 'auto']} />
+                    <Tooltip
+                      contentStyle={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, fontSize: 11, fontFamily: "'Barlow', sans-serif" }}
+                      labelStyle={{ color: '#94a3b8' }}
+                      itemStyle={{ color: '#ef4444' }}
+                      formatter={(v: number) => [v, 'bpm']}
+                    />
+                    <Line type="monotone" dataKey="v" stroke="#ef4444" strokeWidth={2} dot={{ r: 2, fill: '#ef4444' }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ height: 90, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#334155', fontSize: 11, letterSpacing: 2 }}>NO DATA</div>
+              )}
+            </div>
+
+            {/* Sleep */}
+            <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '20px 20px 12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
+                <div style={{ fontSize: 9, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>SLEEP</div>
+                {sleep.length > 0 && (
+                  <div style={{ fontSize: 20, fontWeight: 900, color: '#8b5cf6' }}>
+                    {sleep[sleep.length - 1].value.toFixed(1)}
+                    <span style={{ fontSize: 10, color: '#475569', marginLeft: 4, fontWeight: 400 }}>hrs last night</span>
+                  </div>
+                )}
+              </div>
+              {sleep.length > 0 ? (
+                <ResponsiveContainer width="100%" height={90}>
+                  <BarChart data={sleep.map(m => ({ d: m.date.slice(5), v: Number(m.value.toFixed(1)) }))} margin={{ top: 0, right: 0, left: -28, bottom: 0 }}>
+                    <XAxis dataKey="d" tick={{ fill: '#475569', fontSize: 9, fontFamily: "'Barlow', sans-serif" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={false} axisLine={false} tickLine={false} />
+                    <Tooltip
+                      contentStyle={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, fontSize: 11, fontFamily: "'Barlow', sans-serif" }}
+                      labelStyle={{ color: '#94a3b8' }}
+                      itemStyle={{ color: '#8b5cf6' }}
+                      formatter={(v: number) => [`${v}h`, 'sleep']}
+                    />
+                    <Bar dataKey="v" fill="#8b5cf6" radius={[2, 2, 0, 0]} />
+                    <ReferenceLine y={8} stroke="rgba(139,92,246,0.25)" strokeDasharray="3 3" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ height: 90, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#334155', fontSize: 11, letterSpacing: 2 }}>NO DATA</div>
+              )}
+            </div>
+
+          </div>
+        </div>
       </div>
     </div>
   );
