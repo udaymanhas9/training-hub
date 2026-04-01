@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { SessionLog, WorkoutDefinition } from '@/lib/types';
+import { SessionLog, WorkoutDefinition, StravaActivity } from '@/lib/types';
 import { WORKOUT_TYPE_COLORS } from '@/lib/utils';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, isSameMonth, isToday, parseISO } from 'date-fns';
 
@@ -10,9 +10,10 @@ interface MonthViewProps {
   workouts: WorkoutDefinition[];
   onDayClick: (day: string) => void;
   selectedDay: string | null;
+  stravaActivities?: StravaActivity[];
 }
 
-export default function MonthView({ sessions, workouts, onDayClick, selectedDay }: MonthViewProps) {
+export default function MonthView({ sessions, workouts, onDayClick, selectedDay, stravaActivities = [] }: MonthViewProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const monthStart = startOfMonth(currentMonth);
@@ -26,6 +27,13 @@ export default function MonthView({ sessions, workouts, onDayClick, selectedDay 
     const key = s.date.slice(0, 10);
     if (!sessionsByDay[key]) sessionsByDay[key] = [];
     sessionsByDay[key].push(s);
+  });
+
+  const stravaByDay: Record<string, StravaActivity[]> = {};
+  stravaActivities.forEach(a => {
+    const key = new Date(a.startDate).toISOString().slice(0, 10);
+    if (!stravaByDay[key]) stravaByDay[key] = [];
+    stravaByDay[key].push(a);
   });
 
   function getWorkoutColor(workoutId: string): string {
@@ -71,6 +79,8 @@ export default function MonthView({ sessions, workouts, onDayClick, selectedDay 
         {days.map(day => {
           const key = format(day, 'yyyy-MM-dd');
           const daySessions = sessionsByDay[key] || [];
+          const dayStrava   = stravaByDay[key] || [];
+          const hasActivity = daySessions.length > 0 || dayStrava.length > 0;
           const inMonth = isSameMonth(day, currentMonth);
           const today = isToday(day);
           const isSelected = selectedDay === key;
@@ -78,18 +88,18 @@ export default function MonthView({ sessions, workouts, onDayClick, selectedDay 
           return (
             <div
               key={key}
-              onClick={() => daySessions.length > 0 && onDayClick(key)}
+              onClick={() => hasActivity && onDayClick(key)}
               style={{
                 padding: '8px 6px',
                 minHeight: 56,
                 borderRight: '1px solid rgba(255,255,255,0.04)',
                 borderBottom: '1px solid rgba(255,255,255,0.04)',
                 background: isSelected ? 'rgba(59,130,246,0.1)' : today ? 'rgba(255,255,255,0.03)' : 'transparent',
-                cursor: daySessions.length > 0 ? 'pointer' : 'default',
+                cursor: hasActivity ? 'pointer' : 'default',
                 transition: 'background 0.15s',
                 position: 'relative',
               }}
-              onMouseEnter={e => { if (daySessions.length > 0) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)'; }}
+              onMouseEnter={e => { if (hasActivity) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)'; }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isSelected ? 'rgba(59,130,246,0.1)' : today ? 'rgba(255,255,255,0.03)' : 'transparent'; }}
             >
               <div style={{
@@ -99,7 +109,7 @@ export default function MonthView({ sessions, workouts, onDayClick, selectedDay 
               }}>
                 {format(day, 'd')}
               </div>
-              {/* Workout dots */}
+              {/* Workout + Strava dots */}
               <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
                 {daySessions.slice(0, 3).map((s, i) => (
                   <div key={i} style={{
@@ -108,8 +118,15 @@ export default function MonthView({ sessions, workouts, onDayClick, selectedDay 
                     flexShrink: 0,
                   }} />
                 ))}
-                {daySessions.length > 3 && (
-                  <span style={{ fontSize: 8, color: '#475569' }}>+{daySessions.length - 3}</span>
+                {dayStrava.slice(0, 2).map((a, i) => (
+                  <div key={`s${i}`} title={a.name} style={{
+                    width: 7, height: 7, borderRadius: 1,
+                    background: '#fc4c02',
+                    flexShrink: 0,
+                  }} />
+                ))}
+                {(daySessions.length + dayStrava.length) > 4 && (
+                  <span style={{ fontSize: 8, color: '#475569' }}>+{daySessions.length + dayStrava.length - 4}</span>
                 )}
               </div>
             </div>
@@ -125,6 +142,12 @@ export default function MonthView({ sessions, workouts, onDayClick, selectedDay 
             <span style={{ fontSize: 10, color: '#475569', fontFamily: "'Barlow', sans-serif", letterSpacing: 1 }}>{w.name}</span>
           </div>
         ))}
+        {stravaActivities.length > 0 && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ width: 8, height: 8, borderRadius: 1, background: '#fc4c02' }} />
+            <span style={{ fontSize: 10, color: '#475569', fontFamily: "'Barlow', sans-serif", letterSpacing: 1 }}>Strava</span>
+          </div>
+        )}
       </div>
     </div>
   );

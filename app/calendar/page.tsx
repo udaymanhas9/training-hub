@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getSessions, getWorkouts, getProfile, getLeetCodeEntries, getQuantEntries } from '@/lib/storage';
-import { SessionLog, WorkoutDefinition, LeetCodeEntry, QuantEntry } from '@/lib/types';
+import { getSessions, getWorkouts, getProfile, getLeetCodeEntries, getQuantEntries, getStravaActivities } from '@/lib/storage';
+import { SessionLog, WorkoutDefinition, LeetCodeEntry, QuantEntry, StravaActivity } from '@/lib/types';
 import MonthView from '@/components/calendar/MonthView';
 import WeekHeatmap from '@/components/calendar/WeekHeatmap';
 import DayDetailPanel from '@/components/calendar/DayDetailPanel';
@@ -26,14 +26,15 @@ async function fetchGitHubActivity(username: string): Promise<Record<string, num
 }
 
 export default function CalendarPage() {
-  const [sessions, setSessions] = useState<SessionLog[]>([]);
-  const [workouts, setWorkouts] = useState<WorkoutDefinition[]>([]);
+  const [sessions, setSessions]       = useState<SessionLog[]>([]);
+  const [workouts, setWorkouts]       = useState<WorkoutDefinition[]>([]);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
-  const [view, setView] = useState<'month' | 'heatmap'>('month');
-  const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
-  const [leetcode, setLeetcode] = useState<LeetCodeEntry[]>([]);
-  const [quant, setQuant] = useState<QuantEntry[]>([]);
-  const [github, setGithub] = useState<Record<string, number>>({});
+  const [view, setView]               = useState<'month' | 'heatmap'>('month');
+  const [weightUnit, setWeightUnit]   = useState<'kg' | 'lbs'>('kg');
+  const [leetcode, setLeetcode]       = useState<LeetCodeEntry[]>([]);
+  const [quant, setQuant]             = useState<QuantEntry[]>([]);
+  const [github, setGithub]           = useState<Record<string, number>>({});
+  const [strava, setStrava]           = useState<StravaActivity[]>([]);
   const [labDataLoading, setLabDataLoading] = useState(true);
 
   useEffect(() => {
@@ -43,14 +44,13 @@ export default function CalendarPage() {
       setWorkouts(w);
       setWeightUnit(p.weightUnit);
 
-      // Load lab data for universal heatmap
       try {
-        const [lc, q] = await Promise.all([getLeetCodeEntries(), getQuantEntries()]);
+        const [lc, q, sa] = await Promise.all([getLeetCodeEntries(), getQuantEntries(), getStravaActivities()]);
         setLeetcode(lc);
         setQuant(q);
-        const uname = p.githubUsername;
-        if (uname) {
-          const ghData = await fetchGitHubActivity(uname);
+        setStrava(sa);
+        if (p.githubUsername) {
+          const ghData = await fetchGitHubActivity(p.githubUsername);
           setGithub(ghData);
         }
       } finally {
@@ -63,32 +63,26 @@ export default function CalendarPage() {
   const selectedSessions = selectedDay
     ? sessions.filter(s => s.date.slice(0, 10) === selectedDay)
     : [];
+  const selectedStrava = selectedDay
+    ? strava.filter(a => new Date(a.startDate).toISOString().slice(0, 10) === selectedDay)
+    : [];
 
   return (
     <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 40 }}>
-      {/* Header */}
-      <div style={{
-        borderBottom: '1px solid rgba(255,255,255,0.07)',
-        padding: '32px 24px 24px',
-        background: '#111',
-      }}>
+      <div style={{ borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '32px 24px 24px', background: '#111' }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
           <div style={{ fontSize: 11, letterSpacing: 6, color: '#64748b', fontFamily: "'Barlow', sans-serif", marginBottom: 8 }}>TRAINING CALENDAR</div>
           <h1 style={{ fontSize: 36, fontWeight: 900, color: '#f1f5f9', fontStyle: 'italic', letterSpacing: -1 }}>HISTORY</h1>
           <div style={{ display: 'flex', gap: 8, marginTop: 20 }}>
             {(['month', 'heatmap'] as const).map(v => (
-              <button
-                key={v}
-                onClick={() => setView(v)}
-                style={{
-                  padding: '6px 16px', borderRadius: 4, border: '1px solid',
-                  borderColor: view === v ? '#3b82f6' : 'rgba(255,255,255,0.1)',
-                  background: view === v ? 'rgba(59,130,246,0.15)' : 'transparent',
-                  color: view === v ? '#3b82f6' : '#64748b',
-                  fontSize: 11, fontWeight: 700, letterSpacing: 2, cursor: 'pointer',
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                }}
-              >
+              <button key={v} onClick={() => setView(v)} style={{
+                padding: '6px 16px', borderRadius: 4, border: '1px solid',
+                borderColor: view === v ? '#3b82f6' : 'rgba(255,255,255,0.1)',
+                background: view === v ? 'rgba(59,130,246,0.15)' : 'transparent',
+                color: view === v ? '#3b82f6' : '#64748b',
+                fontSize: 11, fontWeight: 700, letterSpacing: 2, cursor: 'pointer',
+                fontFamily: "'Barlow Condensed', sans-serif",
+              }}>
                 {v.toUpperCase()}
               </button>
             ))}
@@ -103,6 +97,7 @@ export default function CalendarPage() {
             workouts={workouts}
             onDayClick={setSelectedDay}
             selectedDay={selectedDay}
+            stravaActivities={strava}
           />
         ) : (
           <WeekHeatmap sessions={sessions} onDayClick={setSelectedDay} />
@@ -115,10 +110,10 @@ export default function CalendarPage() {
             workouts={workouts}
             onClose={() => setSelectedDay(null)}
             weightUnit={weightUnit}
+            stravaActivities={selectedStrava}
           />
         )}
 
-        {/* Universal cross-discipline heatmap */}
         {!labDataLoading && (
           <div style={{ marginTop: 32 }}>
             <UniversalHeatmap
@@ -126,6 +121,7 @@ export default function CalendarPage() {
               leetcode={leetcode}
               quant={quant}
               githubDays={github}
+              stravaActivities={strava}
               theme="training"
             />
           </div>

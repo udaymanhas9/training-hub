@@ -5,7 +5,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
   Legend, ResponsiveContainer,
 } from 'recharts';
-import { SessionLog, LeetCodeEntry, QuantEntry } from '@/lib/types';
+import { SessionLog, LeetCodeEntry, QuantEntry, StravaActivity } from '@/lib/types';
 import { format, startOfWeek, addWeeks, parseISO, isAfter, subWeeks } from 'date-fns';
 
 interface CumulativeChartProps {
@@ -13,6 +13,7 @@ interface CumulativeChartProps {
   leetcode: LeetCodeEntry[];
   quant: QuantEntry[];
   githubDays: Record<string, number>;
+  stravaActivities?: StravaActivity[];
 }
 
 interface WeekBucket {
@@ -44,7 +45,7 @@ function toDate(dateStr: string): Date {
   try { return parseISO(dateStr); } catch { return new Date(dateStr); }
 }
 
-export default function CumulativeChart({ sessions, leetcode, quant, githubDays }: CumulativeChartProps) {
+export default function CumulativeChart({ sessions, leetcode, quant, githubDays, stravaActivities = [] }: CumulativeChartProps) {
   const [range, setRange] = useState<RangeLabel>('3M');
   const today = new Date();
 
@@ -53,6 +54,7 @@ export default function CumulativeChart({ sessions, leetcode, quant, githubDays 
     ...leetcode.map(e => toDate(e.date)),
     ...quant.map(e => toDate(e.date)),
     ...Object.keys(githubDays).map(d => toDate(d)),
+    ...stravaActivities.map(a => toDate(new Date(a.startDate).toISOString().slice(0, 10))),
   ].filter(d => !isNaN(d.getTime()));
 
   if (allDates.length === 0) {
@@ -83,7 +85,8 @@ export default function CumulativeChart({ sessions, leetcode, quant, githubDays 
 
     buckets.push({
       weekLabel: label,
-      training: sessions.filter(s => { const d = toDate(s.date); return d >= cursor && d < weekEnd; }).length,
+      training: sessions.filter(s => { const d = toDate(s.date); return d >= cursor && d < weekEnd; }).length
+              + stravaActivities.filter(a => { const d = toDate(new Date(a.startDate).toISOString().slice(0, 10)); return d >= cursor && d < weekEnd; }).length,
       leetcode: leetcode.filter(e => { const d = toDate(e.date); return d >= cursor && d < weekEnd; }).length,
       quant:    quant.filter(e    => { const d = toDate(e.date); return d >= cursor && d < weekEnd; }).length,
       commits:  Object.entries(githubDays).reduce((sum, [ds, cnt]) => {

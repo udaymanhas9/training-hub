@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { WorkoutDefinition, SessionLog, PersonalBest, HealthEntry, UserProfile, LeetCodeEntry, QuantEntry } from './types';
+import { WorkoutDefinition, SessionLog, PersonalBest, HealthEntry, UserProfile, LeetCodeEntry, QuantEntry, StravaActivity } from './types';
 import { defaultWorkouts } from './defaultData';
 
 async function getUserId(): Promise<string | null> {
@@ -200,6 +200,10 @@ export async function getProfile(): Promise<UserProfile> {
     githubUsername: data.github_username,
     leetcodeUsername: data.leetcode_username,
     leetcodeSession: data.leetcode_session,
+    stravaAccessToken: data.strava_access_token,
+    stravaRefreshToken: data.strava_refresh_token,
+    stravaExpiresAt: data.strava_expires_at,
+    stravaAthleteId: data.strava_athlete_id,
   };
 }
 
@@ -215,6 +219,10 @@ export async function saveProfile(p: UserProfile): Promise<void> {
     github_username: p.githubUsername,
     leetcode_username: p.leetcodeUsername,
     leetcode_session: p.leetcodeSession,
+    strava_access_token: p.stravaAccessToken,
+    strava_refresh_token: p.stravaRefreshToken,
+    strava_expires_at: p.stravaExpiresAt,
+    strava_athlete_id: p.stravaAthleteId,
   }, { onConflict: 'user_id' });
 }
 
@@ -330,4 +338,62 @@ export async function saveCustomTopics(topics: string[]): Promise<void> {
     { user_id: userId, topics },
     { onConflict: 'user_id' }
   );
+}
+
+// ── Strava ────────────────────────────────────────────────────────────────────
+
+export async function getStravaActivities(): Promise<StravaActivity[]> {
+  const userId = await getUserId();
+  if (!userId) return [];
+  const { data, error } = await supabase
+    .from('strava_activities')
+    .select('*')
+    .eq('user_id', userId)
+    .order('start_date', { ascending: false });
+  if (error) throw error;
+  return (data || []).map(row => ({
+    id:                  row.id,
+    name:                row.name,
+    type:                row.type,
+    distance:            row.distance,
+    movingTime:          row.moving_time,
+    elapsedTime:         row.elapsed_time,
+    totalElevationGain:  row.total_elevation_gain,
+    startDate:           row.start_date,
+    averageSpeed:        row.average_speed,
+    maxSpeed:            row.max_speed,
+    averageHeartrate:    row.average_heartrate,
+    maxHeartrate:        row.max_heartrate,
+    averageCadence:      row.average_cadence,
+    calories:            row.calories,
+    mapPolyline:         row.map_polyline,
+    splits:              row.splits,
+    startLatlng:         row.start_latlng,
+  }));
+}
+
+export async function upsertStravaActivities(activities: StravaActivity[]): Promise<void> {
+  const userId = await getUserId();
+  if (!userId || activities.length === 0) return;
+  const rows = activities.map(a => ({
+    id:                   a.id,
+    user_id:              userId,
+    name:                 a.name,
+    type:                 a.type,
+    distance:             a.distance,
+    moving_time:          a.movingTime,
+    elapsed_time:         a.elapsedTime,
+    total_elevation_gain: a.totalElevationGain,
+    start_date:           a.startDate,
+    average_speed:        a.averageSpeed,
+    max_speed:            a.maxSpeed,
+    average_heartrate:    a.averageHeartrate,
+    max_heartrate:        a.maxHeartrate,
+    average_cadence:      a.averageCadence,
+    calories:             a.calories,
+    map_polyline:         a.mapPolyline,
+    splits:               a.splits,
+    start_latlng:         a.startLatlng,
+  }));
+  await supabase.from('strava_activities').upsert(rows, { onConflict: 'id' });
 }
