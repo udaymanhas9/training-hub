@@ -397,3 +397,33 @@ export async function upsertStravaActivities(activities: StravaActivity[]): Prom
   }));
   await supabase.from('strava_activities').upsert(rows, { onConflict: 'id' });
 }
+
+// ── Apple Health Metrics ──────────────────────────────────────────────────────
+
+export interface HealthMetric {
+  type: string;
+  value: number;
+  unit: string;
+  date: string;  // yyyy-MM-dd
+}
+
+export async function getHealthMetrics(type: string, days = 30): Promise<HealthMetric[]> {
+  const userId = await getUserId();
+  if (!userId) return [];
+  const since = new Date();
+  since.setDate(since.getDate() - days);
+  const { data, error } = await supabase
+    .from('health_metrics')
+    .select('type, value, unit, date')
+    .eq('user_id', userId)
+    .eq('type', type)
+    .gte('date', since.toISOString().slice(0, 10))
+    .order('date', { ascending: true });
+  if (error) throw error;
+  return (data || []).map(row => ({
+    type: row.type,
+    value: row.value,
+    unit: row.unit,
+    date: row.date,
+  }));
+}
