@@ -10,6 +10,7 @@ export interface Exercise {
   tag: string;
   intensity?: string;
   warmupSets?: string;
+  muscleGroups?: string[];
 }
 
 export interface Phase {

@@ -7,10 +7,12 @@ import { WorkoutDefinition, ExerciseLog, SessionLog, SetLog, PersonalBest } from
 import WorkoutHero from '@/components/workout/WorkoutHero';
 import PhaseAccordion from '@/components/workout/PhaseAccordion';
 import ProgressBar from '@/components/workout/ProgressBar';
+import MuscleDiagram from '@/components/workout/MuscleDiagram';
 import FinishWorkoutModal from '@/components/workout/FinishWorkoutModal';
 import BackButton from '@/components/ui/BackButton';
 import Toast from '@/components/ui/Toast';
 import { todayISO, generateId } from '@/lib/utils';
+import { lookupMuscles } from '@/lib/muscleMap';
 
 interface ToastMsg { id: string; message: string; type: 'pb' | 'info'; }
 
@@ -145,6 +147,21 @@ export default function WorkoutPage() {
 
         <div style={{ padding: '20px 24px 0' }}>
           <ProgressBar pct={pct} accentColor={workout.accentColor} />
+        </div>
+
+        <div style={{ padding: '16px 24px 0' }}>
+          <MuscleDiagram
+            workoutType={workout.type}
+            accentColor={workout.accentColor}
+            muscles={workout.phases
+              .flatMap(p => p.exercises)
+              .flatMap(ex =>
+                ex.muscleGroups && ex.muscleGroups.length > 0
+                  ? ex.muscleGroups
+                  : lookupMuscles(ex.name)
+              )
+              .filter((m, i, arr) => arr.indexOf(m) === i)}
+          />
         </div>
 
         <div style={{ padding: '16px 24px 0', display: 'flex', flexDirection: 'column', gap: 12 }}>
