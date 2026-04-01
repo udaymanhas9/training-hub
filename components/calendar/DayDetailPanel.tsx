@@ -1,6 +1,6 @@
 'use client';
 
-import { SessionLog, WorkoutDefinition } from '@/lib/types';
+import { SessionLog, WorkoutDefinition, StravaActivity } from '@/lib/types';
 import { formatDate, WORKOUT_TYPE_COLORS } from '@/lib/utils';
 
 interface DayDetailPanelProps {
@@ -9,9 +9,21 @@ interface DayDetailPanelProps {
   workouts: WorkoutDefinition[];
   onClose: () => void;
   weightUnit?: 'kg' | 'lbs';
+  stravaActivities?: StravaActivity[];
 }
 
-export default function DayDetailPanel({ date, sessions, workouts, onClose, weightUnit = 'kg' }: DayDetailPanelProps) {
+function fmtPace(mps: number) {
+  if (!mps) return '—';
+  const spk = 1000 / mps;
+  return `${Math.floor(spk / 60)}:${Math.floor(spk % 60).toString().padStart(2, '0')}/km`;
+}
+function fmtDist(m: number) { return `${(m / 1000).toFixed(2)} km`; }
+function fmtTime(s: number) {
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+}
+
+export default function DayDetailPanel({ date, sessions, workouts, onClose, weightUnit = 'kg', stravaActivities = [] }: DayDetailPanelProps) {
   const profile = { weightUnit };
 
   function getWorkout(id: string): WorkoutDefinition | undefined {
@@ -23,7 +35,7 @@ export default function DayDetailPanel({ date, sessions, workouts, onClose, weig
     return `${w}kg`;
   }
 
-  if (sessions.length === 0) return null;
+  if (sessions.length === 0 && stravaActivities.length === 0) return null;
 
   return (
     <div
@@ -90,6 +102,35 @@ export default function DayDetailPanel({ date, sessions, workouts, onClose, weig
           </div>
         );
       })}
+
+      {/* Strava runs */}
+      {stravaActivities.map(a => (
+        <div key={a.id} style={{ padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
+            <div style={{ width: 4, height: 36, background: '#fc4c02', borderRadius: 2 }} />
+            <div>
+              <div style={{ fontSize: 18, fontWeight: 900, color: '#f1f5f9' }}>{a.name}</div>
+              <div style={{ fontSize: 11, color: '#64748b', fontFamily: "'Barlow', sans-serif" }}>
+                {a.type} · Strava
+              </div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+            {[
+              { label: 'DIST',  value: fmtDist(a.distance),         color: '#f1f5f9' },
+              { label: 'TIME',  value: fmtTime(a.movingTime),        color: '#94a3b8' },
+              { label: 'PACE',  value: fmtPace(a.averageSpeed),      color: '#10b981' },
+              { label: 'ELEV',  value: `↑${Math.round(a.totalElevationGain)}m`, color: '#f59e0b' },
+              ...(a.averageHeartrate ? [{ label: 'HR', value: `${Math.round(a.averageHeartrate)} bpm`, color: '#ef4444' }] : []),
+            ].map(({ label, value, color }) => (
+              <div key={label}>
+                <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>{label}</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color }}>{value}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

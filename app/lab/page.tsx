@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getSessions, getLeetCodeEntries, getQuantEntries, getProfile } from '@/lib/storage';
-import { SessionLog, LeetCodeEntry, QuantEntry } from '@/lib/types';
+import { getSessions, getLeetCodeEntries, getQuantEntries, getProfile, getStravaActivities } from '@/lib/storage';
+import { SessionLog, LeetCodeEntry, QuantEntry, StravaActivity } from '@/lib/types';
 import { useAuth } from '@/lib/auth-context';
 import UniversalHeatmap from '@/components/shared/UniversalHeatmap';
 import CumulativeChart from '@/components/shared/CumulativeChart';
@@ -34,6 +34,7 @@ export default function LabOverviewPage() {
   const [leetcode, setLeetcode]   = useState<LeetCodeEntry[]>([]);
   const [quant, setQuant]         = useState<QuantEntry[]>([]);
   const [github, setGithub]       = useState<Record<string, number>>({});
+  const [strava, setStrava]       = useState<StravaActivity[]>([]);
   const [username, setUsername]   = useState<string>('');
   const [loading, setLoading]     = useState(true);
   const [now, setNow]             = useState('');
@@ -41,15 +42,17 @@ export default function LabOverviewPage() {
   useEffect(() => {
     async function load() {
       try {
-        const [s, lc, q, profile] = await Promise.all([
+        const [s, lc, q, profile, sa] = await Promise.all([
           getSessions(),
           getLeetCodeEntries(),
           getQuantEntries(),
           getProfile(),
+          getStravaActivities(),
         ]);
         setSessions(s);
         setLeetcode(lc);
         setQuant(q);
+        setStrava(sa);
         const gh = profile.githubUsername || 'udaymanhas9';
         setUsername(gh);
         const ghData = await fetchGitHubActivity(gh);
@@ -75,15 +78,17 @@ export default function LabOverviewPage() {
   }, []);
 
   // Derived stats
-  const lcSolved  = leetcode.filter(e => e.status === 'Solved').length;
-  const quantDone = quant.length;
-  const gitTotal  = Object.values(github).reduce((a, b) => a + b, 0);
+  const lcSolved   = leetcode.filter(e => e.status === 'Solved').length;
+  const quantDone  = quant.length;
+  const gitTotal   = Object.values(github).reduce((a, b) => a + b, 0);
+  const totalRuns  = strava.filter(a => a.type === 'Run').length;
 
   const statPills = [
-    { label: 'LC.SOLVED',    value: lcSolved,       color: '#00b8a3' },
-    { label: 'QUANT.DONE',   value: quantDone,      color: '#8b5cf6' },
-    { label: 'GIT.COMMITS',  value: gitTotal,       color: '#10b981' },
+    { label: 'LC.SOLVED',    value: lcSolved,        color: '#00b8a3' },
+    { label: 'QUANT.DONE',   value: quantDone,       color: '#8b5cf6' },
+    { label: 'GIT.COMMITS',  value: gitTotal,        color: '#f59e0b' },
     { label: 'SESSIONS',     value: sessions.length, color: '#ef4444' },
+    { label: 'RUNS',         value: totalRuns,       color: '#fc4c02' },
   ];
 
   return (
@@ -180,6 +185,7 @@ export default function LabOverviewPage() {
                 leetcode={leetcode}
                 quant={quant}
                 githubDays={github}
+                stravaActivities={strava}
               />
             </div>
 
@@ -196,6 +202,7 @@ export default function LabOverviewPage() {
                 leetcode={leetcode}
                 quant={quant}
                 githubDays={github}
+                stravaActivities={strava}
                 theme="lab"
               />
             </div>

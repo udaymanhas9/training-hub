@@ -76,6 +76,41 @@ export interface UserProfile {
   githubUsername?: string;
   leetcodeUsername?: string;
   leetcodeSession?: string;
+  stravaAccessToken?: string;
+  stravaRefreshToken?: string;
+  stravaExpiresAt?: number;
+  stravaAthleteId?: number;
+}
+
+// ── STRAVA ────────────────────────────────────────────────────────────────────
+
+export interface StravaSplit {
+  distance: number;          // metres
+  movingTime: number;        // seconds
+  elevationDifference: number;
+  averageSpeed: number;      // m/s
+  averageHeartrate?: number;
+  splitIndex: number;
+}
+
+export interface StravaActivity {
+  id: number;
+  name: string;
+  type: string;
+  distance: number;          // metres
+  movingTime: number;        // seconds
+  elapsedTime: number;
+  totalElevationGain: number;
+  startDate: string;         // ISO
+  averageSpeed: number;      // m/s
+  maxSpeed: number;
+  averageHeartrate?: number;
+  maxHeartrate?: number;
+  averageCadence?: number;
+  calories?: number;
+  mapPolyline?: string;
+  splits?: StravaSplit[];
+  startLatlng?: [number, number];
 }
 
 // ── THE LAB ───────────────────────────────────────────────────────────────────
