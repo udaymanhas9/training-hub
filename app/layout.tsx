@@ -7,6 +7,10 @@ import AuthGate from '@/components/ui/AuthGate';
 export const metadata: Metadata = {
   title: 'TRAINING HUB',
   description: 'Your personal workout tracker',
+  icons: {
+    icon: '/logo.png',
+    apple: '/logo.png',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
