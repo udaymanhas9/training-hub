@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   title: 'TRAINING HUB',
   description: 'Your personal workout tracker',
   icons: {
-    icon: '/logo.png',
-    apple: '/logo.png',
+    icon: '/profile-pic.png',
+    apple: '/profile-pic.png',
   },
 };
 
