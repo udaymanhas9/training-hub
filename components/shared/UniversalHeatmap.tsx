@@ -1,6 +1,6 @@
 'use client';
 
-import { SessionLog, LeetCodeEntry, QuantEntry } from '@/lib/types';
+import { SessionLog, LeetCodeEntry, QuantEntry, StravaActivity } from '@/lib/types';
 import { format, subWeeks, startOfWeek, addDays } from 'date-fns';
 
 interface UniversalHeatmapProps {
@@ -8,6 +8,7 @@ interface UniversalHeatmapProps {
   leetcode: LeetCodeEntry[];
   quant: QuantEntry[];
   githubDays: Record<string, number>;  // date → commit count
+  stravaActivities?: StravaActivity[];
   theme?: 'training' | 'lab';
 }
 
@@ -49,6 +50,7 @@ export default function UniversalHeatmap({
   leetcode,
   quant,
   githubDays,
+  stravaActivities = [],
   theme = 'training',
 }: UniversalHeatmapProps) {
   const isLab = theme === 'lab';
@@ -60,6 +62,10 @@ export default function UniversalHeatmap({
   const trainingByDay: Record<string, number> = {};
   sessions.forEach(s => {
     const k = s.date.slice(0, 10);
+    trainingByDay[k] = (trainingByDay[k] || 0) + 1;
+  });
+  stravaActivities.forEach(a => {
+    const k = new Date(a.startDate).toISOString().slice(0, 10);
     trainingByDay[k] = (trainingByDay[k] || 0) + 1;
   });
 

@@ -27,6 +27,7 @@ export default function WorkoutPage() {
   const [toasts, setToasts] = useState<ToastMsg[]>([]);
   const [newPBs, setNewPBs] = useState<PersonalBest[]>([]);
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
+  const [sessionDate, setSessionDate] = useState(todayISO());
   const startTimeRef = useRef<Date>(new Date());
   const lastSession = useRef<SessionLog | undefined>(undefined);
 
@@ -78,7 +79,7 @@ export default function WorkoutPage() {
     const session: SessionLog = {
       id: generateId(),
       workoutId: workout.id,
-      date: todayISO(),
+      date: sessionDate,
       durationMinutes,
       exercises,
     };
@@ -99,7 +100,7 @@ export default function WorkoutPage() {
             exerciseName: exLog.exerciseName,
             weight: s.weight,
             reps: s.reps,
-            date: todayISO(),
+            date: sessionDate,
             workoutId: workout.id,
           };
           const idx = currentPBs.findIndex(p => p.exerciseId === exLog.exerciseId);
@@ -165,8 +166,34 @@ export default function WorkoutPage() {
           ))}
         </div>
 
+        {/* Date picker */}
+        <div style={{ padding: '20px 24px 0' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ fontSize: 10, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow', sans-serif", whiteSpace: 'nowrap' }}>
+              SESSION DATE
+            </div>
+            <input
+              type="date"
+              value={sessionDate}
+              max={todayISO()}
+              onChange={e => setSessionDate(e.target.value)}
+              style={{
+                background: '#111', border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 6, color: '#f1f5f9', padding: '6px 12px',
+                fontSize: 13, fontFamily: "'Barlow', sans-serif",
+                colorScheme: 'dark', cursor: 'pointer',
+              }}
+            />
+            {sessionDate !== todayISO() && (
+              <span style={{ fontSize: 10, color: '#f59e0b', fontFamily: "'Barlow', sans-serif", letterSpacing: 1 }}>
+                LOGGING RETROSPECTIVELY
+              </span>
+            )}
+          </div>
+        </div>
+
         {/* Finish button */}
-        <div style={{ padding: '24px 24px 0' }}>
+        <div style={{ padding: '12px 24px 0' }}>
           <button
             onClick={handleFinish}
             style={{

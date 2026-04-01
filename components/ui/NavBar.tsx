@@ -8,6 +8,7 @@ import { useAuth } from '@/lib/auth-context';
 
 const TRAINING_NAV = [
   { href: '/', label: 'HOME', icon: HomeIcon },
+  { href: '/runs', label: 'RUNS', icon: RunIcon },
   { href: '/calendar', label: 'CALENDAR', icon: CalendarIcon },
   { href: '/progress', label: 'PROGRESS', icon: ProgressIcon },
   { href: '/stats', label: 'STATS', icon: StatsIcon },
@@ -48,6 +49,17 @@ function ProgressIcon({ active }: { active: boolean }) {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? 'currentColor' : '#475569'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+    </svg>
+  );
+}
+
+function RunIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? 'currentColor' : '#475569'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="13" cy="4" r="1.5" />
+      <path d="M7 20l2-6 3 2 4-5" />
+      <path d="M11 20h4" />
+      <path d="M15.5 8.5L14 13l-3-2-2 4" />
     </svg>
   );
 }
