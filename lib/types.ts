@@ -81,6 +81,7 @@ export interface UserProfile {
   stravaRefreshToken?: string;
   stravaExpiresAt?: number;
   stravaAthleteId?: number;
+  githubToken?: string;
 }
 
 // ── STRAVA ────────────────────────────────────────────────────────────────────

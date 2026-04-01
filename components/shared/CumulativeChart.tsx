@@ -81,7 +81,8 @@ export default function CumulativeChart({ sessions, leetcode, quant, githubDays,
   let cursor = effectiveStart;
   while (!isAfter(cursor, today)) {
     const weekEnd = addWeeks(cursor, 1);
-    const label = format(cursor, 'MMM d');
+    const isCurrentWeek = cursor <= today && today < weekEnd;
+    const label = isCurrentWeek ? format(today, 'MMM d') : format(cursor, 'MMM d');
 
     buckets.push({
       weekLabel: label,

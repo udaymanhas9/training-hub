@@ -2,14 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getWorkouts, getSessions, getProfile, getHealthEntries } from '@/lib/storage';
+import { getWorkouts, getProfile, getSessionCount, getSessionDates, getRecentSessions, getLatestHealthEntry } from '@/lib/storage';
 import { WorkoutDefinition, SessionLog } from '@/lib/types';
 import { formatLastTrained, getSessionsThisWeek, getCurrentStreak, formatDate, WORKOUT_TYPE_COLORS } from '@/lib/utils';
 import { format } from 'date-fns';
 
 export default function DashboardPage() {
   const [workouts, setWorkouts] = useState<WorkoutDefinition[]>([]);
-  const [sessions, setSessions] = useState<SessionLog[]>([]);
+  const [totalSessions, setTotalSessions] = useState(0);
+  const [sessionDates, setSessionDates] = useState<{ date: string; workoutId: string }[]>([]);
+  const [recentSessions, setRecentSessions] = useState<SessionLog[]>([]);
   const [profileName, setProfileName] = useState('');
   const [currentWeight, setCurrentWeight] = useState<number | null>(null);
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
@@ -18,33 +20,33 @@ export default function DashboardPage() {
 
   useEffect(() => {
     async function load() {
-      const [w, s, p, h] = await Promise.all([
+      const [w, p, count, dates, recent, latestHealth] = await Promise.all([
         getWorkouts(),
-        getSessions(),
         getProfile(),
-        getHealthEntries(),
+        getSessionCount(),
+        getSessionDates(),
+        getRecentSessions(5),
+        getLatestHealthEntry(),
       ]);
       setWorkouts(w);
-      setSessions(s);
       setProfileName(p.name);
       setWeightUnit(p.weightUnit);
-      if (h.length > 0) {
-        const sorted = [...h].sort((a, b) => b.date.localeCompare(a.date));
-        setCurrentWeight(sorted[0].weight);
-        setCurrentBF(sorted[0].bodyFatPct ?? null);
+      setTotalSessions(count);
+      setSessionDates(dates);
+      setRecentSessions(recent);
+      if (latestHealth) {
+        setCurrentWeight(latestHealth.weight);
+        setCurrentBF(latestHealth.bodyFatPct ?? null);
       }
     }
     load();
   }, []);
 
-  const totalSessions = sessions.length;
-  const thisWeek = getSessionsThisWeek(sessions);
-  const streak = getCurrentStreak(sessions);
-  const recentSessions = [...sessions].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
+  const thisWeek = getSessionsThisWeek(sessionDates);
+  const streak = getCurrentStreak(sessionDates);
 
   function getLastTrainedDate(workoutId: string): string | undefined {
-    const s = sessions.filter(x => x.workoutId === workoutId).sort((a, b) => b.date.localeCompare(a.date));
-    return s[0]?.date;
+    return sessionDates.find(s => s.workoutId === workoutId)?.date;
   }
 
   function getWorkoutTypeLabel(type: string) {
@@ -112,7 +114,7 @@ export default function DashboardPage() {
             {coreWorkouts.map(workout => {
               const accent = workout.accentColor;
               const lastDate = getLastTrainedDate(workout.id);
-              const sessionCount = sessions.filter(s => s.workoutId === workout.id).length;
+              const sessionCount = sessionDates.filter(s => s.workoutId === workout.id).length;
               return (
                 <div key={workout.id} style={{ position: 'relative' }}>
                   <Link href={`/workout/${workout.id}`} style={{ textDecoration: 'none', display: 'block' }}>
@@ -275,7 +277,7 @@ export default function DashboardPage() {
         )}
 
         {/* Empty state */}
-        {sessions.length === 0 && (
+        {totalSessions === 0 && (
           <div style={{ marginTop: 60, textAlign: 'center' }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>🏋️</div>
             <div style={{ fontSize: 22, fontWeight: 900, color: '#475569', letterSpacing: 2 }}>NO SESSIONS YET</div>

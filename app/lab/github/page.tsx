@@ -35,10 +35,10 @@ interface GitHubEvent {
   created_at: string;
 }
 
-async function fetchEvents(username: string): Promise<GitHubEvent[]> {
-  const res = await fetch(
-    `https://api.github.com/users/${username}/events/public?per_page=100`
-  );
+async function fetchEvents(username: string, token?: string): Promise<GitHubEvent[]> {
+  const params = new URLSearchParams({ username });
+  if (token) params.set('token', token);
+  const res = await fetch(`/api/github/events?${params}`);
   if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
   return res.json();
 }
@@ -91,20 +91,23 @@ function buildRepoSummaries(pushes: RepoPush[]): RepoSummary[] {
 }
 
 export default function GitHubPage() {
-  const [username, setUsername]           = useState(DEFAULT_USERNAME);
+  const [username, setUsername]               = useState(DEFAULT_USERNAME);
+  const [token, setToken]                     = useState<string | undefined>(undefined);
   const [editingUsername, setEditingUsername] = useState(false);
-  const [usernameInput, setUsernameInput] = useState('');
-  const [pushes, setPushes]               = useState<RepoPush[]>([]);
-  const [repoSummaries, setRepoSummaries] = useState<RepoSummary[]>([]);
-  const [loading, setLoading]             = useState(true);
-  const [error, setError]                 = useState('');
-  const [expandedRepo, setExpandedRepo]   = useState<string | null>(null);
-  const [refreshing, setRefreshing]       = useState(false);
+  const [usernameInput, setUsernameInput]     = useState('');
+  const [showTokenForm, setShowTokenForm]     = useState(false);
+  const [tokenInput, setTokenInput]           = useState('');
+  const [pushes, setPushes]                   = useState<RepoPush[]>([]);
+  const [repoSummaries, setRepoSummaries]     = useState<RepoSummary[]>([]);
+  const [loading, setLoading]                 = useState(true);
+  const [error, setError]                     = useState('');
+  const [expandedRepo, setExpandedRepo]       = useState<string | null>(null);
+  const [refreshing, setRefreshing]           = useState(false);
 
-  const loadData = useCallback(async (uname: string) => {
+  const loadData = useCallback(async (uname: string, pat?: string) => {
     setError('');
     try {
-      const events = await fetchEvents(uname);
+      const events = await fetchEvents(uname, pat);
       const p = buildRepoPushes(events);
       setPushes(p);
       setRepoSummaries(buildRepoSummaries(p));
@@ -118,8 +121,10 @@ export default function GitHubPage() {
       try {
         const profile = await getProfile();
         const uname = profile.githubUsername || DEFAULT_USERNAME;
+        const pat   = profile.githubToken;
         setUsername(uname);
-        await loadData(uname);
+        setToken(pat);
+        await loadData(uname, pat);
       } finally {
         setLoading(false);
       }
@@ -136,7 +141,23 @@ export default function GitHubPage() {
     try {
       const profile = await getProfile();
       await saveProfile({ ...profile, githubUsername: trimmed });
-      await loadData(trimmed);
+      await loadData(trimmed, token);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleSaveToken() {
+    const trimmed = tokenInput.trim();
+    setShowTokenForm(false);
+    setTokenInput('');
+    const pat = trimmed || undefined;
+    setToken(pat);
+    const profile = await getProfile();
+    await saveProfile({ ...profile, githubToken: pat });
+    setLoading(true);
+    try {
+      await loadData(username, pat);
     } finally {
       setLoading(false);
     }
@@ -144,7 +165,7 @@ export default function GitHubPage() {
 
   async function handleRefresh() {
     setRefreshing(true);
-    await loadData(username);
+    await loadData(username, token);
     setRefreshing(false);
   }
 
@@ -198,20 +219,77 @@ export default function GitHubPage() {
               )}
             </h1>
 
-            <button
-              onClick={handleRefresh}
-              disabled={refreshing}
-              style={{
-                background: 'transparent', border: '1px solid rgba(255,42,42,0.3)',
-                color: '#737373', cursor: 'pointer',
-                padding: '8px 16px', fontSize: 9, letterSpacing: 3, fontFamily: MONO,
-                transition: 'all 0.15s', opacity: refreshing ? 0.5 : 1,
-              }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#FF2A2A'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,42,42,0.6)'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#737373'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,42,42,0.3)'; }}
-            >
-              {refreshing ? 'REFRESHING...' : '↻ REFRESH'}
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              {/* Token status / toggle */}
+              {showTokenForm ? (
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                  <input
+                    autoFocus
+                    type="password"
+                    value={tokenInput}
+                    onChange={e => setTokenInput(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') handleSaveToken(); if (e.key === 'Escape') { setShowTokenForm(false); setTokenInput(''); } }}
+                    placeholder="ghp_xxxxxxxxxxxx"
+                    style={{
+                      background: '#0d0d0d', border: '1px solid rgba(255,42,42,0.4)',
+                      color: '#E5E5E5', fontFamily: MONO, fontSize: 10,
+                      padding: '6px 10px', outline: 'none', width: 200, letterSpacing: 1,
+                    }}
+                  />
+                  <button
+                    onClick={handleSaveToken}
+                    style={{
+                      background: 'transparent', border: '1px solid rgba(255,42,42,0.4)',
+                      color: '#FF2A2A', cursor: 'pointer', padding: '6px 12px',
+                      fontSize: 9, letterSpacing: 2, fontFamily: MONO,
+                    }}
+                  >
+                    SAVE
+                  </button>
+                  {token && (
+                    <button
+                      onClick={() => { setTokenInput(''); handleSaveToken(); }}
+                      style={{
+                        background: 'transparent', border: '1px solid rgba(255,255,255,0.1)',
+                        color: '#737373', cursor: 'pointer', padding: '6px 10px',
+                        fontSize: 9, letterSpacing: 2, fontFamily: MONO,
+                      }}
+                    >
+                      REMOVE
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <button
+                  onClick={() => { setTokenInput(token || ''); setShowTokenForm(true); }}
+                  style={{
+                    background: 'transparent',
+                    border: `1px solid ${token ? 'rgba(16,185,129,0.4)' : 'rgba(255,255,255,0.1)'}`,
+                    color: token ? '#10b981' : '#737373',
+                    cursor: 'pointer', padding: '8px 14px',
+                    fontSize: 9, letterSpacing: 3, fontFamily: MONO, transition: 'all 0.15s',
+                  }}
+                  title={token ? 'PAT connected — showing private commits' : 'Add GitHub PAT to include private commits'}
+                >
+                  {token ? '⬤ PAT' : '○ PAT'}
+                </button>
+              )}
+
+              <button
+                onClick={handleRefresh}
+                disabled={refreshing}
+                style={{
+                  background: 'transparent', border: '1px solid rgba(255,42,42,0.3)',
+                  color: '#737373', cursor: 'pointer',
+                  padding: '8px 16px', fontSize: 9, letterSpacing: 3, fontFamily: MONO,
+                  transition: 'all 0.15s', opacity: refreshing ? 0.5 : 1,
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#FF2A2A'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,42,42,0.6)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#737373'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,42,42,0.3)'; }}
+              >
+                {refreshing ? 'REFRESHING...' : '↻ REFRESH'}
+              </button>
+            </div>
           </div>
         </div>
       </div>

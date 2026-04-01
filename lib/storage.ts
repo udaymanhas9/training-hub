@@ -2,9 +2,17 @@ import { supabase } from './supabase';
 import { WorkoutDefinition, SessionLog, PersonalBest, HealthEntry, UserProfile, LeetCodeEntry, QuantEntry, StravaActivity } from './types';
 import { defaultWorkouts } from './defaultData';
 
+// Cache the in-flight promise so concurrent calls in the same render
+// share one network request instead of each firing their own.
+let _userIdPromise: Promise<string | null> | null = null;
+
 async function getUserId(): Promise<string | null> {
-  const { data } = await supabase.auth.getUser();
-  return data.user?.id ?? null;
+  if (!_userIdPromise) {
+    _userIdPromise = supabase.auth.getUser().then(({ data }) => data.user?.id ?? null);
+    // Expire after 60 s so long-lived sessions still refresh
+    setTimeout(() => { _userIdPromise = null; }, 60_000);
+  }
+  return _userIdPromise;
 }
 
 // ── Workouts ──────────────────────────────────────────────────────────────────
@@ -111,6 +119,69 @@ export async function getLastSession(workoutId: string): Promise<SessionLog | un
   };
 }
 
+/** Total session count — no row data transferred. */
+export async function getSessionCount(): Promise<number> {
+  const userId = await getUserId();
+  if (!userId) return 0;
+  const { count } = await supabase
+    .from('session_log')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', userId);
+  return count ?? 0;
+}
+
+/** All session dates + workoutId — lightweight, no exercises blob. */
+export async function getSessionDates(): Promise<{ date: string; workoutId: string }[]> {
+  const userId = await getUserId();
+  if (!userId) return [];
+  const { data } = await supabase
+    .from('session_log')
+    .select('date, workout_id')
+    .eq('user_id', userId)
+    .order('date', { ascending: false });
+  return (data || []).map(row => ({ date: row.date, workoutId: row.workout_id }));
+}
+
+/** Last N sessions with full data (for display). */
+export async function getRecentSessions(limit: number): Promise<SessionLog[]> {
+  const userId = await getUserId();
+  if (!userId) return [];
+  const { data } = await supabase
+    .from('session_log')
+    .select('*')
+    .eq('user_id', userId)
+    .order('date', { ascending: false })
+    .limit(limit);
+  return (data || []).map(row => ({
+    id: row.id,
+    workoutId: row.workout_id,
+    date: row.date,
+    durationMinutes: row.duration_minutes,
+    exercises: row.exercises,
+  }));
+}
+
+/** Most recent health entry — LIMIT 1 instead of fetching all rows. */
+export async function getLatestHealthEntry(): Promise<HealthEntry | null> {
+  const userId = await getUserId();
+  if (!userId) return null;
+  const { data } = await supabase
+    .from('health_stats')
+    .select('*')
+    .eq('user_id', userId)
+    .order('date', { ascending: false })
+    .limit(1)
+    .single();
+  if (!data) return null;
+  return {
+    id: data.id,
+    date: data.date,
+    weight: data.weight,
+    bodyFatPct: data.body_fat_pct,
+    bmi: data.bmi,
+  };
+}
+
 // ── Personal Bests ────────────────────────────────────────────────────────────
 
 export async function getPBs(): Promise<PersonalBest[]> {
@@ -204,6 +275,7 @@ export async function getProfile(): Promise<UserProfile> {
     stravaRefreshToken: data.strava_refresh_token,
     stravaExpiresAt: data.strava_expires_at,
     stravaAthleteId: data.strava_athlete_id,
+    githubToken: data.github_token,
   };
 }
 
@@ -223,6 +295,7 @@ export async function saveProfile(p: UserProfile): Promise<void> {
     strava_refresh_token: p.stravaRefreshToken,
     strava_expires_at: p.stravaExpiresAt,
     strava_athlete_id: p.stravaAthleteId,
+    github_token: p.githubToken,
   }, { onConflict: 'user_id' });
 }
 
@@ -405,6 +478,22 @@ export interface HealthMetric {
   value: number;
   unit: string;
   date: string;  // yyyy-MM-dd
+}
+
+export async function saveHealthMetric(metric: Omit<HealthMetric, 'unit'> & { unit: string }): Promise<void> {
+  const userId = await getUserId();
+  if (!userId) return;
+  await supabase.from('health_metrics').upsert(
+    {
+      user_id:   userId,
+      type:      metric.type,
+      value:     metric.value,
+      unit:      metric.unit,
+      date:      metric.date,
+      timestamp: new Date(metric.date).toISOString(),
+    },
+    { onConflict: 'user_id,type,date' }
+  );
 }
 
 export async function getHealthMetrics(type: string, days = 30): Promise<HealthMetric[]> {

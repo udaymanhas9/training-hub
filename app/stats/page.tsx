@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getHealthEntries, saveHealthEntries, getProfile, saveProfile, getHealthMetrics, HealthMetric } from '@/lib/storage';
+import { getHealthEntries, saveHealthEntries, getProfile, saveProfile, getHealthMetrics, saveHealthMetric, HealthMetric } from '@/lib/storage';
 import { HealthEntry, UserProfile } from '@/lib/types';
 import HealthEntryForm from '@/components/stats/HealthEntryForm';
 import StatsSummaryCard from '@/components/stats/StatsSummaryCard';
@@ -11,6 +11,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   LineChart, Line, ReferenceLine,
 } from 'recharts';
+import { todayISO } from '@/lib/utils';
 
 export default function StatsPage() {
   const [entries, setEntries] = useState<HealthEntry[]>([]);
@@ -21,15 +22,20 @@ export default function StatsPage() {
   const [steps, setSteps] = useState<HealthMetric[]>([]);
   const [restingHR, setRestingHR] = useState<HealthMetric[]>([]);
   const [sleep, setSleep] = useState<HealthMetric[]>([]);
+  const [vo2Max, setVo2Max] = useState<HealthMetric[]>([]);
+  const [showVo2Form, setShowVo2Form] = useState(false);
+  const [vo2Input, setVo2Input] = useState('');
+  const [vo2Date, setVo2Date] = useState(todayISO());
 
   useEffect(() => {
     async function load() {
-      const [e, p, s, hr, sl] = await Promise.all([
+      const [e, p, s, hr, sl, vo2] = await Promise.all([
         getHealthEntries(),
         getProfile(),
         getHealthMetrics('HKQuantityTypeIdentifierStepCount', 14),
         getHealthMetrics('HKQuantityTypeIdentifierRestingHeartRate', 14),
         getHealthMetrics('HKCategoryTypeIdentifierSleepAnalysis', 14),
+        getHealthMetrics('vo2max', 365),
       ]);
       setEntries(e);
       setProfile(p);
@@ -37,6 +43,7 @@ export default function StatsPage() {
       setSteps(s);
       setRestingHR(hr);
       setSleep(sl);
+      setVo2Max(vo2);
     }
     load();
   }, []);
@@ -60,6 +67,17 @@ export default function StatsPage() {
     setProfile(profileDraft);
     await saveProfile(profileDraft);
     setEditingProfile(false);
+  }
+
+  async function handleSaveVo2() {
+    const val = parseFloat(vo2Input);
+    if (isNaN(val) || val <= 0) return;
+    await saveHealthMetric({ type: 'vo2max', value: val, unit: 'mL/kg/min', date: vo2Date });
+    const updated = await getHealthMetrics('vo2max', 365);
+    setVo2Max(updated);
+    setVo2Input('');
+    setVo2Date(todayISO());
+    setShowVo2Form(false);
   }
 
   const sortedEntries = [...entries].sort((a, b) => b.date.localeCompare(a.date));
@@ -329,6 +347,100 @@ export default function StatsPage() {
                 <div style={{ height: 90, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#334155', fontSize: 11, letterSpacing: 2 }}>NO DATA</div>
               )}
             </div>
+
+            {/* VO2 Max */}
+            {(() => {
+              const latest = vo2Max.length > 0 ? vo2Max[vo2Max.length - 1] : null;
+              const val = latest?.value ?? 0;
+              const color = '#10b981';
+              const zone =
+                val >= 60 ? { label: 'SUPERIOR', color: '#10b981' } :
+                val >= 50 ? { label: 'EXCELLENT', color: '#3b82f6' } :
+                val >= 40 ? { label: 'GOOD',      color: '#f59e0b' } :
+                val >= 30 ? { label: 'FAIR',       color: '#f97316' } :
+                val >  0  ? { label: 'POOR',       color: '#ef4444' } :
+                              null;
+
+              return (
+                <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '20px 20px 16px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                      <div style={{ fontSize: 9, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>VO2 MAX</div>
+                      {zone && (
+                        <span style={{ fontSize: 8, letterSpacing: 2, color: zone.color, fontFamily: "'Barlow', sans-serif", fontWeight: 700 }}>
+                          {zone.label}
+                        </span>
+                      )}
+                    </div>
+                    {latest && (
+                      <div style={{ fontSize: 20, fontWeight: 900, color }}>
+                        {val.toFixed(1)}
+                        <span style={{ fontSize: 10, color: '#475569', marginLeft: 4, fontWeight: 400 }}>mL/kg/min</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {vo2Max.length > 1 ? (
+                    <ResponsiveContainer width="100%" height={90}>
+                      <LineChart data={vo2Max.map(m => ({ d: m.date.slice(5), v: m.value }))} margin={{ top: 4, right: 0, left: -28, bottom: 0 }}>
+                        <XAxis dataKey="d" tick={{ fill: '#475569', fontSize: 9, fontFamily: "'Barlow', sans-serif" }} axisLine={false} tickLine={false} />
+                        <YAxis tick={false} axisLine={false} tickLine={false} domain={['auto', 'auto']} />
+                        <Tooltip
+                          contentStyle={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, fontSize: 11, fontFamily: "'Barlow', sans-serif" }}
+                          labelStyle={{ color: '#94a3b8' }}
+                          itemStyle={{ color }}
+                          formatter={(v: number) => [`${v.toFixed(1)} mL/kg/min`, 'VO2 Max']}
+                        />
+                        <Line type="monotone" dataKey="v" stroke={color} strokeWidth={2} dot={{ r: 3, fill: color }} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div style={{ height: 90, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#334155', fontSize: 11, letterSpacing: 2 }}>
+                      {latest ? 'LOG MORE TO SEE TREND' : 'NO DATA'}
+                    </div>
+                  )}
+
+                  {/* Manual entry */}
+                  {showVo2Form ? (
+                    <div style={{ marginTop: 14, display: 'flex', gap: 8, alignItems: 'center' }}>
+                      <input
+                        type="number"
+                        value={vo2Input}
+                        onChange={e => setVo2Input(e.target.value)}
+                        placeholder="e.g. 52.4"
+                        min={10} max={90} step={0.1}
+                        style={{ flex: 1, background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, color: '#f1f5f9', padding: '6px 10px', fontSize: 13, fontFamily: "'Barlow', sans-serif" }}
+                      />
+                      <input
+                        type="date"
+                        value={vo2Date}
+                        onChange={e => setVo2Date(e.target.value)}
+                        style={{ background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, color: '#f1f5f9', padding: '6px 8px', fontSize: 13, fontFamily: "'Barlow', sans-serif", colorScheme: 'dark' }}
+                      />
+                      <button
+                        onClick={handleSaveVo2}
+                        style={{ background: color, border: 'none', borderRadius: 4, color: '#000', fontSize: 11, fontWeight: 900, letterSpacing: 2, padding: '7px 12px', cursor: 'pointer', fontFamily: "'Barlow Condensed', sans-serif", whiteSpace: 'nowrap' }}
+                      >
+                        SAVE
+                      </button>
+                      <button
+                        onClick={() => setShowVo2Form(false)}
+                        style={{ background: 'transparent', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 16, padding: '0 4px' }}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setShowVo2Form(true)}
+                      style={{ marginTop: 12, background: 'transparent', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 4, color: '#475569', fontSize: 9, letterSpacing: 3, padding: '5px 12px', cursor: 'pointer', fontFamily: "'Barlow', sans-serif", width: '100%' }}
+                    >
+                      + LOG VO2 MAX
+                    </button>
+                  )}
+                </div>
+              );
+            })()}
 
           </div>
         </div>
