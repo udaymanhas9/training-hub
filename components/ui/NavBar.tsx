@@ -316,17 +316,21 @@ export default function NavBar() {
           borderBottom: isLabMode ? '1px solid rgba(255,42,42,0.15)' : '1px solid rgba(255,255,255,0.07)',
           height: 64, overflow: 'hidden',
         }}>
-          <span style={{
-            fontSize: isLabMode ? 14 : 18,
-            fontWeight: 700,
-            fontStyle: isLabMode ? 'normal' : 'italic',
-            color: isLabMode ? '#FF2A2A' : '#f1f5f9',
-            whiteSpace: 'nowrap',
-            letterSpacing: isLabMode ? 2 : -0.5,
-            fontFamily: isLabMode ? "'JetBrains Mono', monospace" : undefined,
-          }}>
-            {isLabMode ? 'LAB' : 'T'}
-          </span>
+          {isLabMode ? (
+            <span style={{
+              fontSize: 14, fontWeight: 700, color: '#FF2A2A',
+              whiteSpace: 'nowrap', letterSpacing: 2,
+              fontFamily: "'JetBrains Mono', monospace",
+            }}>
+              LAB
+            </span>
+          ) : (
+            <img
+              src="/logo.png"
+              alt="logo"
+              style={{ width: 36, height: 36, objectFit: 'cover', borderRadius: '50%', flexShrink: 0 }}
+            />
+          )}
         </div>
 
         {/* Nav items */}
