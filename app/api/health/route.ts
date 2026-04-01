@@ -1,11 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
 interface RawMetric {
   type: string;
   value: number;
@@ -17,6 +12,11 @@ interface RawMetric {
 // Header: X-API-Key: <HEALTH_WEBHOOK_SECRET>
 // Body: { metrics: [{ type, value, unit, timestamp }] }
 export async function POST(request: NextRequest) {
+  const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
   const apiKey = request.headers.get('X-API-Key');
   if (apiKey !== process.env.HEALTH_WEBHOOK_SECRET) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
