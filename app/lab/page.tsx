@@ -9,11 +9,12 @@ import CumulativeChart from '@/components/shared/CumulativeChart';
 
 const MONO = "'JetBrains Mono', monospace";
 
-async function fetchGitHubActivity(username: string): Promise<Record<string, number>> {
+async function fetchGitHubActivity(username: string, token?: string): Promise<Record<string, number>> {
   try {
-    const res = await fetch(
-      `https://api.github.com/users/${username}/events/public?per_page=100`
-    );
+    const params = new URLSearchParams({ username });
+    if (token) params.set('token', token);
+    const res = await fetch(`/api/github/events?${params}`);
+    if (!res.ok) return {};
     const events = await res.json();
     const map: Record<string, number> = {};
     events
@@ -53,9 +54,10 @@ export default function LabOverviewPage() {
         setLeetcode(lc);
         setQuant(q);
         setStrava(sa);
-        const gh = profile.githubUsername || 'udaymanhas9';
+        const gh  = profile.githubUsername || 'udaymanhas9';
+        const pat = profile.githubToken;
         setUsername(gh);
-        const ghData = await fetchGitHubActivity(gh);
+        const ghData = await fetchGitHubActivity(gh, pat);
         setGithub(ghData);
       } finally {
         setLoading(false);

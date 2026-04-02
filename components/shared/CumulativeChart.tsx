@@ -6,7 +6,7 @@ import {
   Legend, ResponsiveContainer,
 } from 'recharts';
 import { SessionLog, LeetCodeEntry, QuantEntry, StravaActivity } from '@/lib/types';
-import { format, startOfWeek, addWeeks, parseISO, isAfter, subWeeks } from 'date-fns';
+import { format, startOfWeek, addDays, parseISO, isAfter, subWeeks } from 'date-fns';
 
 interface CumulativeChartProps {
   sessions: SessionLog[];
@@ -16,8 +16,9 @@ interface CumulativeChartProps {
   stravaActivities?: StravaActivity[];
 }
 
-interface WeekBucket {
-  weekLabel: string;
+interface DayBucket {
+  date: string;      // 'yyyy-MM-dd', used to compute weekly tick positions
+  dayLabel: string;
   training: number;
   leetcode: number;
   quant: number;
@@ -76,26 +77,47 @@ export default function CumulativeChart({ sessions, leetcode, quant, githubDays,
     : startOfWeek(subWeeks(today, selectedWeeks), { weekStartsOn: 1 });
   const effectiveStart = rangeStart < absoluteStart ? absoluteStart : rangeStart;
 
-  // Build weekly buckets
-  const buckets: WeekBucket[] = [];
+  // Build daily buckets
+  const buckets: DayBucket[] = [];
   let cursor = effectiveStart;
   while (!isAfter(cursor, today)) {
-    const weekEnd = addWeeks(cursor, 1);
-    const isCurrentWeek = cursor <= today && today < weekEnd;
-    const label = isCurrentWeek ? format(today, 'MMM d') : format(cursor, 'MMM d');
-
+    const nextDay = addDays(cursor, 1);
+    const dateStr = format(cursor, 'yyyy-MM-dd');
     buckets.push({
-      weekLabel: label,
-      training: sessions.filter(s => { const d = toDate(s.date); return d >= cursor && d < weekEnd; }).length
-              + stravaActivities.filter(a => { const d = toDate(new Date(a.startDate).toISOString().slice(0, 10)); return d >= cursor && d < weekEnd; }).length,
-      leetcode: leetcode.filter(e => { const d = toDate(e.date); return d >= cursor && d < weekEnd; }).length,
-      quant:    quant.filter(e    => { const d = toDate(e.date); return d >= cursor && d < weekEnd; }).length,
+      date: dateStr,
+      dayLabel: format(cursor, 'MMM d'),
+      training: sessions.filter(s => { const d = toDate(s.date); return d >= cursor && d < nextDay; }).length
+              + stravaActivities.filter(a => { const d = toDate(new Date(a.startDate).toISOString().slice(0, 10)); return d >= cursor && d < nextDay; }).length,
+      leetcode: leetcode.filter(e => { const d = toDate(e.date); return d >= cursor && d < nextDay; }).length,
+      quant:    quant.filter(e    => { const d = toDate(e.date); return d >= cursor && d < nextDay; }).length,
       commits:  Object.entries(githubDays).reduce((sum, [ds, cnt]) => {
-        const d = toDate(ds); return d >= cursor && d < weekEnd ? sum + cnt : sum;
+        const d = toDate(ds); return d >= cursor && d < nextDay ? sum + cnt : sum;
       }, 0),
     });
-    cursor = weekEnd;
+    cursor = nextDay;
   }
+
+  // Weekly tick positions (Mondays) for the x-axis labels
+  const weeklyTicks = buckets
+    .filter(b => parseISO(b.date).getDay() === 1)
+    .map(b => b.date);
+  if (buckets.length > 0 && !weeklyTicks.includes(buckets[0].date)) {
+    weeklyTicks.unshift(buckets[0].date);
+  }
+  if (buckets.length > 0 && !weeklyTicks.includes(buckets[buckets.length - 1].date)) {
+    weeklyTicks.push(buckets[buckets.length - 1].date);
+  }
+
+  // Sort series by overall total (ascending) so the most active series is on top (rendered last).
+  // This ensures the topmost visible colour on any given day is from the series with the most
+  // activity overall — making the fill colour at the top of the stack meaningful.
+  const totals: Record<string, number> = {
+    training: sessions.length + stravaActivities.length,
+    leetcode: leetcode.length,
+    quant:    quant.length,
+    commits:  Object.values(githubDays).reduce((s, v) => s + v, 0),
+  };
+  const sortedSeries = [...SERIES].sort((a, b) => totals[a.key] - totals[b.key]);
 
   const MONO = "'JetBrains Mono', monospace";
 
@@ -110,7 +132,9 @@ export default function CumulativeChart({ sessions, leetcode, quant, githubDays,
         background: '#0a0a0a', border: '1px solid rgba(255,42,42,0.3)',
         padding: '10px 14px', fontFamily: MONO, fontSize: 11,
       }}>
-        <div style={{ color: '#737373', marginBottom: 6, letterSpacing: 2 }}>{label}</div>
+        <div style={{ color: '#737373', marginBottom: 6, letterSpacing: 2 }}>
+          {label ? (() => { try { return format(parseISO(label), 'EEE, MMM d yyyy'); } catch { return label; } })() : ''}
+        </div>
         {payload.map(p => (
           <div key={p.name} style={{ color: p.color, marginBottom: 2 }}>
             {p.name.toUpperCase()}: {p.value}
@@ -145,11 +169,14 @@ export default function CumulativeChart({ sessions, leetcode, quant, githubDays,
         <AreaChart data={buckets} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,42,42,0.08)" />
           <XAxis
-            dataKey="weekLabel"
+            dataKey="date"
+            ticks={weeklyTicks}
+            tickFormatter={(value: string) => {
+              try { return format(parseISO(value), 'MMM d'); } catch { return value; }
+            }}
             stroke="#737373"
             tick={{ fill: '#737373', fontFamily: MONO, fontSize: 9 }}
             tickLine={false}
-            interval="preserveStartEnd"
           />
           <YAxis
             stroke="#737373"
@@ -159,7 +186,11 @@ export default function CumulativeChart({ sessions, leetcode, quant, githubDays,
           />
           <Tooltip content={<CustomTooltip />} />
           <Legend wrapperStyle={{ fontFamily: MONO, fontSize: 9, letterSpacing: 2, paddingTop: 8 }} />
-          {SERIES.map(({ key, color, label }) => (
+          {/* strokeWidth={0}: collapsed (0-value) layers don't paint a stroke line on top of
+              the layers below, so the topmost visible colour always belongs to a series with
+              actual data on that day. Series sorted ascending by total so the most active
+              series is rendered last (on top of the stack). */}
+          {sortedSeries.map(({ key, color, label }) => (
             <Area
               key={key}
               type="monotone"
@@ -168,8 +199,8 @@ export default function CumulativeChart({ sessions, leetcode, quant, githubDays,
               stackId="a"
               stroke={color}
               fill={color}
-              fillOpacity={0.15}
-              strokeWidth={1.5}
+              fillOpacity={0.38}
+              strokeWidth={0}
             />
           ))}
         </AreaChart>
