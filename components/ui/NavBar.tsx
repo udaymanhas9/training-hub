@@ -12,6 +12,7 @@ const TRAINING_NAV = [
   { href: '/calendar', label: 'CALENDAR', icon: CalendarIcon },
   { href: '/progress', label: 'PROGRESS', icon: ProgressIcon },
   { href: '/stats', label: 'STATS', icon: StatsIcon },
+  { href: '/review', label: 'REVIEW', icon: ReviewIcon },
 ];
 
 // ── Lab nav ───────────────────────────────────────────────────────────────────
@@ -70,6 +71,16 @@ function StatsIcon({ active }: { active: boolean }) {
       <line x1="18" y1="20" x2="18" y2="10" />
       <line x1="12" y1="20" x2="12" y2="4" />
       <line x1="6" y1="20" x2="6" y2="14" />
+    </svg>
+  );
+}
+
+function ReviewIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? 'currentColor' : '#475569'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+      <rect x="9" y="3" width="6" height="4" rx="1" />
+      <path d="M9 12l2 2 4-4" />
     </svg>
   );
 }
