@@ -1,12 +1,8 @@
 {
   "crons": [
     {
-      "path": "/api/bereal/schedule",
-      "schedule": "0 0 * * *"
-    },
-    {
-      "path": "/api/bereal/notify",
-      "schedule": "*/30 * * * *"
+      "path": "/api/bereal/notify?force=true",
+      "schedule": "0 13 * * *"
     }
   ]
 }
