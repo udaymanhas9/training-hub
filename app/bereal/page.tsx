@@ -306,8 +306,9 @@ export default function BerealPage() {
   }, []);
 
   const sendTestNotif = useCallback(async () => {
-    await fetch('/api/bereal/notify?force=true');
     setNotifStatus('sent');
+    await new Promise(res => setTimeout(res, 5000));
+    await fetch('/api/bereal/notify?force=true');
     setTimeout(() => setNotifStatus('idle'), 3000);
   }, []);
 
@@ -371,7 +372,7 @@ export default function BerealPage() {
             onClick={sendTestNotif}
             style={btnStyle('#1e293b', notifStatus === 'sent' ? '#22c55e' : '#64748b')}
           >
-            {notifStatus === 'sent' ? '✓ SENT!' : '⚡ TEST NOTIFICATION'}
+            {notifStatus === 'sent' ? '⏱ SWITCH TABS NOW…' : '⚡ TEST NOTIFICATION'}
           </button>
         </div>
 
