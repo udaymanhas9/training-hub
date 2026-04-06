@@ -24,6 +24,12 @@ const LAB_NAV = [
   { href: '/lab/github', label: 'GITHUB', icon: GitIcon },
 ];
 
+// ── BeReal nav ────────────────────────────────────────────────────────────────
+
+const BEREAL_NAV = [
+  { href: '/bereal', label: 'BEREAL', icon: BerealCameraIcon },
+];
+
 // ── Training icons ────────────────────────────────────────────────────────────
 
 function HomeIcon({ active }: { active: boolean }) {
@@ -85,6 +91,16 @@ function ReviewIcon({ active }: { active: boolean }) {
   );
 }
 
+function BerealCameraIcon({ active }: { active: boolean }) {
+  const c = active ? '#e2e8f0' : '#475569';
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+      <circle cx="12" cy="13" r="4" />
+    </svg>
+  );
+}
+
 // ── Lab icons ─────────────────────────────────────────────────────────────────
 
 function GridIcon({ active }: { active: boolean }) {
@@ -139,8 +155,9 @@ export default function NavBar() {
   const router = useRouter();
   const { signOut } = useAuth();
 
-  const isLabMode = pathname.startsWith('/lab');
-  const navItems = isLabMode ? LAB_NAV : TRAINING_NAV;
+  const isLabMode    = pathname.startsWith('/lab');
+  const isBeRealMode = pathname.startsWith('/bereal');
+  const navItems = isLabMode ? LAB_NAV : isBeRealMode ? BEREAL_NAV : TRAINING_NAV;
 
   function isActive(href: string) {
     if (href === '/' || href === '/lab') return pathname === href;
@@ -148,12 +165,19 @@ export default function NavBar() {
   }
 
   // ── Mode pill bar (fixed top, both mobile + desktop) ──────────────────────
+  const pillBg = isLabMode ? '#000000' : isBeRealMode ? '#0d0d0d' : '#0d0d0d';
+  const pillBorder = isLabMode
+    ? '1px solid rgba(255,42,42,0.2)'
+    : isBeRealMode
+    ? '1px solid rgba(226,232,240,0.12)'
+    : '1px solid rgba(255,255,255,0.06)';
+
   const ModePill = (
     <div
       style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200,
-        height: 32, background: isLabMode ? '#000000' : '#0d0d0d',
-        borderBottom: isLabMode ? '1px solid rgba(255,42,42,0.2)' : '1px solid rgba(255,255,255,0.06)',
+        height: 32, background: pillBg,
+        borderBottom: pillBorder,
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2,
       }}
     >
@@ -162,9 +186,9 @@ export default function NavBar() {
         onClick={() => router.push('/')}
         style={{
           padding: '0 14px', height: 22, borderRadius: 3,
-          border: !isLabMode ? '1px solid rgba(255,255,255,0.2)' : '1px solid transparent',
-          background: !isLabMode ? 'rgba(255,255,255,0.08)' : 'transparent',
-          color: !isLabMode ? '#f1f5f9' : '#4a4a4a',
+          border: (!isLabMode && !isBeRealMode) ? '1px solid rgba(255,255,255,0.2)' : '1px solid transparent',
+          background: (!isLabMode && !isBeRealMode) ? 'rgba(255,255,255,0.08)' : 'transparent',
+          color: (!isLabMode && !isBeRealMode) ? '#f1f5f9' : '#4a4a4a',
           fontSize: 9, fontWeight: 700, letterSpacing: 3,
           cursor: 'pointer', fontFamily: "'Barlow Condensed', sans-serif",
           transition: 'all 0.15s',
@@ -190,6 +214,25 @@ export default function NavBar() {
         }}
       >
         THE LAB
+      </button>
+
+      {/* Separator */}
+      <div style={{ width: 1, height: 14, background: 'rgba(255,255,255,0.08)' }} />
+
+      {/* BEREAL option */}
+      <button
+        onClick={() => router.push('/bereal')}
+        style={{
+          padding: '0 14px', height: 22, borderRadius: 3,
+          border: isBeRealMode ? '1px solid rgba(226,232,240,0.4)' : '1px solid transparent',
+          background: isBeRealMode ? 'rgba(226,232,240,0.1)' : 'transparent',
+          color: isBeRealMode ? '#e2e8f0' : '#4a4a4a',
+          fontSize: 9, fontWeight: 700, letterSpacing: 3,
+          cursor: 'pointer', fontFamily: "'Barlow Condensed', sans-serif",
+          transition: 'all 0.15s',
+        }}
+      >
+        BEREAL
       </button>
     </div>
   );
@@ -260,7 +303,11 @@ export default function NavBar() {
         style={{
           position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 100,
           background: isLabMode ? '#000000' : '#0d0d0d',
-          borderTop: isLabMode ? '1px solid rgba(255,42,42,0.2)' : '1px solid rgba(255,255,255,0.08)',
+          borderTop: isLabMode
+            ? '1px solid rgba(255,42,42,0.2)'
+            : isBeRealMode
+            ? '1px solid rgba(226,232,240,0.1)'
+            : '1px solid rgba(255,255,255,0.08)',
           display: 'flex', alignItems: 'stretch',
           paddingBottom: 'env(safe-area-inset-bottom)',
         }}
@@ -276,6 +323,8 @@ export default function NavBar() {
                 justifyContent: 'center', padding: '10px 4px', textDecoration: 'none',
                 color: isLabMode
                   ? (active ? '#FF2A2A' : '#4a4a4a')
+                  : isBeRealMode
+                  ? (active ? '#e2e8f0' : '#475569')
                   : (active ? '#f1f5f9' : '#475569'),
                 position: 'relative', gap: 4,
               }}
@@ -284,7 +333,7 @@ export default function NavBar() {
                 <div style={{
                   position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
                   width: 32, height: 2,
-                  background: isLabMode ? '#FF2A2A' : '#3b82f6',
+                  background: isLabMode ? '#FF2A2A' : isBeRealMode ? '#e2e8f0' : '#3b82f6',
                   borderRadius: '0 0 2px 2px',
                 }} />
               )}
@@ -308,7 +357,11 @@ export default function NavBar() {
           flexDirection: 'column',
           width: 64,
           background: isLabMode ? '#000000' : '#0d0d0d',
-          borderRight: isLabMode ? '1px solid rgba(255,42,42,0.15)' : '1px solid rgba(255,255,255,0.07)',
+          borderRight: isLabMode
+            ? '1px solid rgba(255,42,42,0.15)'
+            : isBeRealMode
+            ? '1px solid rgba(226,232,240,0.08)'
+            : '1px solid rgba(255,255,255,0.07)',
           flexShrink: 0,
           position: 'sticky',
           top: 32, // account for mode pill
@@ -324,7 +377,11 @@ export default function NavBar() {
         <div style={{
           padding: '20px 0',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          borderBottom: isLabMode ? '1px solid rgba(255,42,42,0.15)' : '1px solid rgba(255,255,255,0.07)',
+          borderBottom: isLabMode
+            ? '1px solid rgba(255,42,42,0.15)'
+            : isBeRealMode
+            ? '1px solid rgba(226,232,240,0.08)'
+            : '1px solid rgba(255,255,255,0.07)',
           height: 64, overflow: 'hidden',
         }}>
           {isLabMode ? (
@@ -335,6 +392,11 @@ export default function NavBar() {
             }}>
               LAB
             </span>
+          ) : isBeRealMode ? (
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#e2e8f0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+              <circle cx="12" cy="13" r="4" />
+            </svg>
           ) : (
             <img
               src="/logo.png"
@@ -358,14 +420,14 @@ export default function NavBar() {
                   borderRadius: isLabMode ? 2 : 8,
                   textDecoration: 'none',
                   background: active
-                    ? (isLabMode ? 'rgba(255,42,42,0.1)' : 'rgba(59,130,246,0.12)')
+                    ? (isLabMode ? 'rgba(255,42,42,0.1)' : isBeRealMode ? 'rgba(226,232,240,0.08)' : 'rgba(59,130,246,0.12)')
                     : 'transparent',
                   color: active
-                    ? (isLabMode ? '#FF2A2A' : '#f1f5f9')
+                    ? (isLabMode ? '#FF2A2A' : isBeRealMode ? '#e2e8f0' : '#f1f5f9')
                     : (isLabMode ? '#4a4a4a' : '#475569'),
                   transition: 'background 0.15s, color 0.15s',
                   borderLeft: active
-                    ? (isLabMode ? '2px solid #FF2A2A' : '2px solid #3b82f6')
+                    ? (isLabMode ? '2px solid #FF2A2A' : isBeRealMode ? '2px solid #e2e8f0' : '2px solid #3b82f6')
                     : '2px solid transparent',
                   whiteSpace: 'nowrap', overflow: 'hidden',
                 }}
