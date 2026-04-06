@@ -13,7 +13,8 @@ const PAYLOAD = JSON.stringify({
   body:  'What are you up to right now?',
 });
 
-async function sendToAll(db: ReturnType<typeof createClient>, userId: string) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function sendToAll(db: any, userId: string) {
   const { data } = await db
     .from('push_subscriptions')
     .select('subscription')
