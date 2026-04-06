@@ -17,7 +17,8 @@ async function sendToAll(db: ReturnType<typeof createClient>, userId: string) {
   const { data: subs } = await db
     .from('push_subscriptions')
     .select('subscription')
-    .eq('user_id', userId);
+    .eq('user_id', userId)
+    .returns<{ subscription: webpush.PushSubscription }[]>();
 
   if (!subs?.length) return 0;
 
