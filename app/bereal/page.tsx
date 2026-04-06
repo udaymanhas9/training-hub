@@ -497,35 +497,35 @@ export default function BerealPage() {
   );
 }
 
-// ── Entry card with composite rendering ────────────────────────────────────────
+// ── Entry card ────────────────────────────────────────────────────────────────
 
 function EntryCard({ entry }: { entry: BerealEntry }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [drawn, setDrawn] = useState(false);
-
-  useEffect(() => {
-    if (!canvasRef.current) return;
-    drawComposite(entry.back_photo_url, entry.front_photo_url, canvasRef.current).then(() => setDrawn(true));
-  }, [entry]);
-
   const date = new Date(entry.captured_at);
   const label = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
     + ' · ' + date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
   return (
     <div style={{ borderRadius: 12, overflow: 'hidden', background: '#111' }}>
-      <canvas
-        ref={canvasRef}
-        style={{ width: '100%', display: drawn ? 'block' : 'none' }}
-      />
-      {!drawn && (
-        <div style={{
-          height: 200, background: '#111', display: 'flex',
-          alignItems: 'center', justifyContent: 'center', color: '#334155', fontSize: 11,
-        }}>
-          LOADING…
-        </div>
-      )}
+      {/* Composite: back photo full width, front overlaid in bottom-right corner */}
+      <div style={{ position: 'relative', width: '100%' }}>
+        <img
+          src={entry.back_photo_url}
+          alt="back"
+          style={{ width: '100%', display: 'block' }}
+        />
+        <img
+          src={entry.front_photo_url}
+          alt="front"
+          style={{
+            position: 'absolute',
+            bottom: 10, right: 10,
+            width: '28%',
+            borderRadius: 8,
+            border: '2px solid #fff',
+            display: 'block',
+          }}
+        />
+      </div>
       <div style={{ padding: '8px 12px', fontSize: 11, color: '#475569', letterSpacing: 1 }}>
         {label}
       </div>
