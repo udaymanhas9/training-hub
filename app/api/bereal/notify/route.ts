@@ -14,13 +14,13 @@ const PAYLOAD = JSON.stringify({
 });
 
 async function sendToAll(db: ReturnType<typeof createClient>, userId: string) {
-  const { data: subs } = await db
+  const { data } = await db
     .from('push_subscriptions')
     .select('subscription')
-    .eq('user_id', userId)
-    .returns<{ subscription: webpush.PushSubscription }[]>();
+    .eq('user_id', userId);
 
-  if (!subs?.length) return 0;
+  const subs = (data ?? []) as { subscription: webpush.PushSubscription }[];
+  if (!subs.length) return 0;
 
   await Promise.allSettled(
     subs.map(row => webpush.sendNotification(row.subscription, PAYLOAD)),
