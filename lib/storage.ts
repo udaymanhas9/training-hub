@@ -15,6 +15,13 @@ async function getUserId(): Promise<string | null> {
   return _userIdPromise;
 }
 
+function notifyDataChanged() {
+  if (typeof window !== 'undefined') {
+    sessionStorage.setItem('lab-data-dirty', Date.now().toString());
+    window.dispatchEvent(new Event('lab-data-changed'));
+  }
+}
+
 // ── Workouts ──────────────────────────────────────────────────────────────────
 
 export async function getWorkouts(): Promise<WorkoutDefinition[]> {
@@ -96,6 +103,7 @@ export async function saveSession(s: SessionLog): Promise<void> {
     duration_minutes: s.durationMinutes,
     exercises: s.exercises,
   });
+  notifyDataChanged();
 }
 
 export async function getLastSession(workoutId: string): Promise<SessionLog | undefined> {
@@ -340,12 +348,14 @@ export async function saveLeetCodeEntry(entry: LeetCodeEntry): Promise<void> {
     notes: entry.notes,
     date: entry.date,
   }, { onConflict: 'id,user_id' });
+  notifyDataChanged();
 }
 
 export async function deleteLeetCodeEntry(id: string): Promise<void> {
   const userId = await getUserId();
   if (!userId) return;
   await supabase.from('leetcode_log').delete().eq('id', id).eq('user_id', userId);
+  notifyDataChanged();
 }
 
 // ── Quant ─────────────────────────────────────────────────────────────────────
@@ -383,12 +393,14 @@ export async function saveQuantEntry(entry: QuantEntry): Promise<void> {
     notes: entry.notes,
     date: entry.date,
   }, { onConflict: 'id,user_id' });
+  notifyDataChanged();
 }
 
 export async function deleteQuantEntry(id: string): Promise<void> {
   const userId = await getUserId();
   if (!userId) return;
   await supabase.from('quant_log').delete().eq('id', id).eq('user_id', userId);
+  notifyDataChanged();
 }
 
 // ── Quant custom topics ───────────────────────────────────────────────────────
@@ -469,6 +481,7 @@ export async function upsertStravaActivities(activities: StravaActivity[]): Prom
     start_latlng:         a.startLatlng,
   }));
   await supabase.from('strava_activities').upsert(rows, { onConflict: 'id' });
+  notifyDataChanged();
 }
 
 // ── Apple Health Metrics ──────────────────────────────────────────────────────

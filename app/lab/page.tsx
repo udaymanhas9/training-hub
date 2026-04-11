@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getSessions, getLeetCodeEntries, getQuantEntries, getProfile, getStravaActivities } from '@/lib/storage';
 import { SessionLog, LeetCodeEntry, QuantEntry, StravaActivity } from '@/lib/types';
 import { useAuth } from '@/lib/auth-context';
@@ -39,9 +39,13 @@ export default function LabOverviewPage() {
   const [username, setUsername]   = useState<string>('');
   const [loading, setLoading]     = useState(true);
   const [now, setNow]             = useState('');
+  const lastFetchRef = useRef(0);
+  const loadRef      = useRef<() => Promise<void>>();
 
   useEffect(() => {
     async function load() {
+      lastFetchRef.current = Date.now();
+      sessionStorage.removeItem('lab-data-dirty');
       try {
         const [s, lc, q, profile, sa] = await Promise.all([
           getSessions(),
@@ -63,9 +67,11 @@ export default function LabOverviewPage() {
         setLoading(false);
       }
     }
+    loadRef.current = load;
     load();
 
-    // Live clock
+    window.addEventListener('lab-data-changed', load);
+
     const updateClock = () => {
       const d = new Date();
       setNow(d.toLocaleString('en-GB', {
@@ -76,8 +82,19 @@ export default function LabOverviewPage() {
     };
     updateClock();
     const timer = setInterval(updateClock, 1000);
-    return () => clearInterval(timer);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener('lab-data-changed', load);
+    };
   }, []);
+
+  // Catch data saved while this page was in the router cache (no remount = no useEffect([]))
+  useEffect(() => {
+    const dirty = sessionStorage.getItem('lab-data-dirty');
+    if (dirty && Number(dirty) > lastFetchRef.current && loadRef.current) {
+      loadRef.current();
+    }
+  });
 
   // Derived stats
   const lcSolved   = leetcode.filter(e => e.status === 'Solved').length;
