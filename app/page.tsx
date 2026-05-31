@@ -164,60 +164,6 @@ export default function DashboardPage() {
 
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 24px' }}>
 
-        {/* Today's scheduled run from Garmin */}
-        {todayRun && (
-          <div style={{ marginTop: 28 }}>
-            <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 12 }}>
-              TODAY&apos;S RUN
-            </div>
-            <Link href="/runs" style={{ textDecoration: 'none', display: 'block' }}>
-              <div style={{
-                background: 'linear-gradient(135deg, #0f1f17 0%, #111 100%)',
-                border: '1px solid rgba(16,185,129,0.3)',
-                borderLeft: '4px solid #10b981',
-                borderRadius: 10, padding: '16px 20px',
-                display: 'flex', alignItems: 'center', gap: 16,
-                cursor: 'pointer', transition: 'border-color 0.2s',
-              }}
-                onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(16,185,129,0.6)')}
-                onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(16,185,129,0.3)')}
-              >
-                <div style={{
-                  width: 44, height: 44, borderRadius: 10, flexShrink: 0,
-                  background: 'rgba(16,185,129,0.15)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 22,
-                }}>
-                  🏃
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 16, fontWeight: 900, color: '#f1f5f9', letterSpacing: 0.5 }}>{todayRun.title}</div>
-                  <div style={{ display: 'flex', gap: 12, marginTop: 4, flexWrap: 'wrap', alignItems: 'center' }}>
-                    {todayRun.sportTypeKey && (
-                      <span style={{ fontSize: 9, letterSpacing: 3, color: '#10b981', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>
-                        {todayRun.sportTypeKey.replace(/_/g, ' ').toUpperCase()}
-                      </span>
-                    )}
-                    {todayRun.duration && (
-                      <span style={{ fontSize: 13, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif" }}>
-                        ~{Math.round(todayRun.duration / 60)} min
-                      </span>
-                    )}
-                    {todayRun.distance && todayRun.distance > 0 && (
-                      <span style={{ fontSize: 13, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif" }}>
-                        {(todayRun.distance / 1000).toFixed(1)} km
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
-              </div>
-            </Link>
-          </div>
-        )}
-
         {/* Workout Cards */}
         <div style={{ marginTop: 32 }}>
           <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 16 }}>YOUR WORKOUTS</div>
@@ -357,8 +303,8 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        {/* Today's Tasks */}
-        {todayTodos.length > 0 && (
+        {/* Today's Tasks + Today's Run */}
+        {(todayTodos.length > 0 || todayRun) && (
           <div style={{ marginTop: 40 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>TODAY&apos;S TASKS</div>
@@ -366,6 +312,7 @@ export default function DashboardPage() {
                 <span style={{ fontSize: 11, color: '#64748b', letterSpacing: 2 }}>VIEW ALL</span>
               </Link>
             </div>
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               {todayTodos.map(todo => (
                 <HomeTodoItem
@@ -378,6 +325,56 @@ export default function DashboardPage() {
                   }}
                 />
               ))}
+
+              {/* Today's Run — subsection */}
+              {todayRun && (
+                <>
+                  {todayTodos.length > 0 && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6, marginBottom: 2 }}>
+                      <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.06)' }} />
+                      <span style={{ fontSize: 9, letterSpacing: 3, color: '#334155', fontFamily: "'Barlow Condensed', sans-serif" }}>TODAY&apos;S RUN</span>
+                      <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.06)' }} />
+                    </div>
+                  )}
+                  <Link href="/runs" style={{ textDecoration: 'none', display: 'block' }}>
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: 12,
+                      padding: '10px 14px', borderRadius: 8,
+                      background: '#111', border: '1px solid rgba(16,185,129,0.2)',
+                      borderLeft: '3px solid #10b981',
+                      transition: 'border-color 0.15s',
+                    }}
+                      onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(16,185,129,0.5)')}
+                      onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(16,185,129,0.2)')}
+                    >
+                      <span style={{ fontSize: 18, flexShrink: 0 }}>🏃</span>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: '#f1f5f9' }}>{todayRun.title}</div>
+                        <div style={{ display: 'flex', gap: 10, marginTop: 2, flexWrap: 'wrap' }}>
+                          {todayRun.sportTypeKey && (
+                            <span style={{ fontSize: 9, letterSpacing: 2, color: '#10b981', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>
+                              {todayRun.sportTypeKey.replace(/_/g, ' ').toUpperCase()}
+                            </span>
+                          )}
+                          {todayRun.duration && (
+                            <span style={{ fontSize: 11, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif" }}>
+                              ~{Math.round(todayRun.duration / 60)} min
+                            </span>
+                          )}
+                          {todayRun.distance && todayRun.distance > 0 && (
+                            <span style={{ fontSize: 11, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif" }}>
+                              {(todayRun.distance / 1000).toFixed(1)} km
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
+                    </div>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}
