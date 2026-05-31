@@ -13,8 +13,7 @@ body { -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; }
 /* Prevent tiny tap delays on mobile */
 button, a, input, select { touch-action: manipulation; }
 
-/* Minimum 44px tap targets for interactive elements */
-button { min-height: 32px; }
+/* Tap target size applied where needed, not globally (global min-height distorts icon buttons) */
 
 /* iOS safe area — bottom nav sits above home indicator */
 @supports (padding-bottom: env(safe-area-inset-bottom)) {

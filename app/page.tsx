@@ -441,15 +441,20 @@ function HomeTodoItem({ todo, onToggle }: { todo: Todo; onToggle: () => void }) 
       <button
         onClick={() => { setDone(true); setTimeout(onToggle, 200); }}
         style={{
-          width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
-          border: `2px solid ${todo.priority === 'high' ? '#f97316' : 'rgba(255,255,255,0.2)'}`,
-          background: 'transparent', cursor: 'pointer',
+          width: 44, height: 44, flexShrink: 0,
+          background: 'none', border: 'none', cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: 0, margin: '-11px -11px -11px -11px',
+        }}
+      >
+        <div style={{
+          width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+          border: `1.5px solid ${todo.priority === 'high' ? '#f97316' : '#4a5568'}`,
+          background: 'transparent',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           transition: 'all 0.15s',
-        }}
-        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(34,197,94,0.2)'; (e.currentTarget as HTMLElement).style.borderColor = '#22c55e'; }}
-        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.borderColor = todo.priority === 'high' ? '#f97316' : 'rgba(255,255,255,0.2)'; }}
-      />
+        }} />
+      </button>
       <span style={{ flex: 1, fontSize: 14, color: '#cbd5e1' }}>{todo.text}</span>
       {todo.priority === 'high' && (
         <svg width="11" height="11" viewBox="0 0 24 24" fill="#f97316" stroke="#f97316" strokeWidth="1">

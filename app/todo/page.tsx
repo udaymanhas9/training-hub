@@ -482,22 +482,33 @@ function TodoItem({ todo, done, onToggle, onDelete, onTextChange }: {
             : '2px solid transparent',
       }}
     >
-      {/* Checkbox */}
+      {/* Checkbox — 44×44 tap target wrapping a 22×22 visual circle */}
       <button
         onClick={onToggle}
         style={{
-          width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
-          border: done ? 'none' : `2px solid ${overdue ? '#f87171' : todo.priority === 'high' ? '#f97316' : 'rgba(255,255,255,0.2)'}`,
-          background: done ? '#22c55e' : 'transparent',
-          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          transition: 'all 0.15s',
+          width: 44, height: 44, flexShrink: 0,
+          background: 'none', border: 'none', cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: 0, margin: '-11px -11px -11px -11px',
         }}
       >
-        {done && (
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
-        )}
+        <div style={{
+          width: 22, height: 22,
+          borderRadius: '50%',
+          border: done ? 'none' : `1.5px solid ${overdue ? '#f87171' : todo.priority === 'high' ? '#f97316' : '#4a5568'}`,
+          background: done
+            ? (overdue ? '#f87171' : todo.priority === 'high' ? '#f97316' : '#22c55e')
+            : 'transparent',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transition: 'background 0.15s, border-color 0.15s',
+          flexShrink: 0,
+        }}>
+          {done && (
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="2,7 5.5,10.5 12,3.5" />
+            </svg>
+          )}
+        </div>
       </button>
 
       {/* Text */}
