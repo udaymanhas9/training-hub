@@ -3,11 +3,13 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
+import { isAdmin } from '@/lib/admin';
 
 // ── Training nav ──────────────────────────────────────────────────────────────
 
 const TRAINING_NAV = [
   { href: '/', label: 'HOME', icon: HomeIcon },
+  { href: '/todo', label: 'TASKS', icon: TodoIcon },
   { href: '/runs', label: 'RUNS', icon: RunIcon },
   { href: '/calendar', label: 'CALENDAR', icon: CalendarIcon },
   { href: '/progress', label: 'PROGRESS', icon: ProgressIcon },
@@ -91,6 +93,15 @@ function ReviewIcon({ active }: { active: boolean }) {
   );
 }
 
+function TodoIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? 'currentColor' : '#475569'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="9 11 12 14 22 4" />
+      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+    </svg>
+  );
+}
+
 function BerealCameraIcon({ active }: { active: boolean }) {
   const c = active ? '#e2e8f0' : '#475569';
   return (
@@ -153,10 +164,12 @@ function GitIcon({ active }: { active: boolean }) {
 export default function NavBar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
+  const admin = isAdmin(user?.email);
 
   const isLabMode    = pathname.startsWith('/lab');
   const isBeRealMode = pathname.startsWith('/bereal');
+  const isAdminMode  = pathname.startsWith('/admin');
   const navItems = isLabMode ? LAB_NAV : isBeRealMode ? BEREAL_NAV : TRAINING_NAV;
 
   function isActive(href: string) {
@@ -165,11 +178,13 @@ export default function NavBar() {
   }
 
   // ── Mode pill bar (fixed top, both mobile + desktop) ──────────────────────
-  const pillBg = isLabMode ? '#000000' : isBeRealMode ? '#0d0d0d' : '#0d0d0d';
+  const pillBg = isLabMode ? '#000000' : isBeRealMode ? '#0d0d0d' : isAdminMode ? '#0d0d0d' : '#0d0d0d';
   const pillBorder = isLabMode
     ? '1px solid rgba(255,42,42,0.2)'
     : isBeRealMode
     ? '1px solid rgba(226,232,240,0.12)'
+    : isAdminMode
+    ? '1px solid rgba(250,204,21,0.15)'
     : '1px solid rgba(255,255,255,0.06)';
 
   const ModePill = (
@@ -186,9 +201,9 @@ export default function NavBar() {
         onClick={() => router.push('/')}
         style={{
           padding: '0 14px', height: 22, borderRadius: 3,
-          border: (!isLabMode && !isBeRealMode) ? '1px solid rgba(255,255,255,0.2)' : '1px solid transparent',
-          background: (!isLabMode && !isBeRealMode) ? 'rgba(255,255,255,0.08)' : 'transparent',
-          color: (!isLabMode && !isBeRealMode) ? '#f1f5f9' : '#4a4a4a',
+          border: (!isLabMode && !isBeRealMode && !isAdminMode) ? '1px solid rgba(255,255,255,0.2)' : '1px solid transparent',
+          background: (!isLabMode && !isBeRealMode && !isAdminMode) ? 'rgba(255,255,255,0.08)' : 'transparent',
+          color: (!isLabMode && !isBeRealMode && !isAdminMode) ? '#f1f5f9' : '#4a4a4a',
           fontSize: 9, fontWeight: 700, letterSpacing: 3,
           cursor: 'pointer', fontFamily: "'Barlow Condensed', sans-serif",
           transition: 'all 0.15s',
@@ -197,43 +212,64 @@ export default function NavBar() {
         TRAINING HUB
       </button>
 
-      {/* Separator */}
-      <div style={{ width: 1, height: 14, background: 'rgba(255,255,255,0.08)' }} />
+      {admin && (<>
+        {/* Separator */}
+        <div style={{ width: 1, height: 14, background: 'rgba(255,255,255,0.08)' }} />
 
-      {/* THE LAB option */}
-      <button
-        onClick={() => router.push('/lab')}
-        style={{
-          padding: '0 14px', height: 22, borderRadius: 3,
-          border: isLabMode ? '1px solid rgba(255,42,42,0.5)' : '1px solid transparent',
-          background: isLabMode ? 'rgba(255,42,42,0.15)' : 'transparent',
-          color: isLabMode ? '#FF2A2A' : '#4a4a4a',
-          fontSize: 9, fontWeight: 700, letterSpacing: 3,
-          cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace",
-          transition: 'all 0.15s',
-        }}
-      >
-        THE LAB
-      </button>
+        {/* THE LAB option */}
+        <button
+          onClick={() => router.push('/lab')}
+          style={{
+            padding: '0 14px', height: 22, borderRadius: 3,
+            border: isLabMode ? '1px solid rgba(255,42,42,0.5)' : '1px solid transparent',
+            background: isLabMode ? 'rgba(255,42,42,0.15)' : 'transparent',
+            color: isLabMode ? '#FF2A2A' : '#4a4a4a',
+            fontSize: 9, fontWeight: 700, letterSpacing: 3,
+            cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace",
+            transition: 'all 0.15s',
+          }}
+        >
+          THE LAB
+        </button>
 
-      {/* Separator */}
-      <div style={{ width: 1, height: 14, background: 'rgba(255,255,255,0.08)' }} />
+        {/* Separator */}
+        <div style={{ width: 1, height: 14, background: 'rgba(255,255,255,0.08)' }} />
 
-      {/* BEREAL option */}
-      <button
-        onClick={() => router.push('/bereal')}
-        style={{
-          padding: '0 14px', height: 22, borderRadius: 3,
-          border: isBeRealMode ? '1px solid rgba(226,232,240,0.4)' : '1px solid transparent',
-          background: isBeRealMode ? 'rgba(226,232,240,0.1)' : 'transparent',
-          color: isBeRealMode ? '#e2e8f0' : '#4a4a4a',
-          fontSize: 9, fontWeight: 700, letterSpacing: 3,
-          cursor: 'pointer', fontFamily: "'Barlow Condensed', sans-serif",
-          transition: 'all 0.15s',
-        }}
-      >
-        BEREAL
-      </button>
+        {/* BEREAL option */}
+        <button
+          onClick={() => router.push('/bereal')}
+          style={{
+            padding: '0 14px', height: 22, borderRadius: 3,
+            border: isBeRealMode ? '1px solid rgba(226,232,240,0.4)' : '1px solid transparent',
+            background: isBeRealMode ? 'rgba(226,232,240,0.1)' : 'transparent',
+            color: isBeRealMode ? '#e2e8f0' : '#4a4a4a',
+            fontSize: 9, fontWeight: 700, letterSpacing: 3,
+            cursor: 'pointer', fontFamily: "'Barlow Condensed', sans-serif",
+            transition: 'all 0.15s',
+          }}
+        >
+          BEREAL
+        </button>
+
+        {/* Separator */}
+        <div style={{ width: 1, height: 14, background: 'rgba(255,255,255,0.08)' }} />
+
+        {/* ADMIN option */}
+        <button
+          onClick={() => router.push('/admin')}
+          style={{
+            padding: '0 14px', height: 22, borderRadius: 3,
+            border: isAdminMode ? '1px solid rgba(250,204,21,0.5)' : '1px solid transparent',
+            background: isAdminMode ? 'rgba(250,204,21,0.1)' : 'transparent',
+            color: isAdminMode ? '#fbbf24' : '#4a4a4a',
+            fontSize: 9, fontWeight: 700, letterSpacing: 3,
+            cursor: 'pointer', fontFamily: "'Barlow Condensed', sans-serif",
+            transition: 'all 0.15s',
+          }}
+        >
+          ADMIN
+        </button>
+      </>)}
     </div>
   );
 

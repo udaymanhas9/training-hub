@@ -16,6 +16,29 @@ import { lookupMuscles } from '@/lib/muscleMap';
 
 interface ToastMsg { id: string; message: string; type: 'pb' | 'info'; }
 
+interface WorkoutDraft {
+  sessionId: string;
+  startTimestamp: number;
+  exerciseLogs: Record<string, ExerciseLog>;
+  checked: Record<string, boolean>;
+  sessionDate: string;
+  savedAt: number;
+}
+
+function draftKey(workoutId: string) {
+  return `workout-draft-${workoutId}`;
+}
+
+function formatElapsed(seconds: number): string {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+const DRAFT_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+
 export default function WorkoutPage() {
   const params = useParams();
   const router = useRouter();
@@ -30,8 +53,21 @@ export default function WorkoutPage() {
   const [newPBs, setNewPBs] = useState<PersonalBest[]>([]);
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
   const [sessionDate, setSessionDate] = useState(todayISO());
-  const startTimeRef = useRef<Date>(new Date());
+
+  // Stable across backgrounding / retries
+  const [sessionId, setSessionId] = useState('');
+  const [startTimestamp, setStartTimestamp] = useState(0);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+
   const lastSession = useRef<SessionLog | undefined>(undefined);
+
+  function addToast(message: string, type: 'pb' | 'info' = 'info') {
+    const t: ToastMsg = { id: generateId(), message, type };
+    setToasts(p => [...p, t]);
+    setTimeout(() => setToasts(p => p.filter(x => x.id !== t.id)), 4000);
+  }
 
   useEffect(() => {
     async function load() {
@@ -41,10 +77,57 @@ export default function WorkoutPage() {
       setOpenPhase(w.phases[0]?.id || '');
       setWeightUnit(prof.weightUnit);
       lastSession.current = await getLastSession(id);
-      startTimeRef.current = new Date();
+
+      // Attempt to restore an in-progress draft (covers iOS Safari background kill)
+      try {
+        const raw = localStorage.getItem(draftKey(id));
+        if (raw) {
+          const draft: WorkoutDraft = JSON.parse(raw);
+          if (Date.now() - draft.savedAt < DRAFT_MAX_AGE_MS) {
+            setSessionId(draft.sessionId);
+            setStartTimestamp(draft.startTimestamp);
+            setExerciseLogs(draft.exerciseLogs);
+            setChecked(draft.checked);
+            setSessionDate(draft.sessionDate);
+            setTimeout(() => addToast('Workout resumed', 'info'), 0);
+            return;
+          }
+          localStorage.removeItem(draftKey(id));
+        }
+      } catch { /* corrupt localStorage entry — start fresh */ }
+
+      setSessionId(generateId());
+      setStartTimestamp(Date.now());
     }
     load();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, router]);
+
+  // Live elapsed timer — wall-clock based so it stays accurate after phone sleep
+  useEffect(() => {
+    if (!startTimestamp) return;
+    setElapsedSeconds(Math.floor((Date.now() - startTimestamp) / 1000));
+    const interval = setInterval(() => {
+      setElapsedSeconds(Math.floor((Date.now() - startTimestamp) / 1000));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [startTimestamp]);
+
+  // Persist draft so state survives iOS Safari backgrounding
+  useEffect(() => {
+    if (!sessionId || !startTimestamp) return;
+    const draft: WorkoutDraft = {
+      sessionId,
+      startTimestamp,
+      exerciseLogs,
+      checked,
+      sessionDate,
+      savedAt: Date.now(),
+    };
+    try {
+      localStorage.setItem(draftKey(id), JSON.stringify(draft));
+    } catch { /* storage full — non-critical */ }
+  }, [id, sessionId, startTimestamp, exerciseLogs, checked, sessionDate]);
 
   function toggle(phaseId: string, exId: string) {
     const key = `${phaseId}-${exId}`;
@@ -74,54 +157,57 @@ export default function WorkoutPage() {
   }
 
   async function handleFinish() {
-    if (!workout) return;
-    const durationMinutes = Math.round((new Date().getTime() - startTimeRef.current.getTime()) / 60000) || 1;
+    if (!workout || isSubmitting || hasSubmitted) return;
+    setIsSubmitting(true);
+
+    const durationMinutes = Math.max(1, Math.round(elapsedSeconds / 60));
     const exercises = Object.values(exerciseLogs).filter(e => e.sets.length > 0);
 
     const session: SessionLog = {
-      id: generateId(),
+      id: sessionId,
       workoutId: workout.id,
       date: sessionDate,
       durationMinutes,
       exercises,
     };
 
-    // PB detection
-    const currentPBs = await getPBs();
-    const detectedPBs: PersonalBest[] = [];
+    try {
+      const currentPBs = await getPBs();
+      const detectedPBs: PersonalBest[] = [];
 
-    exercises.forEach(exLog => {
-      exLog.sets.forEach(s => {
-        const score = s.weight * s.reps;
-        const existing = currentPBs.find(pb => pb.exerciseId === exLog.exerciseId);
-        const existingScore = existing ? existing.weight * existing.reps : 0;
+      exercises.forEach(exLog => {
+        exLog.sets.forEach(s => {
+          const score = s.weight * s.reps;
+          const existing = currentPBs.find(pb => pb.exerciseId === exLog.exerciseId);
+          const existingScore = existing ? existing.weight * existing.reps : 0;
 
-        if (score > existingScore) {
-          const pb: PersonalBest = {
-            exerciseId: exLog.exerciseId,
-            exerciseName: exLog.exerciseName,
-            weight: s.weight,
-            reps: s.reps,
-            date: sessionDate,
-            workoutId: workout.id,
-          };
-          const idx = currentPBs.findIndex(p => p.exerciseId === exLog.exerciseId);
-          if (idx >= 0) currentPBs[idx] = pb; else currentPBs.push(pb);
-          detectedPBs.push(pb);
-        }
+          if (score > existingScore) {
+            const pb: PersonalBest = {
+              exerciseId: exLog.exerciseId,
+              exerciseName: exLog.exerciseName,
+              weight: s.weight,
+              reps: s.reps,
+              date: sessionDate,
+              workoutId: workout.id,
+            };
+            const idx = currentPBs.findIndex(p => p.exerciseId === exLog.exerciseId);
+            if (idx >= 0) currentPBs[idx] = pb; else currentPBs.push(pb);
+            detectedPBs.push(pb);
+          }
+        });
       });
-    });
 
-    await savePBs(currentPBs);
-    await saveSession(session);
-    setNewPBs(detectedPBs);
-    setShowFinish(true);
-  }
+      await savePBs(currentPBs);
+      await saveSession(session);
 
-  function addToast(message: string, type: 'pb' | 'info' = 'info') {
-    const t: ToastMsg = { id: generateId(), message, type };
-    setToasts(p => [...p, t]);
-    setTimeout(() => setToasts(p => p.filter(x => x.id !== t.id)), 4000);
+      try { localStorage.removeItem(draftKey(id)); } catch { /* ok */ }
+      setNewPBs(detectedPBs);
+      setHasSubmitted(true);
+      setShowFinish(true);
+    } catch {
+      addToast('Failed to save — check your connection and try again', 'info');
+      setIsSubmitting(false);
+    }
   }
 
   if (!workout) {
@@ -135,9 +221,16 @@ export default function WorkoutPage() {
   const totalExercises = workout.phases.flatMap(p => p.exercises).length;
   const doneCount = Object.values(checked).filter(Boolean).length;
   const pct = totalExercises > 0 ? Math.round((doneCount / totalExercises) * 100) : 0;
+  const canFinish = !isSubmitting && !hasSubmitted;
 
   return (
     <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 60 }}>
+      <style>{`
+        @keyframes workout-blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.25; }
+        }
+      `}</style>
       <div style={{ maxWidth: 720, margin: '0 auto', padding: '0' }}>
         <div style={{ padding: '16px 24px 0' }}>
           <BackButton />
@@ -209,21 +302,44 @@ export default function WorkoutPage() {
           </div>
         </div>
 
-        {/* Finish button */}
+        {/* Timer + Finish button */}
         <div style={{ padding: '12px 24px 0' }}>
+          {startTimestamp > 0 && (
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              gap: 10, marginBottom: 12,
+            }}>
+              <div style={{
+                width: 7, height: 7, borderRadius: '50%',
+                background: workout.accentColor,
+                animation: 'workout-blink 2s ease-in-out infinite',
+              }} />
+              <span style={{
+                fontSize: 32, fontWeight: 900, letterSpacing: 6,
+                color: '#f1f5f9', fontFamily: "'Barlow Condensed', sans-serif",
+                fontStyle: 'italic', lineHeight: 1,
+              }}>
+                {formatElapsed(elapsedSeconds)}
+              </span>
+            </div>
+          )}
+
           <button
             onClick={handleFinish}
+            disabled={!canFinish}
             style={{
-              width: '100%', padding: '16px', background: workout.accentColor,
+              width: '100%', padding: '16px',
+              background: canFinish ? workout.accentColor : '#1e293b',
               border: 'none', borderRadius: 8, fontSize: 18, fontWeight: 900,
-              color: '#000', letterSpacing: 3, cursor: 'pointer',
+              color: canFinish ? '#000' : '#475569',
+              letterSpacing: 3, cursor: canFinish ? 'pointer' : 'not-allowed',
               fontFamily: "'Barlow Condensed', sans-serif",
               transition: 'opacity 0.2s',
             }}
-            onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+            onMouseEnter={e => canFinish && (e.currentTarget.style.opacity = '0.85')}
             onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
           >
-            FINISH WORKOUT
+            {isSubmitting ? 'SAVING...' : hasSubmitted ? 'SAVED' : 'FINISH WORKOUT'}
           </button>
         </div>
       </div>
@@ -240,7 +356,7 @@ export default function WorkoutPage() {
         <FinishWorkoutModal
           workout={workout}
           exerciseLogs={Object.values(exerciseLogs)}
-          durationMinutes={Math.round((new Date().getTime() - startTimeRef.current.getTime()) / 60000) || 1}
+          durationMinutes={Math.max(1, Math.round(elapsedSeconds / 60))}
           newPBs={newPBs}
           onClose={() => { setShowFinish(false); router.push('/'); }}
         />

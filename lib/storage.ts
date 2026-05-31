@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { WorkoutDefinition, SessionLog, PersonalBest, HealthEntry, UserProfile, LeetCodeEntry, QuantEntry, StravaActivity } from './types';
+import { WorkoutDefinition, SessionLog, PersonalBest, HealthEntry, UserProfile, LeetCodeEntry, QuantEntry, StravaActivity, Todo } from './types';
 import { defaultWorkouts } from './defaultData';
 
 // Cache the in-flight promise so concurrent calls in the same render
@@ -95,14 +95,14 @@ export async function getSessions(): Promise<SessionLog[]> {
 export async function saveSession(s: SessionLog): Promise<void> {
   const userId = await getUserId();
   if (!userId) return;
-  await supabase.from('session_log').insert({
+  await supabase.from('session_log').upsert({
     id: s.id,
     user_id: userId,
     workout_id: s.workoutId,
     date: s.date,
     duration_minutes: s.durationMinutes,
     exercises: s.exercises,
-  });
+  }, { onConflict: 'id' });
   notifyDataChanged();
 }
 
@@ -482,6 +482,49 @@ export async function upsertStravaActivities(activities: StravaActivity[]): Prom
   }));
   await supabase.from('strava_activities').upsert(rows, { onConflict: 'id' });
   notifyDataChanged();
+}
+
+// ── Todos ─────────────────────────────────────────────────────────────────────
+
+export async function getTodos(): Promise<Todo[]> {
+  const userId = await getUserId();
+  if (!userId) return [];
+  const { data, error } = await supabase
+    .from('todos')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return (data || []).map(row => ({
+    id: row.id,
+    text: row.text,
+    completed: row.completed,
+    dueDate: row.due_date ?? undefined,
+    priority: row.priority,
+    createdAt: row.created_at,
+    completedAt: row.completed_at ?? undefined,
+  }));
+}
+
+export async function saveTodo(todo: Todo): Promise<void> {
+  const userId = await getUserId();
+  if (!userId) return;
+  await supabase.from('todos').upsert({
+    id: todo.id,
+    user_id: userId,
+    text: todo.text,
+    completed: todo.completed,
+    due_date: todo.dueDate ?? null,
+    priority: todo.priority,
+    created_at: todo.createdAt,
+    completed_at: todo.completedAt ?? null,
+  }, { onConflict: 'id,user_id' });
+}
+
+export async function deleteTodo(id: string): Promise<void> {
+  const userId = await getUserId();
+  if (!userId) return;
+  await supabase.from('todos').delete().eq('id', id).eq('user_id', userId);
 }
 
 // ── Apple Health Metrics ──────────────────────────────────────────────────────

@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getWorkouts, getProfile, getSessionCount, getSessionDates, getRecentSessions, getLatestHealthEntry } from '@/lib/storage';
-import { WorkoutDefinition, SessionLog } from '@/lib/types';
+import { getWorkouts, getProfile, getSessionCount, getSessionDates, getRecentSessions, getLatestHealthEntry, getTodos, saveTodo } from '@/lib/storage';
+import { WorkoutDefinition, SessionLog, Todo } from '@/lib/types';
 import { formatLastTrained, getSessionsThisWeek, getCurrentStreak, formatDate, WORKOUT_TYPE_COLORS } from '@/lib/utils';
 import { format } from 'date-fns';
 
@@ -16,17 +16,22 @@ export default function DashboardPage() {
   const [currentWeight, setCurrentWeight] = useState<number | null>(null);
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
   const [currentBF, setCurrentBF] = useState<number | null>(null);
+  const [todayTodos, setTodayTodos] = useState<Todo[]>([]);
+  const [loading, setLoading] = useState(true);
+  const todayStr = format(new Date(), 'yyyy-MM-dd');
   const today = format(new Date(), 'EEEE, MMMM d');
 
   useEffect(() => {
     async function load() {
-      const [w, p, count, dates, recent, latestHealth] = await Promise.all([
+      const todayDate = format(new Date(), 'yyyy-MM-dd');
+      const [w, p, count, dates, recent, latestHealth, allTodos] = await Promise.all([
         getWorkouts(),
         getProfile(),
         getSessionCount(),
         getSessionDates(),
         getRecentSessions(5),
         getLatestHealthEntry(),
+        getTodos(),
       ]);
       setWorkouts(w);
       setProfileName(p.name);
@@ -38,6 +43,8 @@ export default function DashboardPage() {
         setCurrentWeight(latestHealth.weight);
         setCurrentBF(latestHealth.bodyFatPct ?? null);
       }
+      setTodayTodos(allTodos.filter(t => !t.completed && t.dueDate === todayDate));
+      setLoading(false);
     }
     load();
   }, []);
@@ -61,6 +68,37 @@ export default function DashboardPage() {
 
   const coreWorkouts = workouts.filter(w => ['legs', 'push', 'pull', 'run'].includes(w.type));
   const customWorkouts = workouts.filter(w => w.type === 'custom');
+
+  if (loading) {
+    return (
+      <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 40 }}>
+        <div style={{
+          background: 'linear-gradient(135deg, #0f0f0f 0%, #111 50%, #0a0a0a 100%)',
+          borderBottom: '1px solid rgba(255,255,255,0.07)',
+          padding: '40px 24px 32px',
+        }}>
+          <div style={{ maxWidth: 900, margin: '0 auto' }}>
+            <div style={{ height: 12, width: 180, background: 'rgba(255,255,255,0.06)', borderRadius: 4, marginBottom: 12 }} />
+            <div style={{ height: 64, width: '60%', background: 'rgba(255,255,255,0.06)', borderRadius: 6, marginBottom: 16 }} />
+            <div style={{ height: 12, width: 120, background: 'rgba(255,255,255,0.04)', borderRadius: 4, marginBottom: 28 }} />
+            <div style={{ display: 'flex', gap: 16 }}>
+              {[1, 2, 3].map(i => (
+                <div key={i} style={{ height: 70, width: 100, background: 'rgba(255,255,255,0.05)', borderRadius: 8 }} />
+              ))}
+            </div>
+          </div>
+        </div>
+        <div style={{ maxWidth: 900, margin: '0 auto', padding: '32px 24px 0' }}>
+          <div style={{ height: 10, width: 120, background: 'rgba(255,255,255,0.05)', borderRadius: 4, marginBottom: 16 }} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} style={{ height: 160, background: 'rgba(255,255,255,0.04)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)' }} />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 40 }}>
@@ -117,7 +155,7 @@ export default function DashboardPage() {
               const sessionCount = sessionDates.filter(s => s.workoutId === workout.id).length;
               return (
                 <div key={workout.id} style={{ position: 'relative' }}>
-                  <Link href={`/workout/${workout.id}`} style={{ textDecoration: 'none', display: 'block' }}>
+                  <Link href={`/workout/${workout.id}`} style={{ textDecoration: 'none', display: 'block', height: '100%' }}>
                     <div style={{
                       background: '#111',
                       border: `1px solid rgba(255,255,255,0.07)`,
@@ -128,6 +166,10 @@ export default function DashboardPage() {
                       transition: 'border-color 0.2s',
                       position: 'relative',
                       overflow: 'hidden',
+                      height: '100%',
+                      boxSizing: 'border-box',
+                      display: 'flex',
+                      flexDirection: 'column',
                     }}
                       onMouseEnter={e => (e.currentTarget.style.borderColor = accent)}
                       onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)')}
@@ -141,7 +183,7 @@ export default function DashboardPage() {
                         {getWorkoutTypeLabel(workout.type)}
                       </div>
                       <div style={{ fontSize: 26, fontWeight: 900, color: '#f1f5f9', letterSpacing: -0.5, lineHeight: 1, paddingRight: 28 }}>{workout.name}</div>
-                      <div style={{ fontSize: 12, color: '#64748b', fontFamily: "'Barlow', sans-serif", marginTop: 6, lineHeight: 1.4 }}>{workout.tagline}</div>
+                      <div style={{ fontSize: 12, color: '#64748b', fontFamily: "'Barlow', sans-serif", marginTop: 6, lineHeight: 1.4, flex: 1 }}>{workout.tagline}</div>
 
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16 }}>
                         <div style={{ background: `${accent}18`, border: `1px solid ${accent}30`, borderRadius: 4, padding: '3px 8px' }}>
@@ -243,6 +285,31 @@ export default function DashboardPage() {
           </Link>
         </div>
 
+        {/* Today's Tasks */}
+        {todayTodos.length > 0 && (
+          <div style={{ marginTop: 40 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>TODAY&apos;S TASKS</div>
+              <Link href="/todo" style={{ textDecoration: 'none' }}>
+                <span style={{ fontSize: 11, color: '#64748b', letterSpacing: 2 }}>VIEW ALL</span>
+              </Link>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {todayTodos.map(todo => (
+                <HomeTodoItem
+                  key={todo.id}
+                  todo={todo}
+                  onToggle={async () => {
+                    const updated = { ...todo, completed: true, completedAt: new Date().toISOString() };
+                    setTodayTodos(prev => prev.filter(t => t.id !== todo.id));
+                    await saveTodo(updated);
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Recent Sessions */}
         {recentSessions.length > 0 && (
           <div style={{ marginTop: 40 }}>
@@ -285,6 +352,38 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function HomeTodoItem({ todo, onToggle }: { todo: Todo; onToggle: () => void }) {
+  const [done, setDone] = useState(false);
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 12,
+      padding: '10px 14px', borderRadius: 8,
+      background: '#111', border: '1px solid rgba(255,255,255,0.07)',
+      borderLeft: todo.priority === 'high' ? '3px solid rgba(249,115,22,0.5)' : '3px solid transparent',
+      opacity: done ? 0.4 : 1, transition: 'opacity 0.2s',
+    }}>
+      <button
+        onClick={() => { setDone(true); setTimeout(onToggle, 200); }}
+        style={{
+          width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
+          border: `2px solid ${todo.priority === 'high' ? '#f97316' : 'rgba(255,255,255,0.2)'}`,
+          background: 'transparent', cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transition: 'all 0.15s',
+        }}
+        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(34,197,94,0.2)'; (e.currentTarget as HTMLElement).style.borderColor = '#22c55e'; }}
+        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.borderColor = todo.priority === 'high' ? '#f97316' : 'rgba(255,255,255,0.2)'; }}
+      />
+      <span style={{ flex: 1, fontSize: 14, color: '#cbd5e1' }}>{todo.text}</span>
+      {todo.priority === 'high' && (
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="#f97316" stroke="#f97316" strokeWidth="1">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+        </svg>
+      )}
     </div>
   );
 }

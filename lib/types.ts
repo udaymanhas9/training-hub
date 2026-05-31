@@ -115,6 +115,18 @@ export interface StravaActivity {
   startLatlng?: [number, number];
 }
 
+// ── TODOS ─────────────────────────────────────────────────────────────────────
+
+export interface Todo {
+  id: string;
+  text: string;
+  completed: boolean;
+  dueDate?: string;       // yyyy-MM-dd
+  priority: 'normal' | 'high';
+  createdAt: string;      // ISO
+  completedAt?: string;   // ISO
+}
+
 // ── THE LAB ───────────────────────────────────────────────────────────────────
 
 export type ProblemStatus = 'Solved' | 'Attempted' | 'Revisit';

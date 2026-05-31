@@ -32,9 +32,9 @@ export default function StatsPage() {
       const [e, p, s, hr, sl, vo2] = await Promise.all([
         getHealthEntries(),
         getProfile(),
-        getHealthMetrics('HKQuantityTypeIdentifierStepCount', 14),
-        getHealthMetrics('HKQuantityTypeIdentifierRestingHeartRate', 14),
-        getHealthMetrics('HKCategoryTypeIdentifierSleepAnalysis', 14),
+        getHealthMetrics('steps', 14),
+        getHealthMetrics('resting_heart_rate', 14),
+        getHealthMetrics('sleep_duration', 14),
         getHealthMetrics('vo2max', 365),
       ]);
       setEntries(e);
@@ -251,7 +251,7 @@ export default function StatsPage() {
         {/* ── Apple Health ─────────────────────────────────────────────── */}
         <div style={{ marginTop: 40 }}>
           <div style={{ fontSize: 11, letterSpacing: 6, color: '#475569', fontFamily: "'Barlow', sans-serif", marginBottom: 20 }}>
-            APPLE HEALTH
+            GARMIN
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>

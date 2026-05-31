@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { getProfile, saveProfile, getStravaActivities, upsertStravaActivities } from '@/lib/storage';
 import { StravaActivity, UserProfile } from '@/lib/types';
+import { supabase } from '@/lib/supabase';
+import type { UpcomingWorkout } from '@/app/api/garmin/upcoming/route';
 import RunDetailModal from '@/components/runs/RunDetailModal';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -82,6 +84,7 @@ export default function RunsPage() {
   const [syncMsg, setSyncMsg]         = useState('');
   const [selected, setSelected]       = useState<StravaActivity | null>(null);
   const [filterType, setFilterType]   = useState('');
+  const [upcoming, setUpcoming]       = useState<UpcomingWorkout[]>([]);
 
   const stravaStatus = searchParams.get('strava');
 
@@ -178,6 +181,16 @@ export default function RunsPage() {
         if (prof.stravaAccessToken) {
           sync(prof, acts);
         }
+        // Fetch upcoming Garmin schedule
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.access_token) {
+          fetch('/api/garmin/upcoming', {
+            headers: { Authorization: `Bearer ${session.access_token}` },
+          })
+            .then(r => r.ok ? r.json() : null)
+            .then(d => { if (d?.upcoming) setUpcoming(d.upcoming); })
+            .catch(() => {});
+        }
       } finally {
         setLoading(false);
       }
@@ -185,10 +198,15 @@ export default function RunsPage() {
     load();
   }, [sync]);
 
+  function isRunType(type: string) {
+    const t = type.toLowerCase();
+    return t === 'run' || t.includes('running');
+  }
+
   const runs = activities.filter(a =>
     filterType ? a.type === filterType : true
   );
-  const runningOnly = activities.filter(a => a.type === 'Run');
+  const runningOnly = activities.filter(a => isRunType(a.type));
   const activityTypes = Array.from(new Set(activities.map(a => a.type))).sort();
 
   // Dashboard stats
@@ -209,7 +227,8 @@ export default function RunsPage() {
 
   const weeklyData = weeklyBuckets(runningOnly, 12);
 
-  const isConnected = !!profile?.stravaAccessToken;
+  const isStravaConnected = !!profile?.stravaAccessToken;
+  const hasActivities = activities.length > 0;
 
   return (
     <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 60 }}>
@@ -228,36 +247,9 @@ export default function RunsPage() {
                 </span>
               )}
               {!syncing && syncMsg && (
-                <span style={{ fontSize: 11, color: isConnected ? '#10b981' : '#64748b', fontFamily: "'Barlow', sans-serif" }}>
+                <span style={{ fontSize: 11, color: isStravaConnected ? '#10b981' : '#64748b', fontFamily: "'Barlow', sans-serif" }}>
                   ● {syncMsg}
                 </span>
-              )}
-              {isConnected ? (
-                <a
-                  href="/api/strava/auth"
-                  style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 8,
-                    background: 'rgba(252,76,2,0.12)', border: '1px solid rgba(252,76,2,0.4)',
-                    borderRadius: 6, color: '#fc4c02', padding: '7px 16px',
-                    fontSize: 11, fontWeight: 700, letterSpacing: 2,
-                    fontFamily: "'Barlow Condensed', sans-serif", textDecoration: 'none',
-                  }}
-                >
-                  ✓ STRAVA CONNECTED
-                </a>
-              ) : (
-                <a
-                  href="/api/strava/auth"
-                  style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 8,
-                    background: '#fc4c02', border: 'none',
-                    borderRadius: 6, color: '#fff', padding: '8px 18px',
-                    fontSize: 11, fontWeight: 900, letterSpacing: 2,
-                    fontFamily: "'Barlow Condensed', sans-serif", textDecoration: 'none',
-                  }}
-                >
-                  CONNECT STRAVA
-                </a>
               )}
             </div>
           </div>
@@ -284,25 +276,6 @@ export default function RunsPage() {
       <div style={{ maxWidth: 960, margin: '0 auto', padding: '28px 24px 0' }}>
         {loading ? (
           <div style={{ color: '#475569', fontSize: 13, textAlign: 'center', paddingTop: 60 }}>Loading...</div>
-        ) : !isConnected ? (
-          <div style={{ textAlign: 'center', paddingTop: 60 }}>
-            <div style={{ fontSize: 48, marginBottom: 16 }}>🏃</div>
-            <div style={{ fontSize: 20, fontWeight: 900, color: '#475569', letterSpacing: 2 }}>NOT CONNECTED</div>
-            <div style={{ fontSize: 14, color: '#334155', fontFamily: "'Barlow', sans-serif", marginTop: 8, marginBottom: 24 }}>
-              Connect your Strava account to sync runs automatically
-            </div>
-            <a
-              href="/api/strava/auth"
-              style={{
-                background: '#fc4c02', border: 'none', borderRadius: 8,
-                color: '#fff', padding: '12px 32px', fontSize: 14, fontWeight: 900,
-                letterSpacing: 2, fontFamily: "'Barlow Condensed', sans-serif",
-                textDecoration: 'none', display: 'inline-block',
-              }}
-            >
-              CONNECT STRAVA
-            </a>
-          </div>
         ) : (
           <>
             {/* Stats strip */}
@@ -374,6 +347,59 @@ export default function RunsPage() {
                     <Bar dataKey="km" fill="#3b82f6" radius={[3, 3, 0, 0]} opacity={0.8} />
                   </BarChart>
                 </ResponsiveContainer>
+              </div>
+            )}
+
+            {/* Upcoming schedule */}
+            {upcoming.length > 0 && (
+              <div style={{ marginBottom: 32 }}>
+                <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow', sans-serif", marginBottom: 16 }}>
+                  UPCOMING
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {upcoming.map(w => {
+                    const dayLabel = new Date(w.date + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+                    const isToday  = w.date === new Date().toISOString().slice(0, 10);
+                    return (
+                      <div key={w.id} style={{
+                        background: '#111',
+                        border: `1px solid ${isToday ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.07)'}`,
+                        borderLeft: `3px solid ${isToday ? '#10b981' : '#3b82f6'}`,
+                        borderRadius: 8, padding: '12px 16px',
+                        display: 'flex', alignItems: 'center', gap: 16,
+                      }}>
+                        <div style={{ minWidth: 70 }}>
+                          <div style={{ fontSize: 10, letterSpacing: 2, color: isToday ? '#10b981' : '#3b82f6', fontFamily: "'Barlow', sans-serif", fontWeight: 700 }}>
+                            {isToday ? 'TODAY' : dayLabel.split(' ')[0].toUpperCase()}
+                          </div>
+                          <div style={{ fontSize: 12, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>
+                            {isToday ? dayLabel : dayLabel.slice(dayLabel.indexOf(' ') + 1)}
+                          </div>
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9' }}>{w.title}</div>
+                          <div style={{ display: 'flex', gap: 14, marginTop: 4, flexWrap: 'wrap' }}>
+                            {w.sportTypeKey && (
+                              <span style={{ fontSize: 10, letterSpacing: 2, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>
+                                {w.sportTypeKey.replace(/_/g, ' ').toUpperCase()}
+                              </span>
+                            )}
+                            {w.duration && (
+                              <span style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>
+                                {Math.round(w.duration / 60)} min
+                              </span>
+                            )}
+                            {w.distance && w.distance > 0 && (
+                              <span style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>
+                                {(w.distance / 1000).toFixed(1)} km
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
 
