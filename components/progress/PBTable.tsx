@@ -64,7 +64,7 @@ export default function PBTable({ pbs, workouts, weightUnit = 'kg' }: PBTablePro
             onClick={() => key && handleSort(key)}
             style={{
               fontSize: 9, letterSpacing: 3, color: key && sortKey === key ? '#f1f5f9' : '#475569',
-              fontFamily: "'Barlow', sans-serif", cursor: key ? 'pointer' : 'default',
+              fontFamily: "'Barlow Condensed', sans-serif", cursor: key ? 'pointer' : 'default',
               display: 'flex', alignItems: 'center', gap: 4,
             }}
           >
@@ -91,11 +91,11 @@ export default function PBTable({ pbs, workouts, weightUnit = 'kg' }: PBTablePro
             <div style={{ fontSize: 16, fontWeight: 900, color: recent ? '#fbbf24' : '#f1f5f9' }}>
               {displayWeight(pb.weight)}
             </div>
-            <div style={{ fontSize: 13, color: '#94a3b8', fontFamily: "'Barlow', sans-serif" }}>{pb.reps}</div>
-            <div style={{ fontSize: 12, color: '#64748b', fontFamily: "'Barlow', sans-serif" }}>{formatDate(pb.date)}</div>
+            <div style={{ fontSize: 13, color: '#94a3b8', fontFamily: "'Barlow Condensed', sans-serif" }}>{pb.reps}</div>
+            <div style={{ fontSize: 12, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif" }}>{formatDate(pb.date)}</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: color }} />
-              <span style={{ fontSize: 11, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>
+              <span style={{ fontSize: 11, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>
                 {workouts.find(w => w.id === pb.workoutId)?.name || '—'}
               </span>
             </div>

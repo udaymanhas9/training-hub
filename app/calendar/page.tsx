@@ -68,10 +68,10 @@ export default function CalendarPage() {
     : [];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 40 }}>
+    <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 120, overflowX: 'hidden' }}>
       <div style={{ borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '32px 24px 24px', background: '#111' }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
-          <div style={{ fontSize: 11, letterSpacing: 6, color: '#64748b', fontFamily: "'Barlow', sans-serif", marginBottom: 8 }}>TRAINING CALENDAR</div>
+          <div style={{ fontSize: 11, letterSpacing: 6, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 8 }}>TRAINING CALENDAR</div>
           <h1 style={{ fontSize: 36, fontWeight: 900, color: '#f1f5f9', fontStyle: 'italic', letterSpacing: -1 }}>HISTORY</h1>
           <div style={{ display: 'flex', gap: 8, marginTop: 20 }}>
             {(['month', 'heatmap'] as const).map(v => (

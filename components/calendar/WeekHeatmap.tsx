@@ -73,7 +73,7 @@ export default function WeekHeatmap({ sessions, onDayClick }: WeekHeatmapProps) 
           ].map(({ label, val }) => (
             <div key={label} style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 18, fontWeight: 900, color: '#3b82f6' }}>{val}</div>
-              <div style={{ fontSize: 8, letterSpacing: 2, color: '#334155', fontFamily: "'Barlow', sans-serif" }}>{label}</div>
+              <div style={{ fontSize: 8, letterSpacing: 2, color: '#334155', fontFamily: "'Barlow Condensed', sans-serif" }}>{label}</div>
             </div>
           ))}
         </div>
@@ -85,7 +85,7 @@ export default function WeekHeatmap({ sessions, onDayClick }: WeekHeatmapProps) 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 3, marginRight: 4 }}>
             <div style={{ height: 14 }} /> {/* month label spacer */}
             {DAY_LABELS.map((label, i) => (
-              <div key={i} style={{ width: 12, height: 12, fontSize: 8, color: '#334155', fontFamily: "'Barlow', sans-serif", display: 'flex', alignItems: 'center' }}>
+              <div key={i} style={{ width: 12, height: 12, fontSize: 8, color: '#334155', fontFamily: "'Barlow Condensed', sans-serif", display: 'flex', alignItems: 'center' }}>
                 {label}
               </div>
             ))}
@@ -96,7 +96,7 @@ export default function WeekHeatmap({ sessions, onDayClick }: WeekHeatmapProps) 
             const monthLabel = monthLabels.find(m => m.col === wi);
             return (
               <div key={wi} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <div style={{ height: 14, fontSize: 8, color: '#475569', fontFamily: "'Barlow', sans-serif", whiteSpace: 'nowrap' }}>
+                <div style={{ height: 14, fontSize: 8, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", whiteSpace: 'nowrap' }}>
                   {monthLabel?.label || ''}
                 </div>
                 {week.map(day => {
@@ -129,11 +129,11 @@ export default function WeekHeatmap({ sessions, onDayClick }: WeekHeatmapProps) 
 
       {/* Legend */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 12 }}>
-        <span style={{ fontSize: 9, color: '#334155', fontFamily: "'Barlow', sans-serif" }}>LESS</span>
+        <span style={{ fontSize: 9, color: '#334155', fontFamily: "'Barlow Condensed', sans-serif" }}>LESS</span>
         {[0, 1, 2, 3].map(v => (
           <div key={v} style={{ width: 10, height: 10, borderRadius: 2, background: getColor(v) }} />
         ))}
-        <span style={{ fontSize: 9, color: '#334155', fontFamily: "'Barlow', sans-serif" }}>MORE</span>
+        <span style={{ fontSize: 9, color: '#334155', fontFamily: "'Barlow Condensed', sans-serif" }}>MORE</span>
       </div>
     </div>
   );

@@ -375,7 +375,7 @@ export default function ReviewPage() {
   // ── render ────────────────────────────────────────────────────────────────
 
   return (
-    <main style={{ minHeight: '100vh', background: '#0a0a0a', padding: '20px 20px 64px', paddingTop: 'calc(32px + 20px)' }}>
+    <main style={{ minHeight: '100vh', background: '#0a0a0a', padding: '16px 16px 120px', overflowX: 'hidden', paddingTop: 'calc(32px + 20px)' }}>
       <div style={{ maxWidth: 960, margin: '0 auto' }}>
 
         {/* ── Header ─────────────────────────────────────────────────────── */}

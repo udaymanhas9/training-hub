@@ -119,7 +119,7 @@ export default function PhaseEditBlock({ phase, onChange, onDelete, accentColor 
           value={phase.time}
           onChange={e => updatePhaseField('time', e.target.value)}
           placeholder="10 min"
-          style={{ width: 60, background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 4, color: '#94a3b8', padding: '4px 6px', fontSize: 11, fontFamily: "'Barlow', sans-serif", textAlign: 'center' }}
+          style={{ width: 60, background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 4, color: '#94a3b8', padding: '4px 6px', fontSize: 11, fontFamily: "'Barlow Condensed', sans-serif", textAlign: 'center' }}
         />
 
         {/* Color picker */}

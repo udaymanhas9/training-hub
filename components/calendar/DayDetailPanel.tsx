@@ -54,7 +54,7 @@ export default function DayDetailPanel({ date, sessions, workouts, onClose, weig
         background: 'rgba(255,255,255,0.03)',
       }}>
         <div>
-          <div style={{ fontSize: 11, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow', sans-serif", marginBottom: 4 }}>SESSION DETAILS</div>
+          <div style={{ fontSize: 11, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 4 }}>SESSION DETAILS</div>
           <div style={{ fontSize: 18, fontWeight: 900, color: '#f1f5f9' }}>{formatDate(date)}</div>
         </div>
         <button
@@ -74,7 +74,7 @@ export default function DayDetailPanel({ date, sessions, workouts, onClose, weig
               <div style={{ width: 4, height: 36, background: accent, borderRadius: 2 }} />
               <div>
                 <div style={{ fontSize: 18, fontWeight: 900, color: '#f1f5f9' }}>{workout?.name || 'Unknown'}</div>
-                <div style={{ fontSize: 11, color: '#64748b', fontFamily: "'Barlow', sans-serif" }}>
+                <div style={{ fontSize: 11, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif" }}>
                   {session.durationMinutes}min · {session.exercises.length} exercises
                 </div>
               </div>
@@ -84,11 +84,11 @@ export default function DayDetailPanel({ date, sessions, workouts, onClose, weig
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {session.exercises.map(ex => (
                   <div key={ex.exerciseId} style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                    <span style={{ fontSize: 13, color: '#94a3b8', fontFamily: "'Barlow', sans-serif", minWidth: 0, flex: 1 }}>{ex.exerciseName}</span>
+                    <span style={{ fontSize: 13, color: '#94a3b8', fontFamily: "'Barlow Condensed', sans-serif", minWidth: 0, flex: 1 }}>{ex.exerciseName}</span>
                     <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', flexShrink: 0 }}>
                       {ex.sets.map((s, i) => (
                         <span key={i} style={{
-                          fontSize: 10, color: '#64748b', fontFamily: "'Barlow', sans-serif",
+                          fontSize: 10, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif",
                           background: 'rgba(255,255,255,0.04)', padding: '1px 5px', borderRadius: 3,
                         }}>
                           {s.weight > 0 ? displayWeight(s.weight) : 'BW'}×{s.reps}
@@ -110,7 +110,7 @@ export default function DayDetailPanel({ date, sessions, workouts, onClose, weig
             <div style={{ width: 4, height: 36, background: '#fc4c02', borderRadius: 2 }} />
             <div>
               <div style={{ fontSize: 18, fontWeight: 900, color: '#f1f5f9' }}>{a.name}</div>
-              <div style={{ fontSize: 11, color: '#64748b', fontFamily: "'Barlow', sans-serif" }}>
+              <div style={{ fontSize: 11, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif" }}>
                 {a.type} · Strava
               </div>
             </div>
@@ -124,7 +124,7 @@ export default function DayDetailPanel({ date, sessions, workouts, onClose, weig
               ...(a.averageHeartrate ? [{ label: 'HR', value: `${Math.round(a.averageHeartrate)} bpm`, color: '#ef4444' }] : []),
             ].map(({ label, value, color }) => (
               <div key={label}>
-                <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>{label}</div>
+                <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>{label}</div>
                 <div style={{ fontSize: 14, fontWeight: 700, color }}>{value}</div>
               </div>
             ))}

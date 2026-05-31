@@ -48,14 +48,14 @@ export default function MuscleDiagram({ workoutType, accentColor, muscles }: Pro
     }}>
       <div style={{
         fontSize: 10, letterSpacing: 3, color: '#475569',
-        fontFamily: "'Barlow', sans-serif", marginBottom: 16,
+        fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 16,
       }}>
         MUSCLES TARGETED
       </div>
 
       <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
         <div style={{ textAlign: 'center', flex: 1 }}>
-          <div style={{ fontSize: 9, letterSpacing: 2, color: '#475569', marginBottom: 8, fontFamily: "'Barlow', sans-serif" }}>FRONT</div>
+          <div style={{ fontSize: 9, letterSpacing: 2, color: '#475569', marginBottom: 8, fontFamily: "'Barlow Condensed', sans-serif" }}>FRONT</div>
           <Model
             data={exerciseData}
             style={wrapperStyle}
@@ -66,7 +66,7 @@ export default function MuscleDiagram({ workoutType, accentColor, muscles }: Pro
           />
         </div>
         <div style={{ textAlign: 'center', flex: 1 }}>
-          <div style={{ fontSize: 9, letterSpacing: 2, color: '#475569', marginBottom: 8, fontFamily: "'Barlow', sans-serif" }}>BACK</div>
+          <div style={{ fontSize: 9, letterSpacing: 2, color: '#475569', marginBottom: 8, fontFamily: "'Barlow Condensed', sans-serif" }}>BACK</div>
           <Model
             data={exerciseData}
             style={wrapperStyle}
@@ -89,7 +89,7 @@ export default function MuscleDiagram({ workoutType, accentColor, muscles }: Pro
               border: `1px solid ${accentColor}45`,
               borderRadius: 4,
               padding: '3px 8px',
-              fontFamily: "'Barlow', sans-serif",
+              fontFamily: "'Barlow Condensed', sans-serif",
             }}>
               {MUSCLE_DISPLAY[m as keyof typeof MUSCLE_DISPLAY] ?? m}
             </span>

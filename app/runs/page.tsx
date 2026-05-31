@@ -231,23 +231,23 @@ export default function RunsPage() {
   const hasActivities = activities.length > 0;
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 60 }}>
+    <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 120, overflowX: 'hidden' }}>
       {/* Header */}
       <div style={{ borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '32px 24px 24px', background: '#111' }}>
         <div style={{ maxWidth: 960, margin: '0 auto' }}>
-          <div style={{ fontSize: 11, letterSpacing: 6, color: '#64748b', fontFamily: "'Barlow', sans-serif", marginBottom: 8 }}>
+          <div style={{ fontSize: 11, letterSpacing: 6, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 8 }}>
             TRAINING HUB
           </div>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
             <h1 style={{ fontSize: 36, fontWeight: 900, color: '#f1f5f9', fontStyle: 'italic', letterSpacing: -1 }}>RUNS</h1>
             <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
               {syncing && (
-                <span style={{ fontSize: 11, color: '#64748b', fontFamily: "'Barlow', sans-serif" }}>
+                <span style={{ fontSize: 11, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif" }}>
                   ● {syncMsg}
                 </span>
               )}
               {!syncing && syncMsg && (
-                <span style={{ fontSize: 11, color: isStravaConnected ? '#10b981' : '#64748b', fontFamily: "'Barlow', sans-serif" }}>
+                <span style={{ fontSize: 11, color: isStravaConnected ? '#10b981' : '#64748b', fontFamily: "'Barlow Condensed', sans-serif" }}>
                   ● {syncMsg}
                 </span>
               )}
@@ -256,17 +256,17 @@ export default function RunsPage() {
 
           {/* Status messages */}
           {stravaStatus === 'connected' && (
-            <div style={{ marginTop: 12, fontSize: 12, color: '#10b981', fontFamily: "'Barlow', sans-serif" }}>
+            <div style={{ marginTop: 12, fontSize: 12, color: '#10b981', fontFamily: "'Barlow Condensed', sans-serif" }}>
               Strava connected successfully.
             </div>
           )}
           {stravaStatus === 'denied' && (
-            <div style={{ marginTop: 12, fontSize: 12, color: '#f59e0b', fontFamily: "'Barlow', sans-serif" }}>
+            <div style={{ marginTop: 12, fontSize: 12, color: '#f59e0b', fontFamily: "'Barlow Condensed', sans-serif" }}>
               Strava connection was declined.
             </div>
           )}
           {stravaStatus === 'noauth' && (
-            <div style={{ marginTop: 12, fontSize: 12, color: '#f59e0b', fontFamily: "'Barlow', sans-serif" }}>
+            <div style={{ marginTop: 12, fontSize: 12, color: '#f59e0b', fontFamily: "'Barlow Condensed', sans-serif" }}>
               Please log in before connecting Strava.
             </div>
           )}
@@ -291,7 +291,7 @@ export default function RunsPage() {
                   background: '#111', border: '1px solid rgba(255,255,255,0.07)',
                   borderRadius: 8, padding: '10px 18px', minWidth: 110,
                 }}>
-                  <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>{label}</div>
+                  <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>{label}</div>
                   <div style={{ fontSize: 22, fontWeight: 900, color, marginTop: 2 }}>{value}</div>
                 </div>
               ))}
@@ -300,7 +300,7 @@ export default function RunsPage() {
             {/* PBs */}
             {(pb5k || pb10k || pbHalf) && (
               <div style={{ marginBottom: 28 }}>
-                <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow', sans-serif", marginBottom: 12 }}>ESTIMATED PBs</div>
+                <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 12 }}>ESTIMATED PBs</div>
                 <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                   {[
                     { label: '5K',   value: pb5k },
@@ -311,7 +311,7 @@ export default function RunsPage() {
                       background: '#111', border: '1px solid rgba(59,130,246,0.2)',
                       borderRadius: 8, padding: '10px 20px', textAlign: 'center',
                     }}>
-                      <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>{label}</div>
+                      <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>{label}</div>
                       <div style={{ fontSize: 22, fontWeight: 900, color: '#3b82f6', marginTop: 2 }}>{value}</div>
                     </div>
                   ))}
@@ -322,7 +322,7 @@ export default function RunsPage() {
             {/* Weekly mileage chart */}
             {weeklyData.length > 0 && (
               <div style={{ marginBottom: 32 }}>
-                <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow', sans-serif", marginBottom: 16 }}>
+                <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 16 }}>
                   WEEKLY MILEAGE (KM)
                 </div>
                 <ResponsiveContainer width="100%" height={180}>
@@ -330,12 +330,12 @@ export default function RunsPage() {
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
                     <XAxis
                       dataKey="label"
-                      tick={{ fill: '#475569', fontFamily: "'Barlow', sans-serif", fontSize: 10 }}
+                      tick={{ fill: '#475569', fontFamily: "'Barlow Condensed', sans-serif", fontSize: 10 }}
                       tickLine={false}
                       interval="preserveStartEnd"
                     />
                     <YAxis
-                      tick={{ fill: '#475569', fontFamily: "'Barlow', sans-serif", fontSize: 10 }}
+                      tick={{ fill: '#475569', fontFamily: "'Barlow Condensed', sans-serif", fontSize: 10 }}
                       tickLine={false} axisLine={false}
                     />
                     <Tooltip
@@ -353,7 +353,7 @@ export default function RunsPage() {
             {/* Upcoming schedule */}
             {upcoming.length > 0 && (
               <div style={{ marginBottom: 32 }}>
-                <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow', sans-serif", marginBottom: 16 }}>
+                <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 16 }}>
                   UPCOMING
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -369,10 +369,10 @@ export default function RunsPage() {
                         display: 'flex', alignItems: 'center', gap: 16,
                       }}>
                         <div style={{ minWidth: 70 }}>
-                          <div style={{ fontSize: 10, letterSpacing: 2, color: isToday ? '#10b981' : '#3b82f6', fontFamily: "'Barlow', sans-serif", fontWeight: 700 }}>
+                          <div style={{ fontSize: 10, letterSpacing: 2, color: isToday ? '#10b981' : '#3b82f6', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>
                             {isToday ? 'TODAY' : dayLabel.split(' ')[0].toUpperCase()}
                           </div>
-                          <div style={{ fontSize: 12, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>
+                          <div style={{ fontSize: 12, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>
                             {isToday ? dayLabel : dayLabel.slice(dayLabel.indexOf(' ') + 1)}
                           </div>
                         </div>
@@ -380,7 +380,7 @@ export default function RunsPage() {
                           <div style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9' }}>{w.title}</div>
                           <div style={{ display: 'flex', gap: 14, marginTop: 4, flexWrap: 'wrap' }}>
                             {w.sportTypeKey && (
-                              <span style={{ fontSize: 10, letterSpacing: 2, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>
+                              <span style={{ fontSize: 10, letterSpacing: 2, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>
                                 {w.sportTypeKey.replace(/_/g, ' ').toUpperCase()}
                               </span>
                             )}
@@ -406,7 +406,7 @@ export default function RunsPage() {
             {/* Activity list */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>
+                <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>
                   ACTIVITIES
                 </div>
                 {activityTypes.length > 1 && (
@@ -428,7 +428,7 @@ export default function RunsPage() {
               {runs.length === 0 ? (
                 <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, padding: '40px 24px', textAlign: 'center' }}>
                   <div style={{ fontSize: 18, fontWeight: 900, color: '#475569', letterSpacing: 2 }}>NO ACTIVITIES YET</div>
-                  <div style={{ fontSize: 13, color: '#334155', fontFamily: "'Barlow', sans-serif", marginTop: 8 }}>
+                  <div style={{ fontSize: 13, color: '#334155', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 8 }}>
                     {syncing ? 'Syncing...' : 'Go for a run — it will appear here automatically.'}
                   </div>
                 </div>
@@ -457,10 +457,10 @@ export default function RunsPage() {
                     >
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-                          <span style={{ fontSize: 9, letterSpacing: 3, color: '#3b82f6', fontFamily: "'Barlow', sans-serif" }}>
+                          <span style={{ fontSize: 9, letterSpacing: 3, color: '#3b82f6', fontFamily: "'Barlow Condensed', sans-serif" }}>
                             {activity.type.toUpperCase()}
                           </span>
-                          <span style={{ fontSize: 12, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>
+                          <span style={{ fontSize: 12, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>
                             {new Date(activity.startDate).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}
                           </span>
                         </div>

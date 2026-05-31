@@ -59,13 +59,13 @@ export default function PhaseAccordion({
             <div style={{ fontSize: 16, fontWeight: 900, letterSpacing: 2, color: isOpen ? '#fff' : '#94a3b8' }}>
               {phase.label}
             </div>
-            <div style={{ fontSize: 12, color: phase.color, fontFamily: "'Barlow', sans-serif", marginTop: 1 }}>
+            <div style={{ fontSize: 12, color: phase.color, fontFamily: "'Barlow Condensed', sans-serif", marginTop: 1 }}>
               {phase.time} · {phase.exercises.length} exercises
             </div>
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ fontSize: 12, color: '#64748b', fontFamily: "'Barlow', sans-serif" }}>
+          <div style={{ fontSize: 12, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif" }}>
             {phaseDone}/{phase.exercises.length}
           </div>
           {phaseDone > 0 && phaseDone === phase.exercises.length && (
@@ -87,7 +87,7 @@ export default function PhaseAccordion({
           {/* Column headers */}
           <div style={{ display: 'grid', gridTemplateColumns: '28px 1fr 56px 80px 56px', gap: 0, padding: '8px 18px', borderBottom: '1px solid #1e293b' }}>
             {['', 'EXERCISE', 'SETS', 'REPS', 'REST'].map(h => (
-              <div key={h} style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>{h}</div>
+              <div key={h} style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>{h}</div>
             ))}
           </div>
 

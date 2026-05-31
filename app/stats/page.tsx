@@ -85,7 +85,7 @@ export default function StatsPage() {
   const previous = sortedEntries[1];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 40 }}>
+    <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 120, overflowX: 'hidden' }}>
       {/* Header */}
       <div style={{
         borderBottom: '1px solid rgba(255,255,255,0.07)',
@@ -93,7 +93,7 @@ export default function StatsPage() {
         background: '#111',
       }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
-          <div style={{ fontSize: 11, letterSpacing: 6, color: '#64748b', fontFamily: "'Barlow', sans-serif", marginBottom: 8 }}>BODY COMPOSITION</div>
+          <div style={{ fontSize: 11, letterSpacing: 6, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 8 }}>BODY COMPOSITION</div>
           <h1 style={{ fontSize: 36, fontWeight: 900, color: '#f1f5f9', fontStyle: 'italic', letterSpacing: -1 }}>HEALTH STATS</h1>
         </div>
       </div>
@@ -102,7 +102,7 @@ export default function StatsPage() {
         {/* Profile Section */}
         <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '20px 24px', marginBottom: 24 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-            <div style={{ fontSize: 11, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>PROFILE</div>
+            <div style={{ fontSize: 11, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>PROFILE</div>
             <button
               onClick={() => setEditingProfile(!editingProfile)}
               style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, color: '#94a3b8', fontSize: 11, letterSpacing: 2, padding: '4px 12px', cursor: 'pointer', fontFamily: "'Barlow Condensed', sans-serif" }}
@@ -118,21 +118,21 @@ export default function StatsPage() {
                   { label: 'HEIGHT (cm)', key: 'heightCm', type: 'number', val: profileDraft.heightCm },
                 ].map(({ label, key, type, val }) => (
                   <div key={key}>
-                    <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow', sans-serif", marginBottom: 6 }}>{label}</div>
+                    <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>{label}</div>
                     <input
                       type={type}
                       value={val}
                       onChange={e => setProfileDraft(p => ({ ...p, [key]: type === 'number' ? Number(e.target.value) : e.target.value }))}
-                      style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#f1f5f9', padding: '8px 12px', fontSize: 14, fontFamily: "'Barlow', sans-serif" }}
+                      style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#f1f5f9', padding: '8px 12px', fontSize: 14, fontFamily: "'Barlow Condensed', sans-serif" }}
                     />
                   </div>
                 ))}
                 <div>
-                  <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow', sans-serif", marginBottom: 6 }}>WEIGHT UNIT</div>
+                  <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>WEIGHT UNIT</div>
                   <select
                     value={profileDraft.weightUnit}
                     onChange={e => setProfileDraft(p => ({ ...p, weightUnit: e.target.value as 'kg' | 'lbs' }))}
-                    style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#f1f5f9', padding: '8px 12px', fontSize: 14, fontFamily: "'Barlow', sans-serif" }}
+                    style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#f1f5f9', padding: '8px 12px', fontSize: 14, fontFamily: "'Barlow Condensed', sans-serif" }}
                   >
                     <option value="kg">kg</option>
                     <option value="lbs">lbs</option>
@@ -145,12 +145,12 @@ export default function StatsPage() {
                   { label: 'LEETCODE USERNAME', key: 'leetcodeUsername', val: profileDraft.leetcodeUsername ?? '' },
                 ].map(({ label, key, val }) => (
                   <div key={key}>
-                    <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow', sans-serif", marginBottom: 6 }}>{label}</div>
+                    <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>{label}</div>
                     <input
                       type="text"
                       value={val}
                       onChange={e => setProfileDraft(p => ({ ...p, [key]: e.target.value }))}
-                      style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#f1f5f9', padding: '8px 12px', fontSize: 14, fontFamily: "'Barlow', sans-serif" }}
+                      style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#f1f5f9', padding: '8px 12px', fontSize: 14, fontFamily: "'Barlow Condensed', sans-serif" }}
                     />
                   </div>
                 ))}
@@ -170,7 +170,7 @@ export default function StatsPage() {
                 { label: 'UNIT', val: profile.weightUnit.toUpperCase() },
               ].map(({ label, val }) => (
                 <div key={label}>
-                  <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>{label}</div>
+                  <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>{label}</div>
                   <div style={{ fontSize: 20, fontWeight: 900, color: '#f1f5f9', marginTop: 4 }}>{val}</div>
                 </div>
               ))}
@@ -187,7 +187,7 @@ export default function StatsPage() {
 
         {/* Add Entry */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>MEASUREMENTS</div>
+          <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>MEASUREMENTS</div>
           <button
             onClick={() => setShowForm(!showForm)}
             style={{ background: '#10b981', border: 'none', borderRadius: 6, color: '#000', fontSize: 11, fontWeight: 900, letterSpacing: 2, padding: '6px 16px', cursor: 'pointer', fontFamily: "'Barlow Condensed', sans-serif" }}
@@ -214,7 +214,7 @@ export default function StatsPage() {
           <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, overflow: 'hidden' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px 80px 40px', gap: 0, padding: '10px 18px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
               {['DATE', 'WEIGHT', 'BODY FAT', 'BMI', ''].map(h => (
-                <div key={h} style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>{h}</div>
+                <div key={h} style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>{h}</div>
               ))}
             </div>
             {sortedEntries.map((entry, i) => {
@@ -244,13 +244,13 @@ export default function StatsPage() {
           <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, padding: '40px 24px', textAlign: 'center' }}>
             <div style={{ fontSize: 32, marginBottom: 12 }}>📊</div>
             <div style={{ fontSize: 18, fontWeight: 900, color: '#475569', letterSpacing: 2 }}>NO MEASUREMENTS YET</div>
-            <div style={{ fontSize: 13, color: '#334155', fontFamily: "'Barlow', sans-serif", marginTop: 8 }}>Log your first measurement to track body composition over time</div>
+            <div style={{ fontSize: 13, color: '#334155', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 8 }}>Log your first measurement to track body composition over time</div>
           </div>
         )}
 
         {/* ── Apple Health ─────────────────────────────────────────────── */}
         <div style={{ marginTop: 40 }}>
-          <div style={{ fontSize: 11, letterSpacing: 6, color: '#475569', fontFamily: "'Barlow', sans-serif", marginBottom: 20 }}>
+          <div style={{ fontSize: 11, letterSpacing: 6, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 20 }}>
             GARMIN
           </div>
 
@@ -259,7 +259,7 @@ export default function StatsPage() {
             {/* Steps */}
             <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '20px 20px 12px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
-                <div style={{ fontSize: 9, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>STEPS</div>
+                <div style={{ fontSize: 9, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>STEPS</div>
                 {steps.length > 0 && (
                   <div style={{ fontSize: 20, fontWeight: 900, color: '#3b82f6' }}>
                     {Math.round(steps[steps.length - 1].value).toLocaleString()}
@@ -270,10 +270,10 @@ export default function StatsPage() {
               {steps.length > 0 ? (
                 <ResponsiveContainer width="100%" height={90}>
                   <BarChart data={steps.map(m => ({ d: m.date.slice(5), v: Math.round(m.value) }))} margin={{ top: 0, right: 0, left: -28, bottom: 0 }}>
-                    <XAxis dataKey="d" tick={{ fill: '#475569', fontSize: 9, fontFamily: "'Barlow', sans-serif" }} axisLine={false} tickLine={false} />
+                    <XAxis dataKey="d" tick={{ fill: '#475569', fontSize: 9, fontFamily: "'Barlow Condensed', sans-serif" }} axisLine={false} tickLine={false} />
                     <YAxis tick={false} axisLine={false} tickLine={false} />
                     <Tooltip
-                      contentStyle={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, fontSize: 11, fontFamily: "'Barlow', sans-serif" }}
+                      contentStyle={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, fontSize: 11, fontFamily: "'Barlow Condensed', sans-serif" }}
                       labelStyle={{ color: '#94a3b8' }}
                       itemStyle={{ color: '#3b82f6' }}
                       formatter={(v: number) => [v.toLocaleString(), 'steps']}
@@ -290,7 +290,7 @@ export default function StatsPage() {
             {/* Resting HR */}
             <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '20px 20px 12px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
-                <div style={{ fontSize: 9, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>RESTING HR</div>
+                <div style={{ fontSize: 9, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>RESTING HR</div>
                 {restingHR.length > 0 && (
                   <div style={{ fontSize: 20, fontWeight: 900, color: '#ef4444' }}>
                     {Math.round(restingHR[restingHR.length - 1].value)}
@@ -301,10 +301,10 @@ export default function StatsPage() {
               {restingHR.length > 0 ? (
                 <ResponsiveContainer width="100%" height={90}>
                   <LineChart data={restingHR.map(m => ({ d: m.date.slice(5), v: Math.round(m.value) }))} margin={{ top: 4, right: 0, left: -28, bottom: 0 }}>
-                    <XAxis dataKey="d" tick={{ fill: '#475569', fontSize: 9, fontFamily: "'Barlow', sans-serif" }} axisLine={false} tickLine={false} />
+                    <XAxis dataKey="d" tick={{ fill: '#475569', fontSize: 9, fontFamily: "'Barlow Condensed', sans-serif" }} axisLine={false} tickLine={false} />
                     <YAxis tick={false} axisLine={false} tickLine={false} domain={['auto', 'auto']} />
                     <Tooltip
-                      contentStyle={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, fontSize: 11, fontFamily: "'Barlow', sans-serif" }}
+                      contentStyle={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, fontSize: 11, fontFamily: "'Barlow Condensed', sans-serif" }}
                       labelStyle={{ color: '#94a3b8' }}
                       itemStyle={{ color: '#ef4444' }}
                       formatter={(v: number) => [v, 'bpm']}
@@ -320,7 +320,7 @@ export default function StatsPage() {
             {/* Sleep */}
             <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '20px 20px 12px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
-                <div style={{ fontSize: 9, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>SLEEP</div>
+                <div style={{ fontSize: 9, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>SLEEP</div>
                 {sleep.length > 0 && (
                   <div style={{ fontSize: 20, fontWeight: 900, color: '#8b5cf6' }}>
                     {sleep[sleep.length - 1].value.toFixed(1)}
@@ -331,10 +331,10 @@ export default function StatsPage() {
               {sleep.length > 0 ? (
                 <ResponsiveContainer width="100%" height={90}>
                   <BarChart data={sleep.map(m => ({ d: m.date.slice(5), v: Number(m.value.toFixed(1)) }))} margin={{ top: 0, right: 0, left: -28, bottom: 0 }}>
-                    <XAxis dataKey="d" tick={{ fill: '#475569', fontSize: 9, fontFamily: "'Barlow', sans-serif" }} axisLine={false} tickLine={false} />
+                    <XAxis dataKey="d" tick={{ fill: '#475569', fontSize: 9, fontFamily: "'Barlow Condensed', sans-serif" }} axisLine={false} tickLine={false} />
                     <YAxis tick={false} axisLine={false} tickLine={false} />
                     <Tooltip
-                      contentStyle={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, fontSize: 11, fontFamily: "'Barlow', sans-serif" }}
+                      contentStyle={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, fontSize: 11, fontFamily: "'Barlow Condensed', sans-serif" }}
                       labelStyle={{ color: '#94a3b8' }}
                       itemStyle={{ color: '#8b5cf6' }}
                       formatter={(v: number) => [`${v}h`, 'sleep']}
@@ -365,9 +365,9 @@ export default function StatsPage() {
                 <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '20px 20px 16px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                      <div style={{ fontSize: 9, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>VO2 MAX</div>
+                      <div style={{ fontSize: 9, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>VO2 MAX</div>
                       {zone && (
-                        <span style={{ fontSize: 8, letterSpacing: 2, color: zone.color, fontFamily: "'Barlow', sans-serif", fontWeight: 700 }}>
+                        <span style={{ fontSize: 8, letterSpacing: 2, color: zone.color, fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>
                           {zone.label}
                         </span>
                       )}
@@ -383,10 +383,10 @@ export default function StatsPage() {
                   {vo2Max.length > 1 ? (
                     <ResponsiveContainer width="100%" height={90}>
                       <LineChart data={vo2Max.map(m => ({ d: m.date.slice(5), v: m.value }))} margin={{ top: 4, right: 0, left: -28, bottom: 0 }}>
-                        <XAxis dataKey="d" tick={{ fill: '#475569', fontSize: 9, fontFamily: "'Barlow', sans-serif" }} axisLine={false} tickLine={false} />
+                        <XAxis dataKey="d" tick={{ fill: '#475569', fontSize: 9, fontFamily: "'Barlow Condensed', sans-serif" }} axisLine={false} tickLine={false} />
                         <YAxis tick={false} axisLine={false} tickLine={false} domain={['auto', 'auto']} />
                         <Tooltip
-                          contentStyle={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, fontSize: 11, fontFamily: "'Barlow', sans-serif" }}
+                          contentStyle={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, fontSize: 11, fontFamily: "'Barlow Condensed', sans-serif" }}
                           labelStyle={{ color: '#94a3b8' }}
                           itemStyle={{ color }}
                           formatter={(v: number) => [`${v.toFixed(1)} mL/kg/min`, 'VO2 Max']}
@@ -409,13 +409,13 @@ export default function StatsPage() {
                         onChange={e => setVo2Input(e.target.value)}
                         placeholder="e.g. 52.4"
                         min={10} max={90} step={0.1}
-                        style={{ flex: 1, background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, color: '#f1f5f9', padding: '6px 10px', fontSize: 13, fontFamily: "'Barlow', sans-serif" }}
+                        style={{ flex: 1, background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, color: '#f1f5f9', padding: '6px 10px', fontSize: 13, fontFamily: "'Barlow Condensed', sans-serif" }}
                       />
                       <input
                         type="date"
                         value={vo2Date}
                         onChange={e => setVo2Date(e.target.value)}
-                        style={{ background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, color: '#f1f5f9', padding: '6px 8px', fontSize: 13, fontFamily: "'Barlow', sans-serif", colorScheme: 'dark' }}
+                        style={{ background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, color: '#f1f5f9', padding: '6px 8px', fontSize: 13, fontFamily: "'Barlow Condensed', sans-serif", colorScheme: 'dark' }}
                       />
                       <button
                         onClick={handleSaveVo2}
@@ -433,7 +433,7 @@ export default function StatsPage() {
                   ) : (
                     <button
                       onClick={() => setShowVo2Form(true)}
-                      style={{ marginTop: 12, background: 'transparent', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 4, color: '#475569', fontSize: 9, letterSpacing: 3, padding: '5px 12px', cursor: 'pointer', fontFamily: "'Barlow', sans-serif", width: '100%' }}
+                      style={{ marginTop: 12, background: 'transparent', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 4, color: '#475569', fontSize: 9, letterSpacing: 3, padding: '5px 12px', cursor: 'pointer', fontFamily: "'Barlow Condensed', sans-serif", width: '100%' }}
                     >
                       + LOG VO2 MAX
                     </button>

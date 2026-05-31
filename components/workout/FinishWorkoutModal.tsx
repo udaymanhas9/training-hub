@@ -32,7 +32,7 @@ export default function FinishWorkoutModal({
         textAlign: 'center',
       }}>
         <div style={{ fontSize: 40, marginBottom: 8 }}>🔥</div>
-        <div style={{ fontSize: 11, letterSpacing: 6, color: accent, fontFamily: "'Barlow', sans-serif", marginBottom: 8 }}>WORKOUT COMPLETE</div>
+        <div style={{ fontSize: 11, letterSpacing: 6, color: accent, fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 8 }}>WORKOUT COMPLETE</div>
         <div style={{ fontSize: 32, fontWeight: 900, color: '#f1f5f9', fontStyle: 'italic' }}>{workout.name}</div>
       </div>
 
@@ -49,7 +49,7 @@ export default function FinishWorkoutModal({
               borderRadius: 8, padding: '12px 8px', textAlign: 'center',
             }}>
               <div style={{ fontSize: 22, fontWeight: 900, color }}>{val}</div>
-              <div style={{ fontSize: 8, letterSpacing: 2, color: '#475569', fontFamily: "'Barlow', sans-serif", marginTop: 2 }}>{label}</div>
+              <div style={{ fontSize: 8, letterSpacing: 2, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 2 }}>{label}</div>
             </div>
           ))}
         </div>
@@ -57,7 +57,7 @@ export default function FinishWorkoutModal({
         {/* PB Notifications */}
         {newPBs.length > 0 && (
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 10, letterSpacing: 4, color: '#f59e0b', fontFamily: "'Barlow', sans-serif", marginBottom: 10 }}>NEW PERSONAL BESTS</div>
+            <div style={{ fontSize: 10, letterSpacing: 4, color: '#f59e0b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 10 }}>NEW PERSONAL BESTS</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {newPBs.map(pb => (
                 <div key={pb.exerciseId} style={{
@@ -67,7 +67,7 @@ export default function FinishWorkoutModal({
                   <span style={{ fontSize: 20 }}>🏆</span>
                   <div>
                     <div style={{ fontSize: 14, fontWeight: 700, color: '#fbbf24' }}>{pb.exerciseName}</div>
-                    <div style={{ fontSize: 12, color: '#92400e', fontFamily: "'Barlow', sans-serif" }}>
+                    <div style={{ fontSize: 12, color: '#92400e', fontFamily: "'Barlow Condensed', sans-serif" }}>
                       {pb.weight}kg × {pb.reps} reps
                     </div>
                   </div>
@@ -80,15 +80,15 @@ export default function FinishWorkoutModal({
         {/* Exercise summary */}
         {exerciseLogs.length > 0 && (
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 10, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow', sans-serif", marginBottom: 10 }}>EXERCISES LOGGED</div>
+            <div style={{ fontSize: 10, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 10 }}>EXERCISES LOGGED</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {exerciseLogs.map(ex => (
                 <div key={ex.exerciseId} style={{
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                   padding: '8px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 4,
                 }}>
-                  <span style={{ fontSize: 13, color: '#94a3b8', fontFamily: "'Barlow', sans-serif" }}>{ex.exerciseName}</span>
-                  <span style={{ fontSize: 11, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>{ex.sets.length} sets</span>
+                  <span style={{ fontSize: 13, color: '#94a3b8', fontFamily: "'Barlow Condensed', sans-serif" }}>{ex.exerciseName}</span>
+                  <span style={{ fontSize: 11, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>{ex.sets.length} sets</span>
                 </div>
               ))}
             </div>

@@ -10,12 +10,12 @@ type Mode = 'signin' | 'signup' | 'forgot' | 'reset';
 const inputStyle = {
   width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)',
   borderRadius: 8, padding: '12px 14px', color: '#f1f5f9', fontSize: 15,
-  fontFamily: "'Barlow', sans-serif", outline: 'none',
+  fontFamily: "'Barlow Condensed', sans-serif", outline: 'none',
 };
 
 const labelStyle = {
   fontSize: 10, letterSpacing: 3, color: '#64748b',
-  fontFamily: "'Barlow', sans-serif", display: 'block', marginBottom: 8,
+  fontFamily: "'Barlow Condensed', sans-serif", display: 'block', marginBottom: 8,
 };
 
 export default function LoginPage() {
@@ -149,13 +149,13 @@ export default function LoginPage() {
       <div style={{ width: '100%', maxWidth: 400 }}>
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <div style={{ fontSize: 11, letterSpacing: 6, color: '#475569', fontFamily: "'Barlow', sans-serif", marginBottom: 8 }}>
+          <div style={{ fontSize: 11, letterSpacing: 6, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 8 }}>
             WELCOME TO
           </div>
           <h1 style={{ fontSize: 56, fontWeight: 900, fontStyle: 'italic', color: '#fff', letterSpacing: -1, lineHeight: 0.9 }}>
             TRAINING<br />HUB
           </h1>
-          <p style={{ fontSize: 13, color: '#475569', fontFamily: "'Barlow', sans-serif", marginTop: 12, letterSpacing: 2 }}>
+          <p style={{ fontSize: 13, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 12, letterSpacing: 2 }}>
             TRACK · TRAIN · PROGRESS
           </p>
         </div>
@@ -192,12 +192,12 @@ export default function LoginPage() {
             <div style={{ textAlign: 'center', padding: '8px 0' }}>
               <div style={{ fontSize: 36, marginBottom: 14 }}>✅</div>
               <div style={{ fontSize: 18, fontWeight: 900, color: '#10b981', letterSpacing: 2, marginBottom: 10 }}>ACCOUNT CREATED</div>
-              <div style={{ fontSize: 13, color: '#64748b', fontFamily: "'Barlow', sans-serif", lineHeight: 1.6 }}>
+              <div style={{ fontSize: 13, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", lineHeight: 1.6 }}>
                 {message}
               </div>
               <button
                 onClick={() => switchMode('signin')}
-                style={{ marginTop: 20, background: 'none', border: 'none', color: '#3b82f6', fontSize: 12, cursor: 'pointer', fontFamily: "'Barlow', sans-serif", letterSpacing: 2, fontWeight: 700 }}
+                style={{ marginTop: 20, background: 'none', border: 'none', color: '#3b82f6', fontSize: 12, cursor: 'pointer', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 2, fontWeight: 700 }}
               >
                 BACK TO SIGN IN
               </button>
@@ -206,10 +206,10 @@ export default function LoginPage() {
             <form onSubmit={handleSubmit}>
               {(mode === 'forgot' || mode === 'reset') && (
                 <div style={{ marginBottom: 20 }}>
-                  <div style={{ fontSize: 11, letterSpacing: 4, color: '#64748b', fontFamily: "'Barlow', sans-serif", marginBottom: 8 }}>
+                  <div style={{ fontSize: 11, letterSpacing: 4, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 8 }}>
                     {mode === 'forgot' ? 'PASSWORD RESET' : 'SET NEW PASSWORD'}
                   </div>
-                  <div style={{ fontSize: 13, color: '#94a3b8', fontFamily: "'Barlow', sans-serif", lineHeight: 1.6 }}>
+                  <div style={{ fontSize: 13, color: '#94a3b8', fontFamily: "'Barlow Condensed', sans-serif", lineHeight: 1.6 }}>
                     {mode === 'forgot'
                       ? 'Enter the email address for your account and we will send you a reset link.'
                       : 'Your reset link has been accepted. Enter a new password below.'}
@@ -278,7 +278,7 @@ export default function LoginPage() {
                     </div>
                     <span
                       onClick={() => setRememberMe(r => !r)}
-                      style={{ fontSize: 12, color: '#64748b', fontFamily: "'Barlow', sans-serif", cursor: 'pointer', userSelect: 'none' }}
+                      style={{ fontSize: 12, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", cursor: 'pointer', userSelect: 'none' }}
                     >
                       Remember me
                     </span>
@@ -289,7 +289,7 @@ export default function LoginPage() {
                     style={{
                       marginBottom: 20, padding: 0, background: 'none', border: 'none',
                       color: '#3b82f6', fontSize: 12, cursor: 'pointer',
-                      fontFamily: "'Barlow', sans-serif", letterSpacing: 1,
+                      fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 1,
                     }}
                   >
                     Forgot password?
@@ -298,13 +298,13 @@ export default function LoginPage() {
               )}
 
               {message && !signedUp && (
-                <div style={{ fontSize: 12, color: '#93c5fd', fontFamily: "'Barlow', sans-serif", marginBottom: 14, lineHeight: 1.4 }}>
+                <div style={{ fontSize: 12, color: '#93c5fd', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 14, lineHeight: 1.4 }}>
                   {message}
                 </div>
               )}
 
               {error && (
-                <div style={{ fontSize: 12, color: '#f87171', fontFamily: "'Barlow', sans-serif", marginBottom: 14, lineHeight: 1.4 }}>
+                <div style={{ fontSize: 12, color: '#f87171', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 14, lineHeight: 1.4 }}>
                   {error}
                 </div>
               )}
@@ -350,7 +350,7 @@ export default function LoginPage() {
           )}
         </div>
 
-        <div style={{ textAlign: 'center', marginTop: 20, fontSize: 11, color: '#1e293b', fontFamily: "'Barlow', sans-serif", letterSpacing: 1 }}>
+        <div style={{ textAlign: 'center', marginTop: 20, fontSize: 11, color: '#1e293b', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 1 }}>
           YOUR DATA SYNCS ACROSS ALL YOUR DEVICES
         </div>
       </div>

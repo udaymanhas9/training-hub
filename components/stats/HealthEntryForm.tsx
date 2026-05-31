@@ -31,20 +31,20 @@ export default function HealthEntryForm({ onAdd, weightUnit }: HealthEntryFormPr
 
   return (
     <form onSubmit={handleSubmit} style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '20px 24px' }}>
-      <div style={{ fontSize: 11, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow', sans-serif", marginBottom: 16 }}>LOG MEASUREMENT</div>
+      <div style={{ fontSize: 11, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 16 }}>LOG MEASUREMENT</div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
         <div>
-          <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow', sans-serif", marginBottom: 6 }}>DATE</div>
+          <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>DATE</div>
           <input
             type="date"
             value={date}
             onChange={e => setDate(e.target.value)}
             required
-            style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#f1f5f9', padding: '10px 12px', fontSize: 14, fontFamily: "'Barlow', sans-serif" }}
+            style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#f1f5f9', padding: '10px 12px', fontSize: 14, fontFamily: "'Barlow Condensed', sans-serif" }}
           />
         </div>
         <div>
-          <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow', sans-serif", marginBottom: 6 }}>WEIGHT ({weightUnit})</div>
+          <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>WEIGHT ({weightUnit})</div>
           <input
             type="number"
             step="0.1"
@@ -53,11 +53,11 @@ export default function HealthEntryForm({ onAdd, weightUnit }: HealthEntryFormPr
             onChange={e => setWeight(e.target.value)}
             placeholder={`e.g. ${weightUnit === 'kg' ? '82.5' : '182'}`}
             required
-            style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#f1f5f9', padding: '10px 12px', fontSize: 14, fontFamily: "'Barlow', sans-serif" }}
+            style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#f1f5f9', padding: '10px 12px', fontSize: 14, fontFamily: "'Barlow Condensed', sans-serif" }}
           />
         </div>
         <div>
-          <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow', sans-serif", marginBottom: 6 }}>BODY FAT % (optional)</div>
+          <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>BODY FAT % (optional)</div>
           <input
             type="number"
             step="0.1"
@@ -66,7 +66,7 @@ export default function HealthEntryForm({ onAdd, weightUnit }: HealthEntryFormPr
             value={bodyFat}
             onChange={e => setBodyFat(e.target.value)}
             placeholder="e.g. 15.2"
-            style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#f1f5f9', padding: '10px 12px', fontSize: 14, fontFamily: "'Barlow', sans-serif" }}
+            style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#f1f5f9', padding: '10px 12px', fontSize: 14, fontFamily: "'Barlow Condensed', sans-serif" }}
           />
         </div>
       </div>

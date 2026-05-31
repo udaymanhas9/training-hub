@@ -18,7 +18,7 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
   if (!active || !payload?.length) return null;
   return (
     <div style={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '10px 14px' }}>
-      <div style={{ fontSize: 11, color: '#94a3b8', fontFamily: "'Barlow', sans-serif", marginBottom: 6 }}>{label}</div>
+      <div style={{ fontSize: 11, color: '#94a3b8', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>{label}</div>
       {payload.map(p => (
         <div key={p.dataKey} style={{ fontSize: 14, fontWeight: 700, color: p.color, fontFamily: "'Barlow Condensed', sans-serif" }}>
           {p.dataKey === 'weight' ? `${p.value}kg` : `${p.value} reps`}
@@ -56,13 +56,13 @@ export default function ExerciseChart({ exerciseName, data }: ExerciseChartProps
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
           <XAxis
             dataKey="date"
-            tick={{ fill: '#475569', fontSize: 10, fontFamily: "'Barlow', sans-serif" }}
+            tick={{ fill: '#475569', fontSize: 10, fontFamily: "'Barlow Condensed', sans-serif" }}
             axisLine={{ stroke: 'rgba(255,255,255,0.07)' }}
             tickLine={false}
           />
           <YAxis
             yAxisId="weight"
-            tick={{ fill: '#475569', fontSize: 10, fontFamily: "'Barlow', sans-serif" }}
+            tick={{ fill: '#475569', fontSize: 10, fontFamily: "'Barlow Condensed', sans-serif" }}
             axisLine={false}
             tickLine={false}
             tickFormatter={v => `${v}kg`}
@@ -70,7 +70,7 @@ export default function ExerciseChart({ exerciseName, data }: ExerciseChartProps
           <YAxis
             yAxisId="reps"
             orientation="right"
-            tick={{ fill: '#475569', fontSize: 10, fontFamily: "'Barlow', sans-serif" }}
+            tick={{ fill: '#475569', fontSize: 10, fontFamily: "'Barlow Condensed', sans-serif" }}
             axisLine={false}
             tickLine={false}
             tickFormatter={v => `${v}r`}
@@ -96,7 +96,7 @@ export default function ExerciseChart({ exerciseName, data }: ExerciseChartProps
             activeDot={{ r: 5, fill: '#10b981' }}
           />
           <Legend
-            wrapperStyle={{ fontSize: 10, color: '#64748b', fontFamily: "'Barlow', sans-serif", letterSpacing: 2 }}
+            wrapperStyle={{ fontSize: 10, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 2 }}
             formatter={v => v.toUpperCase()}
           />
         </LineChart>

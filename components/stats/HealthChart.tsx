@@ -17,7 +17,7 @@ function CustomTooltip({ active, payload, label, unit }: { active?: boolean; pay
   if (!active || !payload?.length) return null;
   return (
     <div style={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '10px 14px' }}>
-      <div style={{ fontSize: 11, color: '#94a3b8', fontFamily: "'Barlow', sans-serif", marginBottom: 4 }}>{label}</div>
+      <div style={{ fontSize: 11, color: '#94a3b8', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 4 }}>{label}</div>
       <div style={{ fontSize: 16, fontWeight: 900, color: payload[0].color }}>
         {payload[0].value}{unit}
       </div>
@@ -76,12 +76,12 @@ export default function HealthChart({ entries, weightUnit }: HealthChartProps) {
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
             <XAxis
               dataKey="date"
-              tick={{ fill: '#475569', fontSize: 10, fontFamily: "'Barlow', sans-serif" }}
+              tick={{ fill: '#475569', fontSize: 10, fontFamily: "'Barlow Condensed', sans-serif" }}
               axisLine={{ stroke: 'rgba(255,255,255,0.07)' }}
               tickLine={false}
             />
             <YAxis
-              tick={{ fill: '#475569', fontSize: 10, fontFamily: "'Barlow', sans-serif" }}
+              tick={{ fill: '#475569', fontSize: 10, fontFamily: "'Barlow Condensed', sans-serif" }}
               axisLine={false}
               tickLine={false}
               tickFormatter={v => `${v}${displayUnit}`}
@@ -100,7 +100,7 @@ export default function HealthChart({ entries, weightUnit }: HealthChartProps) {
         </ResponsiveContainer>
       ) : (
         <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ fontSize: 13, color: '#334155', fontFamily: "'Barlow', sans-serif" }}>Add more entries to see trends</span>
+          <span style={{ fontSize: 13, color: '#334155', fontFamily: "'Barlow Condensed', sans-serif" }}>Add more entries to see trends</span>
         </div>
       )}
     </div>

@@ -6,6 +6,8 @@ import { getWorkouts, getProfile, getSessionCount, getSessionDates, getRecentSes
 import { WorkoutDefinition, SessionLog, Todo } from '@/lib/types';
 import { formatLastTrained, getSessionsThisWeek, getCurrentStreak, formatDate, WORKOUT_TYPE_COLORS } from '@/lib/utils';
 import { format } from 'date-fns';
+import { supabase } from '@/lib/supabase';
+import type { UpcomingWorkout } from '@/app/api/garmin/upcoming/route';
 
 export default function DashboardPage() {
   const [workouts, setWorkouts] = useState<WorkoutDefinition[]>([]);
@@ -17,6 +19,7 @@ export default function DashboardPage() {
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
   const [currentBF, setCurrentBF] = useState<number | null>(null);
   const [todayTodos, setTodayTodos] = useState<Todo[]>([]);
+  const [todayRun, setTodayRun] = useState<UpcomingWorkout | null>(null);
   const [loading, setLoading] = useState(true);
   const todayStr = format(new Date(), 'yyyy-MM-dd');
   const today = format(new Date(), 'EEEE, MMMM d');
@@ -45,6 +48,21 @@ export default function DashboardPage() {
       }
       setTodayTodos(allTodos.filter(t => !t.completed && t.dueDate === todayDate));
       setLoading(false);
+
+      // Fetch today's scheduled Garmin run (non-blocking, best-effort)
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.access_token) {
+          const res = await fetch('/api/garmin/upcoming', {
+            headers: { Authorization: `Bearer ${session.access_token}` },
+          });
+          if (res.ok) {
+            const json = await res.json();
+            const run = (json.upcoming as UpcomingWorkout[]).find(w => w.date === todayDate);
+            if (run) setTodayRun(run);
+          }
+        }
+      } catch { /* Garmin unavailable — silent fail */ }
     }
     load();
   }, []);
@@ -71,7 +89,7 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 40 }}>
+      <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 120, overflowX: 'hidden' }}>
         <div style={{
           background: 'linear-gradient(135deg, #0f0f0f 0%, #111 50%, #0a0a0a 100%)',
           borderBottom: '1px solid rgba(255,255,255,0.07)',
@@ -90,8 +108,8 @@ export default function DashboardPage() {
         </div>
         <div style={{ maxWidth: 900, margin: '0 auto', padding: '32px 24px 0' }}>
           <div style={{ height: 10, width: 120, background: 'rgba(255,255,255,0.05)', borderRadius: 4, marginBottom: 16 }} />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map(i => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1, 2, 3].map(i => (
               <div key={i} style={{ height: 160, background: 'rgba(255,255,255,0.04)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)' }} />
             ))}
           </div>
@@ -101,7 +119,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 40 }}>
+    <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 120, overflowX: 'hidden' }}>
       {/* Hero Header */}
       <div style={{
         background: 'linear-gradient(135deg, #0f0f0f 0%, #111 50%, #0a0a0a 100%)',
@@ -116,13 +134,13 @@ export default function DashboardPage() {
           pointerEvents: 'none',
         }} />
         <div style={{ maxWidth: 900, margin: '0 auto', position: 'relative' }}>
-          <div style={{ fontSize: 11, letterSpacing: 6, color: '#64748b', fontFamily: "'Barlow', sans-serif", fontWeight: 500, marginBottom: 8 }}>
+          <div style={{ fontSize: 11, letterSpacing: 6, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 500, marginBottom: 8 }}>
             {today.toUpperCase()}
           </div>
           <h1 style={{ fontSize: 'clamp(42px,8vw,72px)', fontWeight: 900, lineHeight: 0.9, letterSpacing: -1, color: '#fff', fontStyle: 'italic' }}>
             {profileName ? `WELCOME BACK, ${profileName.toUpperCase()}` : 'TRAINING HUB'}
           </h1>
-          <p style={{ fontSize: 16, color: '#64748b', letterSpacing: 2, marginTop: 10, fontFamily: "'Barlow', sans-serif" }}>
+          <p style={{ fontSize: 16, color: '#64748b', letterSpacing: 2, marginTop: 10, fontFamily: "'Barlow Condensed', sans-serif" }}>
             Track · Train · Progress
           </p>
 
@@ -137,7 +155,7 @@ export default function DashboardPage() {
             ].map(({ label, val, color }) => (
               <div key={label} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '12px 20px', textAlign: 'center', minWidth: 90 }}>
                 <div style={{ fontSize: 26, fontWeight: 900, color }}>{val}</div>
-                <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow', sans-serif", marginTop: 2 }}>{label}</div>
+                <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 2 }}>{label}</div>
               </div>
             ))}
           </div>
@@ -145,10 +163,65 @@ export default function DashboardPage() {
       </div>
 
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 24px' }}>
+
+        {/* Today's scheduled run from Garmin */}
+        {todayRun && (
+          <div style={{ marginTop: 28 }}>
+            <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 12 }}>
+              TODAY&apos;S RUN
+            </div>
+            <Link href="/runs" style={{ textDecoration: 'none', display: 'block' }}>
+              <div style={{
+                background: 'linear-gradient(135deg, #0f1f17 0%, #111 100%)',
+                border: '1px solid rgba(16,185,129,0.3)',
+                borderLeft: '4px solid #10b981',
+                borderRadius: 10, padding: '16px 20px',
+                display: 'flex', alignItems: 'center', gap: 16,
+                cursor: 'pointer', transition: 'border-color 0.2s',
+              }}
+                onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(16,185,129,0.6)')}
+                onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(16,185,129,0.3)')}
+              >
+                <div style={{
+                  width: 44, height: 44, borderRadius: 10, flexShrink: 0,
+                  background: 'rgba(16,185,129,0.15)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 22,
+                }}>
+                  🏃
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 16, fontWeight: 900, color: '#f1f5f9', letterSpacing: 0.5 }}>{todayRun.title}</div>
+                  <div style={{ display: 'flex', gap: 12, marginTop: 4, flexWrap: 'wrap', alignItems: 'center' }}>
+                    {todayRun.sportTypeKey && (
+                      <span style={{ fontSize: 9, letterSpacing: 3, color: '#10b981', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>
+                        {todayRun.sportTypeKey.replace(/_/g, ' ').toUpperCase()}
+                      </span>
+                    )}
+                    {todayRun.duration && (
+                      <span style={{ fontSize: 13, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif" }}>
+                        ~{Math.round(todayRun.duration / 60)} min
+                      </span>
+                    )}
+                    {todayRun.distance && todayRun.distance > 0 && (
+                      <span style={{ fontSize: 13, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif" }}>
+                        {(todayRun.distance / 1000).toFixed(1)} km
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </div>
+            </Link>
+          </div>
+        )}
+
         {/* Workout Cards */}
         <div style={{ marginTop: 32 }}>
-          <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow', sans-serif", marginBottom: 16 }}>YOUR WORKOUTS</div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 16 }}>YOUR WORKOUTS</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {coreWorkouts.map(workout => {
               const accent = workout.accentColor;
               const lastDate = getLastTrainedDate(workout.id);
@@ -159,7 +232,6 @@ export default function DashboardPage() {
                     <div style={{
                       background: '#111',
                       border: `1px solid rgba(255,255,255,0.07)`,
-                      borderTop: `3px solid ${accent}`,
                       borderRadius: 10,
                       padding: '20px 18px 20px 18px',
                       cursor: 'pointer',
@@ -179,22 +251,22 @@ export default function DashboardPage() {
                         background: `radial-gradient(circle at top right, ${accent}15, transparent 70%)`,
                         pointerEvents: 'none',
                       }} />
-                      <div style={{ fontSize: 10, letterSpacing: 4, color: accent, fontFamily: "'Barlow', sans-serif", fontWeight: 500, marginBottom: 6 }}>
+                      <div style={{ fontSize: 10, letterSpacing: 4, color: accent, fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 500, marginBottom: 6 }}>
                         {getWorkoutTypeLabel(workout.type)}
                       </div>
                       <div style={{ fontSize: 26, fontWeight: 900, color: '#f1f5f9', letterSpacing: -0.5, lineHeight: 1, paddingRight: 28 }}>{workout.name}</div>
-                      <div style={{ fontSize: 12, color: '#64748b', fontFamily: "'Barlow', sans-serif", marginTop: 6, lineHeight: 1.4, flex: 1 }}>{workout.tagline}</div>
+                      <div style={{ fontSize: 12, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 6, lineHeight: 1.4, flex: 1 }}>{workout.tagline}</div>
 
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16 }}>
                         <div style={{ background: `${accent}18`, border: `1px solid ${accent}30`, borderRadius: 4, padding: '3px 8px' }}>
                           <span style={{ fontSize: 11, color: accent, fontWeight: 700, letterSpacing: 1 }}>{workout.duration}</span>
                         </div>
-                        <div style={{ fontSize: 10, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>
+                        <div style={{ fontSize: 10, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>
                           {sessionCount > 0 ? `${sessionCount}× logged` : 'Not started'}
                         </div>
                       </div>
 
-                      <div style={{ marginTop: 10, fontSize: 10, color: '#475569', fontFamily: "'Barlow', sans-serif", letterSpacing: 1 }}>
+                      <div style={{ marginTop: 10, fontSize: 10, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 1 }}>
                         {formatLastTrained(lastDate).toUpperCase()}
                       </div>
                     </div>
@@ -226,7 +298,7 @@ export default function DashboardPage() {
         {customWorkouts.length > 0 && (
           <div style={{ marginTop: 32 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>CUSTOM WORKOUTS</div>
+              <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>CUSTOM WORKOUTS</div>
               <Link href="/edit/new" style={{ textDecoration: 'none' }}>
                 <span style={{ fontSize: 11, color: '#8b5cf6', letterSpacing: 2, fontWeight: 600, cursor: 'pointer' }}>+ NEW</span>
               </Link>
@@ -242,7 +314,7 @@ export default function DashboardPage() {
                         borderRadius: 8, padding: '16px 18px', cursor: 'pointer',
                       }}>
                         <div style={{ fontSize: 18, fontWeight: 900, color: '#f1f5f9', paddingRight: 28 }}>{workout.name}</div>
-                        <div style={{ fontSize: 11, color: '#64748b', fontFamily: "'Barlow', sans-serif", marginTop: 4 }}>{formatLastTrained(lastDate)}</div>
+                        <div style={{ fontSize: 11, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 4 }}>{formatLastTrained(lastDate)}</div>
                       </div>
                     </Link>
                     <Link
@@ -279,7 +351,7 @@ export default function DashboardPage() {
               <span style={{ fontSize: 24, color: '#8b5cf6' }}>+</span>
               <div>
                 <div style={{ fontSize: 14, fontWeight: 700, color: '#94a3b8', letterSpacing: 1 }}>CREATE CUSTOM WORKOUT</div>
-                <div style={{ fontSize: 11, color: '#475569', fontFamily: "'Barlow', sans-serif", marginTop: 2 }}>Build your own program with phases and exercises</div>
+                <div style={{ fontSize: 11, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 2 }}>Build your own program with phases and exercises</div>
               </div>
             </div>
           </Link>
@@ -289,7 +361,7 @@ export default function DashboardPage() {
         {todayTodos.length > 0 && (
           <div style={{ marginTop: 40 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>TODAY&apos;S TASKS</div>
+              <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>TODAY&apos;S TASKS</div>
               <Link href="/todo" style={{ textDecoration: 'none' }}>
                 <span style={{ fontSize: 11, color: '#64748b', letterSpacing: 2 }}>VIEW ALL</span>
               </Link>
@@ -314,7 +386,7 @@ export default function DashboardPage() {
         {recentSessions.length > 0 && (
           <div style={{ marginTop: 40 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>RECENT SESSIONS</div>
+              <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>RECENT SESSIONS</div>
               <Link href="/calendar" style={{ textDecoration: 'none' }}>
                 <span style={{ fontSize: 11, color: '#64748b', letterSpacing: 2 }}>VIEW ALL</span>
               </Link>
@@ -331,7 +403,7 @@ export default function DashboardPage() {
                     <div style={{ width: 4, height: 40, background: accent, borderRadius: 2, flexShrink: 0 }} />
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 16, fontWeight: 700, color: '#f1f5f9' }}>{workout?.name || 'Unknown Workout'}</div>
-                      <div style={{ fontSize: 11, color: '#64748b', fontFamily: "'Barlow', sans-serif", marginTop: 2 }}>
+                      <div style={{ fontSize: 11, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 2 }}>
                         {formatDate(session.date)} · {session.durationMinutes}min · {session.exercises.length} exercises
                       </div>
                     </div>
@@ -348,7 +420,7 @@ export default function DashboardPage() {
           <div style={{ marginTop: 60, textAlign: 'center' }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>🏋️</div>
             <div style={{ fontSize: 22, fontWeight: 900, color: '#475569', letterSpacing: 2 }}>NO SESSIONS YET</div>
-            <div style={{ fontSize: 14, color: '#334155', fontFamily: "'Barlow', sans-serif", marginTop: 8 }}>Start a workout above to begin tracking your progress</div>
+            <div style={{ fontSize: 14, color: '#334155', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 8 }}>Start a workout above to begin tracking your progress</div>
           </div>
         )}
       </div>

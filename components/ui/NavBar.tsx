@@ -17,6 +17,15 @@ const TRAINING_NAV = [
   { href: '/review', label: 'REVIEW', icon: ReviewIcon },
 ];
 
+// Max 5 items on the mobile tab bar to avoid cramping
+const MOBILE_TRAINING_NAV = [
+  { href: '/', label: 'Home', icon: HomeIcon },
+  { href: '/todo', label: 'Tasks', icon: TodoIcon },
+  { href: '/runs', label: 'Runs', icon: RunIcon },
+  { href: '/progress', label: 'Progress', icon: ProgressIcon },
+  { href: '/stats', label: 'Stats', icon: StatsIcon },
+];
+
 // ── Lab nav ───────────────────────────────────────────────────────────────────
 
 const LAB_NAV = [
@@ -170,7 +179,8 @@ export default function NavBar() {
   const isLabMode    = pathname.startsWith('/lab');
   const isBeRealMode = pathname.startsWith('/bereal');
   const isAdminMode  = pathname.startsWith('/admin');
-  const navItems = isLabMode ? LAB_NAV : isBeRealMode ? BEREAL_NAV : TRAINING_NAV;
+  const navItems       = isLabMode ? LAB_NAV : isBeRealMode ? BEREAL_NAV : TRAINING_NAV;
+  const mobileNavItems = isLabMode ? LAB_NAV : isBeRealMode ? BEREAL_NAV : MOBILE_TRAINING_NAV;
 
   function isActive(href: string) {
     if (href === '/' || href === '/lab') return pathname === href;
@@ -348,7 +358,7 @@ export default function NavBar() {
           paddingBottom: 'env(safe-area-inset-bottom)',
         }}
       >
-        {navItems.map(({ href, label, icon: Icon }) => {
+        {mobileNavItems.map(({ href, label, icon: Icon }) => {
           const active = isActive(href);
           return (
             <Link
@@ -356,28 +366,29 @@ export default function NavBar() {
               href={href}
               style={{
                 flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
-                justifyContent: 'center', padding: '10px 4px', textDecoration: 'none',
+                justifyContent: 'center', padding: '8px 2px', textDecoration: 'none',
                 color: isLabMode
                   ? (active ? '#FF2A2A' : '#4a4a4a')
                   : isBeRealMode
                   ? (active ? '#e2e8f0' : '#475569')
                   : (active ? '#f1f5f9' : '#475569'),
-                position: 'relative', gap: 4,
+                position: 'relative', gap: 3, minWidth: 0,
               }}
             >
               {active && (
                 <div style={{
                   position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
-                  width: 32, height: 2,
+                  width: 28, height: 2,
                   background: isLabMode ? '#FF2A2A' : isBeRealMode ? '#e2e8f0' : '#3b82f6',
                   borderRadius: '0 0 2px 2px',
                 }} />
               )}
               <Icon active={active} />
               <span style={{
-                fontSize: 8, letterSpacing: 2,
+                fontSize: 9, letterSpacing: 0.5,
                 fontWeight: active ? 700 : 500,
                 fontFamily: isLabMode ? "'JetBrains Mono', monospace" : "'Barlow Condensed', sans-serif",
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%',
               }}>
                 {label}
               </span>

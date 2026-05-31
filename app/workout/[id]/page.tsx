@@ -224,7 +224,7 @@ export default function WorkoutPage() {
   const canFinish = !isSubmitting && !hasSubmitted;
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 60 }}>
+    <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 'calc(env(safe-area-inset-bottom) + 120px)' }}>
       <style>{`
         @keyframes workout-blink {
           0%, 100% { opacity: 1; }
@@ -279,7 +279,7 @@ export default function WorkoutPage() {
         {/* Date picker */}
         <div style={{ padding: '20px 24px 0' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ fontSize: 10, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow', sans-serif", whiteSpace: 'nowrap' }}>
+            <div style={{ fontSize: 10, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", whiteSpace: 'nowrap' }}>
               SESSION DATE
             </div>
             <input
@@ -290,12 +290,12 @@ export default function WorkoutPage() {
               style={{
                 background: '#111', border: '1px solid rgba(255,255,255,0.1)',
                 borderRadius: 6, color: '#f1f5f9', padding: '6px 12px',
-                fontSize: 13, fontFamily: "'Barlow', sans-serif",
+                fontSize: 13, fontFamily: "'Barlow Condensed', sans-serif",
                 colorScheme: 'dark', cursor: 'pointer',
               }}
             />
             {sessionDate !== todayISO() && (
-              <span style={{ fontSize: 10, color: '#f59e0b', fontFamily: "'Barlow', sans-serif", letterSpacing: 1 }}>
+              <span style={{ fontSize: 10, color: '#f59e0b', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 1 }}>
                 LOGGING RETROSPECTIVELY
               </span>
             )}
@@ -345,7 +345,7 @@ export default function WorkoutPage() {
       </div>
 
       {/* Toasts */}
-      <div style={{ position: 'fixed', top: 16, right: 16, zIndex: 1000, display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={{ position: 'fixed', top: 'calc(env(safe-area-inset-top) + 48px)', right: 16, zIndex: 1000, display: 'flex', flexDirection: 'column', gap: 8 }}>
         {toasts.map(t => (
           <Toast key={t.id} message={t.message} type={t.type} onDismiss={() => setToasts(p => p.filter(x => x.id !== t.id))} />
         ))}

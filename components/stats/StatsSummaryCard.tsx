@@ -42,10 +42,10 @@ export default function StatsSummaryCard({ latest, previous, weightUnit, heightC
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       {/* Weight */}
       <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '20px 24px' }}>
-        <div style={{ fontSize: 9, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow', sans-serif", marginBottom: 8 }}>CURRENT WEIGHT</div>
+        <div style={{ fontSize: 9, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 8 }}>CURRENT WEIGHT</div>
         <div style={{ fontSize: 36, fontWeight: 900, color: '#3b82f6' }}>{displayWeight}<span style={{ fontSize: 16, color: '#64748b', marginLeft: 4 }}>{weightUnit}</span></div>
         {previous && (
-          <div style={{ marginTop: 8, fontSize: 12, fontFamily: "'Barlow', sans-serif" }}>
+          <div style={{ marginTop: 8, fontSize: 12, fontFamily: "'Barlow Condensed', sans-serif" }}>
             <TrendArrow diff={weightDiff} />
             <span style={{ color: '#475569', marginLeft: 6 }}>vs last entry</span>
           </div>
@@ -54,12 +54,12 @@ export default function StatsSummaryCard({ latest, previous, weightUnit, heightC
 
       {/* Body Fat */}
       <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '20px 24px' }}>
-        <div style={{ fontSize: 9, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow', sans-serif", marginBottom: 8 }}>BODY FAT</div>
+        <div style={{ fontSize: 9, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 8 }}>BODY FAT</div>
         <div style={{ fontSize: 36, fontWeight: 900, color: '#8b5cf6' }}>
           {latest.bodyFatPct ? <>{latest.bodyFatPct}<span style={{ fontSize: 16, color: '#64748b', marginLeft: 2 }}>%</span></> : <span style={{ color: '#334155' }}>—</span>}
         </div>
         {previous?.bodyFatPct && latest.bodyFatPct && (
-          <div style={{ marginTop: 8, fontSize: 12, fontFamily: "'Barlow', sans-serif" }}>
+          <div style={{ marginTop: 8, fontSize: 12, fontFamily: "'Barlow Condensed', sans-serif" }}>
             <TrendArrow diff={bfDiff} />
             <span style={{ color: '#475569', marginLeft: 6 }}>vs last entry</span>
           </div>
@@ -68,17 +68,17 @@ export default function StatsSummaryCard({ latest, previous, weightUnit, heightC
 
       {/* BMI */}
       <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '20px 24px' }}>
-        <div style={{ fontSize: 9, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow', sans-serif", marginBottom: 8 }}>BMI</div>
+        <div style={{ fontSize: 9, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 8 }}>BMI</div>
         {bmi !== null ? (
           <>
             <div style={{ fontSize: 36, fontWeight: 900, color: getBMILabel(bmi).color }}>{bmi}</div>
             <div style={{ marginTop: 6 }}>
-              <span style={{ fontSize: 10, letterSpacing: 2, fontWeight: 700, color: getBMILabel(bmi).color, fontFamily: "'Barlow', sans-serif" }}>
+              <span style={{ fontSize: 10, letterSpacing: 2, fontWeight: 700, color: getBMILabel(bmi).color, fontFamily: "'Barlow Condensed', sans-serif" }}>
                 {getBMILabel(bmi).label}
               </span>
             </div>
             {prevBMI && (
-              <div style={{ marginTop: 4, fontSize: 12, fontFamily: "'Barlow', sans-serif" }}>
+              <div style={{ marginTop: 4, fontSize: 12, fontFamily: "'Barlow Condensed', sans-serif" }}>
                 <TrendArrow diff={bmiDiff} />
               </div>
             )}
@@ -87,7 +87,7 @@ export default function StatsSummaryCard({ latest, previous, weightUnit, heightC
           <div style={{ fontSize: 36, fontWeight: 900, color: '#334155' }}>—</div>
         )}
         {heightCm === 0 && (
-          <div style={{ fontSize: 10, color: '#475569', fontFamily: "'Barlow', sans-serif", marginTop: 4 }}>Set height in profile</div>
+          <div style={{ fontSize: 10, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 4 }}>Set height in profile</div>
         )}
       </div>
     </div>

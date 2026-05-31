@@ -68,7 +68,7 @@ export default function MonthView({ sessions, workouts, onDayClick, selectedDay,
       {/* Weekday headers */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
         {WEEK_DAYS.map(d => (
-          <div key={d} style={{ padding: '8px 0', textAlign: 'center', fontSize: 9, letterSpacing: 3, color: '#334155', fontFamily: "'Barlow', sans-serif" }}>
+          <div key={d} style={{ padding: '8px 0', textAlign: 'center', fontSize: 9, letterSpacing: 3, color: '#334155', fontFamily: "'Barlow Condensed', sans-serif" }}>
             {d}
           </div>
         ))}
@@ -139,13 +139,13 @@ export default function MonthView({ sessions, workouts, onDayClick, selectedDay,
         {workouts.slice(0, 4).map(w => (
           <div key={w.id} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: w.accentColor || '#8b5cf6' }} />
-            <span style={{ fontSize: 10, color: '#475569', fontFamily: "'Barlow', sans-serif", letterSpacing: 1 }}>{w.name}</span>
+            <span style={{ fontSize: 10, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 1 }}>{w.name}</span>
           </div>
         ))}
         {stravaActivities.length > 0 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 8, height: 8, borderRadius: 1, background: '#fc4c02' }} />
-            <span style={{ fontSize: 10, color: '#475569', fontFamily: "'Barlow', sans-serif", letterSpacing: 1 }}>Strava</span>
+            <span style={{ fontSize: 10, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 1 }}>Strava</span>
           </div>
         )}
       </div>

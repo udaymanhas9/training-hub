@@ -30,7 +30,7 @@ export default function Toast({ message, type = 'info', onDismiss }: ToastProps)
         fontSize: 13,
         fontWeight: 600,
         color: isPB ? '#fbbf24' : '#f1f5f9',
-        fontFamily: "'Barlow', sans-serif",
+        fontFamily: "'Barlow Condensed', sans-serif",
         lineHeight: 1.4,
       }}>
         {message}

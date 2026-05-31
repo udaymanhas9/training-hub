@@ -55,6 +55,10 @@ export async function GET(request: NextRequest) {
     // 'workout', 'scheduledWorkout', 'event', 'note', 'goal' etc.
     // We exclude 'activity' (already done) and blank titles only.
     const EXCLUDED_TYPES = new Set(['activity']);
+
+    // Deduplicate by date+title — Garmin often returns the same scheduled
+    // workout twice (once as a training plan entry, once as a workout entry).
+    const seen = new Set<string>();
     const upcoming: UpcomingWorkout[] = allItems
       .filter(item =>
         !EXCLUDED_TYPES.has(item.itemType) &&
@@ -62,6 +66,12 @@ export async function GET(request: NextRequest) {
         (item.title || item.workoutId)
       )
       .sort((a, b) => a.date.localeCompare(b.date))
+      .filter(item => {
+        const key = `${item.date}|${(item.title ?? item.workoutId ?? item.id).toString().toLowerCase()}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
       .slice(0, 10)
       .map(item => ({
         id:           item.id,

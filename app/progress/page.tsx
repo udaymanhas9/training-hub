@@ -79,7 +79,7 @@ export default function ProgressPage() {
   const exercisesWithData = Object.keys(exerciseHistory).filter(id => exerciseHistory[id].length > 1);
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 40 }}>
+    <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 120, overflowX: 'hidden' }}>
       {/* Header */}
       <div style={{
         borderBottom: '1px solid rgba(255,255,255,0.07)',
@@ -87,7 +87,7 @@ export default function ProgressPage() {
         background: '#111',
       }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
-          <div style={{ fontSize: 11, letterSpacing: 6, color: '#64748b', fontFamily: "'Barlow', sans-serif", marginBottom: 8 }}>PERFORMANCE TRACKING</div>
+          <div style={{ fontSize: 11, letterSpacing: 6, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 8 }}>PERFORMANCE TRACKING</div>
           <h1 style={{ fontSize: 36, fontWeight: 900, color: '#f1f5f9', fontStyle: 'italic', letterSpacing: -1 }}>PROGRESS</h1>
           <div style={{ display: 'flex', gap: 20, marginTop: 16, flexWrap: 'wrap' }}>
             {[
@@ -97,7 +97,7 @@ export default function ProgressPage() {
             ].map(({ label, val, color }) => (
               <div key={label} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '10px 18px', textAlign: 'center' }}>
                 <div style={{ fontSize: 24, fontWeight: 900, color }}>{val}</div>
-                <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow', sans-serif", marginTop: 2 }}>{label}</div>
+                <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 2 }}>{label}</div>
               </div>
             ))}
           </div>
@@ -108,7 +108,7 @@ export default function ProgressPage() {
         {/* PB Table */}
         <div style={{ marginBottom: 40 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-            <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow', sans-serif" }}>PERSONAL BESTS</div>
+            <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>PERSONAL BESTS</div>
             <button
               onClick={() => setShowPBForm(v => !v)}
               style={{
@@ -129,12 +129,12 @@ export default function ProgressPage() {
               background: '#111', border: '1px solid rgba(245,158,11,0.2)',
               borderRadius: 10, padding: '20px 20px', marginBottom: 16,
             }}>
-              <div style={{ fontSize: 11, letterSpacing: 3, color: '#f59e0b', fontFamily: "'Barlow', sans-serif", marginBottom: 16 }}>
+              <div style={{ fontSize: 11, letterSpacing: 3, color: '#f59e0b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 16 }}>
                 ADD / UPDATE PERSONAL BEST
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" style={{ marginBottom: 16 }}>
                 <div style={{ gridColumn: '1 / -1' }}>
-                  <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow', sans-serif", marginBottom: 6 }}>EXERCISE NAME</div>
+                  <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>EXERCISE NAME</div>
                   <input
                     value={pbName} onChange={e => setPbName(e.target.value)}
                     placeholder="e.g. Bench Press"
@@ -145,34 +145,34 @@ export default function ProgressPage() {
                   />
                 </div>
                 <div>
-                  <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow', sans-serif", marginBottom: 6 }}>WEIGHT ({weightUnit})</div>
+                  <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>WEIGHT ({weightUnit})</div>
                   <input
                     type="number" min="0" step="0.5"
                     value={pbWeight} onChange={e => setPbWeight(e.target.value)}
                     placeholder="0"
                     required
-                    style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '10px 12px', color: '#f1f5f9', fontSize: 15, fontFamily: "'Barlow', sans-serif", outline: 'none' }}
+                    style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '10px 12px', color: '#f1f5f9', fontSize: 15, fontFamily: "'Barlow Condensed', sans-serif", outline: 'none' }}
                     onFocus={e => (e.target.style.borderColor = 'rgba(245,158,11,0.5)')}
                     onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
                   />
                 </div>
                 <div>
-                  <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow', sans-serif", marginBottom: 6 }}>REPS</div>
+                  <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>REPS</div>
                   <input
                     type="number" min="1" step="1"
                     value={pbReps} onChange={e => setPbReps(e.target.value)}
                     placeholder="1"
                     required
-                    style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '10px 12px', color: '#f1f5f9', fontSize: 15, fontFamily: "'Barlow', sans-serif", outline: 'none' }}
+                    style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '10px 12px', color: '#f1f5f9', fontSize: 15, fontFamily: "'Barlow Condensed', sans-serif", outline: 'none' }}
                     onFocus={e => (e.target.style.borderColor = 'rgba(245,158,11,0.5)')}
                     onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
                   />
                 </div>
                 <div>
-                  <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow', sans-serif", marginBottom: 6 }}>DATE</div>
+                  <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>DATE</div>
                   <input
                     type="date" value={pbDate} onChange={e => setPbDate(e.target.value)}
-                    style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '10px 12px', color: '#f1f5f9', fontSize: 14, fontFamily: "'Barlow', sans-serif", outline: 'none', colorScheme: 'dark' }}
+                    style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '10px 12px', color: '#f1f5f9', fontSize: 14, fontFamily: "'Barlow Condensed', sans-serif", outline: 'none', colorScheme: 'dark' }}
                     onFocus={e => (e.target.style.borderColor = 'rgba(245,158,11,0.5)')}
                     onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
                   />
@@ -200,7 +200,7 @@ export default function ProgressPage() {
             <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, padding: '40px 24px', textAlign: 'center' }}>
               <div style={{ fontSize: 32, marginBottom: 12 }}>🏆</div>
               <div style={{ fontSize: 18, fontWeight: 900, color: '#475569', letterSpacing: 2 }}>NO PBS YET</div>
-              <div style={{ fontSize: 13, color: '#334155', fontFamily: "'Barlow', sans-serif", marginTop: 8 }}>Add your current PBs above, or log sets during workouts</div>
+              <div style={{ fontSize: 13, color: '#334155', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 8 }}>Add your current PBs above, or log sets during workouts</div>
             </div>
           )}
         </div>
@@ -208,7 +208,7 @@ export default function ProgressPage() {
         {/* Exercise Charts */}
         {exercisesWithData.length > 0 && (
           <div>
-            <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow', sans-serif", marginBottom: 16 }}>EXERCISE HISTORY</div>
+            <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 16 }}>EXERCISE HISTORY</div>
             <div style={{ marginBottom: 16 }}>
               <select
                 value={selectedExercise || ''}

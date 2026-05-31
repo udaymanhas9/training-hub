@@ -35,7 +35,7 @@ export default function WorkoutHero({ workout, totalExercises }: WorkoutHeroProp
       }} />
 
       <div style={{ position: 'relative' }}>
-        <div style={{ fontSize: 11, letterSpacing: 6, color: accent, marginBottom: 8, fontFamily: "'Barlow', sans-serif", fontWeight: 500 }}>
+        <div style={{ fontSize: 11, letterSpacing: 6, color: accent, marginBottom: 8, fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 500 }}>
           {label}
         </div>
         <h1 style={{ fontSize: 'clamp(48px,9vw,80px)', fontWeight: 900, lineHeight: 0.9, letterSpacing: -2, color: '#fff', fontStyle: 'italic' }}>
@@ -60,7 +60,7 @@ export default function WorkoutHero({ workout, totalExercises }: WorkoutHeroProp
               textAlign: 'center',
             }}>
               <div style={{ fontSize: 22, fontWeight: 900, color: accent }}>{val}</div>
-              <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow', sans-serif" }}>{label}</div>
+              <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif" }}>{label}</div>
             </div>
           ))}
         </div>
@@ -78,7 +78,7 @@ export default function WorkoutHero({ workout, totalExercises }: WorkoutHeroProp
             border: `1px solid ${accent}30`,
           }}>
             <span style={{ fontSize: 16 }}>⚠️</span>
-            <span style={{ fontSize: 13, color: '#fca5a5', fontFamily: "'Barlow', sans-serif", fontWeight: 500 }}>{workout.note}</span>
+            <span style={{ fontSize: 13, color: '#fca5a5', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 500 }}>{workout.note}</span>
           </div>
         )}
       </div>

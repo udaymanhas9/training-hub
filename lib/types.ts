@@ -117,14 +117,20 @@ export interface StravaActivity {
 
 // ── TODOS ─────────────────────────────────────────────────────────────────────
 
+export interface TodoRepeat {
+  type: 'daily' | 'weekly' | 'monthly' | 'custom';
+  every?: number; // only used when type === 'custom'; unit = days
+}
+
 export interface Todo {
   id: string;
   text: string;
   completed: boolean;
   dueDate?: string;       // yyyy-MM-dd
   priority: 'normal' | 'high';
+  repeat?: TodoRepeat;
   createdAt: string;      // ISO
-  completedAt?: string;   // ISO
+  completedAt?: string;   // ISO — repeating tasks check this against the interval
 }
 
 // ── THE LAB ───────────────────────────────────────────────────────────────────

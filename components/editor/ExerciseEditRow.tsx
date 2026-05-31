@@ -105,7 +105,7 @@ export default function ExerciseEditRow({ exercise, onChange, onDelete, accentCo
     color: '#f1f5f9',
     padding: '6px 8px',
     fontSize: 13,
-    fontFamily: "'Barlow', sans-serif",
+    fontFamily: "'Barlow Condensed', sans-serif",
     width: '100%',
   };
 
@@ -113,7 +113,7 @@ export default function ExerciseEditRow({ exercise, onChange, onDelete, accentCo
     fontSize: 8,
     letterSpacing: 2,
     color: '#475569',
-    fontFamily: "'Barlow', sans-serif",
+    fontFamily: "'Barlow Condensed', sans-serif",
     marginBottom: 4,
     display: 'block',
   };
@@ -200,7 +200,7 @@ export default function ExerciseEditRow({ exercise, onChange, onDelete, accentCo
                   <span style={{
                     fontSize: 9,
                     color: '#475569',
-                    fontFamily: "'Barlow', sans-serif",
+                    fontFamily: "'Barlow Condensed', sans-serif",
                     letterSpacing: 1,
                     whiteSpace: 'nowrap',
                     flexShrink: 0,
@@ -235,7 +235,7 @@ export default function ExerciseEditRow({ exercise, onChange, onDelete, accentCo
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
           <span style={{ ...labelStyle, marginBottom: 0 }}>MUSCLES</span>
           {selectedMuscles.length > 0 && (
-            <span style={{ fontSize: 8, letterSpacing: 1, color: '#22c55e', fontFamily: "'Barlow', sans-serif" }}>
+            <span style={{ fontSize: 8, letterSpacing: 1, color: '#22c55e', fontFamily: "'Barlow Condensed', sans-serif" }}>
               AUTO
             </span>
           )}
@@ -245,7 +245,7 @@ export default function ExerciseEditRow({ exercise, onChange, onDelete, accentCo
               background: 'transparent', border: 'none',
               color: showPicker ? accentColor : '#475569',
               cursor: 'pointer', fontSize: 9, letterSpacing: 2,
-              fontFamily: "'Barlow', sans-serif", padding: 0,
+              fontFamily: "'Barlow Condensed', sans-serif", padding: 0,
             }}
           >
             {showPicker ? 'DONE' : 'EDIT'}
@@ -262,7 +262,7 @@ export default function ExerciseEditRow({ exercise, onChange, onDelete, accentCo
                     background: `${accentColor}18`,
                     border: `1px solid ${accentColor}40`,
                     borderRadius: 3, padding: '2px 7px',
-                    fontFamily: "'Barlow', sans-serif",
+                    fontFamily: "'Barlow Condensed', sans-serif",
                   }}>
                     {MUSCLE_DISPLAY[m] ?? m}
                   </span>
@@ -274,7 +274,7 @@ export default function ExerciseEditRow({ exercise, onChange, onDelete, accentCo
                     background: 'transparent', border: '1px dashed #334155',
                     borderRadius: 3, color: '#475569', cursor: 'pointer',
                     fontSize: 9, letterSpacing: 1, padding: '2px 8px',
-                    fontFamily: "'Barlow', sans-serif",
+                    fontFamily: "'Barlow Condensed', sans-serif",
                   }}
                 >
                   + Select muscles
@@ -298,7 +298,7 @@ export default function ExerciseEditRow({ exercise, onChange, onDelete, accentCo
                     color: active ? accentColor : '#64748b',
                     borderRadius: 3, cursor: 'pointer',
                     fontSize: 9, letterSpacing: 1, padding: '3px 8px',
-                    fontFamily: "'Barlow', sans-serif",
+                    fontFamily: "'Barlow Condensed', sans-serif",
                     transition: 'all 0.1s',
                   }}
                 >

@@ -102,10 +102,10 @@ export default function EditPage() {
       <div style={{ maxWidth: 760, margin: '0 auto', padding: '24px 24px 0' }}>
         {/* Workout Meta */}
         <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '20px 24px', marginBottom: 24 }}>
-          <div style={{ fontSize: 11, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow', sans-serif", marginBottom: 16 }}>WORKOUT DETAILS</div>
+          <div style={{ fontSize: 11, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 16 }}>WORKOUT DETAILS</div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow', sans-serif", marginBottom: 6 }}>NAME</div>
+              <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>NAME</div>
               <input
                 value={workout.name}
                 onChange={e => setWorkout(w => w ? { ...w, name: e.target.value.toUpperCase() } : w)}
@@ -113,25 +113,25 @@ export default function EditPage() {
               />
             </div>
             <div>
-              <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow', sans-serif", marginBottom: 6 }}>TAGLINE</div>
+              <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>TAGLINE</div>
               <input
                 value={workout.tagline}
                 onChange={e => setWorkout(w => w ? { ...w, tagline: e.target.value } : w)}
                 placeholder="e.g. Chest · Shoulders · Arms"
-                style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#f1f5f9', padding: '10px 12px', fontSize: 14, fontFamily: "'Barlow', sans-serif" }}
+                style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#f1f5f9', padding: '10px 12px', fontSize: 14, fontFamily: "'Barlow Condensed', sans-serif" }}
               />
             </div>
             <div>
-              <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow', sans-serif", marginBottom: 6 }}>DURATION</div>
+              <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>DURATION</div>
               <input
                 value={workout.duration}
                 onChange={e => setWorkout(w => w ? { ...w, duration: e.target.value } : w)}
                 placeholder="e.g. 60 min"
-                style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#f1f5f9', padding: '10px 12px', fontSize: 14, fontFamily: "'Barlow', sans-serif" }}
+                style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#f1f5f9', padding: '10px 12px', fontSize: 14, fontFamily: "'Barlow Condensed', sans-serif" }}
               />
             </div>
             <div>
-              <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow', sans-serif", marginBottom: 6 }}>ACCENT COLOR</div>
+              <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>ACCENT COLOR</div>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 {['#ef4444', '#f97316', '#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899'].map(color => (
                   <button
@@ -148,12 +148,12 @@ export default function EditPage() {
             </div>
           </div>
           <div style={{ marginTop: 16 }}>
-            <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow', sans-serif", marginBottom: 6 }}>COACH NOTE (optional)</div>
+            <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>COACH NOTE (optional)</div>
             <input
               value={workout.note || ''}
               onChange={e => setWorkout(w => w ? { ...w, note: e.target.value } : w)}
               placeholder="Any important notes for this workout..."
-              style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#f1f5f9', padding: '10px 12px', fontSize: 14, fontFamily: "'Barlow', sans-serif" }}
+              style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#f1f5f9', padding: '10px 12px', fontSize: 14, fontFamily: "'Barlow Condensed', sans-serif" }}
             />
           </div>
         </div>

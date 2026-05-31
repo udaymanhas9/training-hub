@@ -62,15 +62,16 @@ export default function RunDetailModal({ activity, onClose }: RunDetailModalProp
           border: '1px solid rgba(255,255,255,0.08)',
           borderRadius: 12,
           width: '100%', maxWidth: 680,
-          maxHeight: '90vh', overflowY: 'auto',
-          padding: 28,
+          maxHeight: '90dvh', overflowY: 'auto',
+          padding: 20,
+          WebkitOverflowScrolling: 'touch',
         }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
           <div>
-            <div style={{ fontSize: 10, letterSpacing: 4, color: '#64748b', fontFamily: "'Barlow', sans-serif", marginBottom: 4 }}>
+            <div style={{ fontSize: 10, letterSpacing: 4, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 4 }}>
               {activity.type.toUpperCase()} · {new Date(activity.startDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
             </div>
             <h2 style={{ fontSize: 22, fontWeight: 900, color: '#f1f5f9', letterSpacing: -0.5 }}>{activity.name}</h2>
@@ -81,11 +82,11 @@ export default function RunDetailModal({ activity, onClose }: RunDetailModalProp
           >×</button>
         </div>
 
-        {/* Stats grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
+        {/* Stats grid — 2 cols on mobile, 4 on wider screens */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 20 }}>
           {stats.map(({ label, value }) => (
             <div key={label} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: '10px 14px' }}>
-              <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow', sans-serif", marginBottom: 4 }}>{label}</div>
+              <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 4 }}>{label}</div>
               <div style={{ fontSize: 16, fontWeight: 700, color: '#f1f5f9' }}>{value}</div>
             </div>
           ))}
@@ -94,7 +95,7 @@ export default function RunDetailModal({ activity, onClose }: RunDetailModalProp
         {/* Map */}
         {activity.mapPolyline && (
           <div style={{ marginBottom: 24 }}>
-            <div style={{ fontSize: 10, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow', sans-serif", marginBottom: 10 }}>ROUTE</div>
+            <div style={{ fontSize: 10, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 10 }}>ROUTE</div>
             <RunMap polyline={activity.mapPolyline} />
           </div>
         )}
@@ -102,7 +103,7 @@ export default function RunDetailModal({ activity, onClose }: RunDetailModalProp
         {/* Splits table */}
         {activity.splits && activity.splits.length > 0 && (
           <div>
-            <div style={{ fontSize: 10, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow', sans-serif", marginBottom: 10 }}>
+            <div style={{ fontSize: 10, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 10 }}>
               SPLITS (PER KM)
             </div>
             <div style={{ overflowX: 'auto' }}>
@@ -110,7 +111,7 @@ export default function RunDetailModal({ activity, onClose }: RunDetailModalProp
                 <thead>
                   <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
                     {['KM', 'DIST', 'TIME', 'PACE', 'ELEV', 'HR'].map(h => (
-                      <th key={h} style={{ padding: '6px 10px', textAlign: 'left', fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow', sans-serif", fontWeight: 700 }}>{h}</th>
+                      <th key={h} style={{ padding: '6px 10px', textAlign: 'left', fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
