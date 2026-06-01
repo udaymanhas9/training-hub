@@ -5,8 +5,9 @@ import { getTodos, saveTodo, deleteTodo } from '@/lib/storage';
 import { Todo, TodoRepeat } from '@/lib/types';
 import { format } from 'date-fns';
 
-const today = format(new Date(), 'yyyy-MM-dd');
-const tomorrow = format(new Date(Date.now() + 86400000), 'yyyy-MM-dd');
+// Computed fresh each render so overnight sessions get the correct date
+function getToday()    { return format(new Date(), 'yyyy-MM-dd'); }
+function getTomorrow() { return format(new Date(Date.now() + 86400000), 'yyyy-MM-dd'); }
 
 type Filter = 'all' | 'today' | 'upcoming' | 'done';
 
@@ -38,7 +39,7 @@ function isCompleted(t: Todo): boolean {
   if (!t.completed) return false;
   if (!t.repeat)    return true;
   if (!t.completedAt) return false;
-  if (t.repeat.type === 'daily') return t.completedAt.slice(0, 10) === today;
+  if (t.repeat.type === 'daily') return t.completedAt.slice(0, 10) === getToday();
   const diffMs   = Date.now() - new Date(t.completedAt).getTime();
   const diffDays = diffMs / (1000 * 60 * 60 * 24);
   return diffDays < repeatIntervalDays(t.repeat);
@@ -46,8 +47,10 @@ function isCompleted(t: Todo): boolean {
 
 function dueDateLabel(date?: string): { text: string; color: string } | null {
   if (!date) return null;
-  if (date < today) return { text: 'Overdue', color: '#f87171' };
-  if (date === today) return { text: 'Today', color: '#f97316' };
+  const today    = getToday();
+  const tomorrow = getTomorrow();
+  if (date < today)    return { text: 'Overdue',   color: '#f87171' };
+  if (date === today)  return { text: 'Today',     color: '#f97316' };
   if (date === tomorrow) return { text: 'Tomorrow', color: '#facc15' };
   return { text: format(new Date(date + 'T00:00:00'), 'MMM d'), color: '#64748b' };
 }
@@ -72,6 +75,9 @@ function newTodo(
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function TodoPage() {
+  const today    = getToday();
+  const tomorrow = getTomorrow();
+
   const [todos, setTodos]           = useState<Todo[]>([]);
   const [loading, setLoading]       = useState(true);
   const [input, setInput]           = useState('');
@@ -457,7 +463,7 @@ function TodoItem({ todo, done, onToggle, onDelete, onTextChange }: {
   const [editing, setEditing]   = useState(false);
   const [editText, setEditText] = useState(todo.text);
   const dateInfo = dueDateLabel(todo.dueDate);
-  const overdue  = todo.dueDate && todo.dueDate < today && !done;
+  const overdue  = todo.dueDate && todo.dueDate < getToday() && !done;
 
   function commitEdit() {
     setEditing(false);

@@ -501,6 +501,7 @@ export async function getTodos(): Promise<Todo[]> {
     completed: row.completed,
     dueDate: row.due_date ?? undefined,
     priority: row.priority,
+    repeat: row.repeat ?? undefined,
     createdAt: row.created_at,
     completedAt: row.completed_at ?? undefined,
   }));
@@ -516,6 +517,7 @@ export async function saveTodo(todo: Todo): Promise<void> {
     completed: todo.completed,
     due_date: todo.dueDate ?? null,
     priority: todo.priority,
+    repeat: todo.repeat ?? null,
     created_at: todo.createdAt,
     completed_at: todo.completedAt ?? null,
   }, { onConflict: 'id,user_id' });
