@@ -1,9 +1,17 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { getTodos, saveTodo, deleteTodo } from '@/lib/storage';
+import { getTodos, saveTodo, deleteTodo, ensureGradSchedule } from '@/lib/storage';
+import { MIN_DELIM } from '@/lib/gradSchedule';
 import { Todo, TodoRepeat } from '@/lib/types';
 import { format } from 'date-fns';
+
+// Split "ideal action · min: fallback" into its two parts for a two-line render.
+function splitMin(text: string): { main: string; min?: string } {
+  const i = text.indexOf(MIN_DELIM);
+  if (i === -1) return { main: text };
+  return { main: text.slice(0, i), min: text.slice(i + MIN_DELIM.length) };
+}
 
 // Computed fresh each render so overnight sessions get the correct date
 function getToday()    { return format(new Date(), 'yyyy-MM-dd'); }
@@ -91,7 +99,12 @@ export default function TodoPage() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    getTodos().then(t => { setTodos(t); setLoading(false); });
+    (async () => {
+      const existing = await getTodos();
+      const t = await ensureGradSchedule(existing);
+      setTodos(t);
+      setLoading(false);
+    })();
   }, []);
 
   async function addTodo() {
@@ -464,6 +477,7 @@ function TodoItem({ todo, done, onToggle, onDelete, onTextChange }: {
   const [editText, setEditText] = useState(todo.text);
   const dateInfo = dueDateLabel(todo.dueDate);
   const overdue  = todo.dueDate && todo.dueDate < getToday() && !done;
+  const { main, min } = splitMin(todo.text);
 
   function commitEdit() {
     setEditing(false);
@@ -531,14 +545,29 @@ function TodoItem({ todo, done, onToggle, onDelete, onTextChange }: {
           }}
         />
       ) : (
-        <span
+        <div
           onDoubleClick={() => !done && setEditing(true)}
-          style={{
-            flex: 1, fontSize: 14, color: done ? '#334155' : '#cbd5e1',
-            textDecoration: done ? 'line-through' : 'none',
-            lineHeight: 1.4, cursor: 'text',
-          }}
-        >{todo.text}</span>
+          style={{ flex: 1, minWidth: 0, cursor: 'text' }}
+        >
+          <span style={{
+            display: 'block', fontSize: 14, color: done ? '#334155' : '#cbd5e1',
+            textDecoration: done ? 'line-through' : 'none', lineHeight: 1.4,
+          }}>{main}</span>
+          {min && (
+            <span style={{
+              display: 'block', fontSize: 12, lineHeight: 1.35, marginTop: 3,
+              color: done ? '#2a3340' : '#64748b',
+            }}>
+              <span style={{
+                fontSize: 8.5, fontWeight: 800, letterSpacing: 1.5, marginRight: 5,
+                color: done ? '#2a3340' : '#475569',
+                fontFamily: "'Barlow Condensed', sans-serif",
+                textTransform: 'uppercase', verticalAlign: 1,
+              }}>Min</span>
+              {min}
+            </span>
+          )}
+        </div>
       )}
 
       {/* Badges */}

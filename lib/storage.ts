@@ -1,6 +1,7 @@
 import { supabase } from './supabase';
 import { WorkoutDefinition, SessionLog, PersonalBest, HealthEntry, UserProfile, LeetCodeEntry, QuantEntry, StravaActivity, Todo } from './types';
 import { defaultWorkouts } from './defaultData';
+import { buildGradScheduleTodos, isGradScheduleText, GRAD_SCHEDULE_VERSION } from './gradSchedule';
 
 // Cache the in-flight promise so concurrent calls in the same render
 // share one network request instead of each firing their own.
@@ -527,6 +528,47 @@ export async function deleteTodo(id: string): Promise<void> {
   const userId = await getUserId();
   if (!userId) return;
   await supabase.from('todos').delete().eq('id', id).eq('user_id', userId);
+}
+
+// Seed (and keep up to date) the grad-role push schedule. Runs once per schedule
+// version: when the version bumps, any previously-seeded schedule tasks are cleared
+// and replaced with the current copy, leaving the user's own tasks untouched.
+// Returns the (possibly augmented) list, newest first.
+const GRAD_VERSION_KEY = 'grad_schedule_version';
+
+export async function ensureGradSchedule(existing: Todo[]): Promise<Todo[]> {
+  if (typeof window === 'undefined') return existing;
+  if (localStorage.getItem(GRAD_VERSION_KEY) === GRAD_SCHEDULE_VERSION) return existing;
+
+  const userId = await getUserId();
+  if (!userId) return existing;
+
+  // Clear previously-seeded schedule tasks (identified by their wording) so the
+  // refreshed copy replaces them rather than duplicating.
+  const stale = existing.filter(t => isGradScheduleText(t.text));
+  await Promise.all(
+    stale.map(t => supabase.from('todos').delete().eq('id', t.id).eq('user_id', userId)),
+  );
+  const kept = existing.filter(t => !isGradScheduleText(t.text));
+
+  const todos = buildGradScheduleTodos();
+  const rows = todos.map(t => ({
+    id: t.id,
+    user_id: userId,
+    text: t.text,
+    completed: false,
+    due_date: t.dueDate ?? null,
+    priority: t.priority,
+    repeat: t.repeat ?? null,
+    created_at: t.createdAt,
+    completed_at: null,
+  }));
+  const { error } = await supabase.from('todos').insert(rows);
+  if (error) throw error;
+
+  localStorage.setItem(GRAD_VERSION_KEY, GRAD_SCHEDULE_VERSION);
+  localStorage.removeItem('grad_schedule_seeded_v1'); // retire the old flag
+  return [...todos, ...kept];
 }
 
 // ── Apple Health Metrics ──────────────────────────────────────────────────────
