@@ -62,9 +62,18 @@ input[type="number"] { -moz-appearance: textfield; }
 .board-cards::-webkit-scrollbar { width: 6px; }
 .board-cards::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
 
+/* Phone: stack lists vertically, let the page scroll instead of the board */
 @media (max-width: 767px) {
-  .board-scroll { scroll-snap-type: x proximity; padding: 4px 16px 24px; gap: 10px; }
-  .board-col { width: 84vw; scroll-snap-align: start; }
+  .board-scroll {
+    flex-direction: column;
+    align-items: stretch;
+    overflow-x: hidden;
+    padding: 4px 16px 28px;
+    gap: 12px;
+  }
+  .board-col { width: 100%; max-height: none !important; }
+  .board-cards { overflow-y: visible !important; }
+  .board-add-list { width: 100% !important; }
 }
 
 /* Card detail: centred modal on desktop, bottom sheet on mobile */

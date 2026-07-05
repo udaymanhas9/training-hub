@@ -229,7 +229,7 @@ export default function TodoPage() {
               onMove={moveList}
             />
           ))}
-          <button onClick={addList} style={{
+          <button onClick={addList} className="board-add-list" style={{
             width: 200, flexShrink: 0, alignSelf: 'flex-start', marginTop: 4,
             padding: '14px', borderRadius: 12, cursor: 'pointer', fontFamily: BC,
             border: '1px dashed rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.02)',
