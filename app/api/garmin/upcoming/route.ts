@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createGarminClient } from '@/lib/garmin';
 
+export const runtime = 'nodejs';
+export const maxDuration = 60; // Garmin login + calendar fetches can exceed the default limit
+
 export interface UpcomingWorkout {
   id: number;
   date: string;         // 'YYYY-MM-DD'

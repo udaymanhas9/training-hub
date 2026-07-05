@@ -3,6 +3,9 @@
 import { useState, useEffect } from 'react';
 import { getHealthEntries, saveHealthEntries, getProfile, saveProfile, getHealthMetrics, saveHealthMetric, HealthMetric } from '@/lib/storage';
 import { HealthEntry, UserProfile } from '@/lib/types';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/lib/auth-context';
+import { isAdmin } from '@/lib/admin';
 import HealthEntryForm from '@/components/stats/HealthEntryForm';
 import StatsSummaryCard from '@/components/stats/StatsSummaryCard';
 import HealthChart from '@/components/stats/HealthChart';
@@ -26,27 +29,57 @@ export default function StatsPage() {
   const [showVo2Form, setShowVo2Form] = useState(false);
   const [vo2Input, setVo2Input] = useState('');
   const [vo2Date, setVo2Date] = useState(todayISO());
+  const [syncing, setSyncing] = useState(false);
+  const [syncMsg, setSyncMsg] = useState<string | null>(null);
+
+  const { user } = useAuth();
+  const admin = isAdmin(user?.email);
+
+  async function loadMetrics() {
+    const [s, hr, sl, vo2] = await Promise.all([
+      getHealthMetrics('steps', 14),
+      getHealthMetrics('resting_heart_rate', 14),
+      getHealthMetrics('sleep_duration', 14),
+      getHealthMetrics('vo2max', 365),
+    ]);
+    setSteps(s);
+    setRestingHR(hr);
+    setSleep(sl);
+    setVo2Max(vo2);
+  }
 
   useEffect(() => {
     async function load() {
-      const [e, p, s, hr, sl, vo2] = await Promise.all([
-        getHealthEntries(),
-        getProfile(),
-        getHealthMetrics('steps', 14),
-        getHealthMetrics('resting_heart_rate', 14),
-        getHealthMetrics('sleep_duration', 14),
-        getHealthMetrics('vo2max', 365),
-      ]);
+      const [e, p] = await Promise.all([getHealthEntries(), getProfile()]);
       setEntries(e);
       setProfile(p);
       setProfileDraft(p);
-      setSteps(s);
-      setRestingHR(hr);
-      setSleep(sl);
-      setVo2Max(vo2);
+      await loadMetrics();
     }
     load();
   }, []);
+
+  async function syncGarmin() {
+    setSyncing(true);
+    setSyncMsg(null);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) { setSyncMsg('Not signed in'); return; }
+      const res = await fetch('/api/garmin/refresh', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) { setSyncMsg(json.error ? String(json.error).slice(0, 60) : 'Sync failed'); return; }
+      await loadMetrics();
+      setSyncMsg('Synced ✓');
+    } catch {
+      setSyncMsg('Sync failed');
+    } finally {
+      setSyncing(false);
+      setTimeout(() => setSyncMsg(null), 5000);
+    }
+  }
 
   async function handleAddEntry(e: Omit<HealthEntry, 'id' | 'bmi'>) {
     const bmi = e.weight && profile.heightCm ? calculateBMI(e.weight, profile.heightCm) : undefined;
@@ -250,8 +283,35 @@ export default function StatsPage() {
 
         {/* ── Apple Health ─────────────────────────────────────────────── */}
         <div style={{ marginTop: 40 }}>
-          <div style={{ fontSize: 11, letterSpacing: 6, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 20 }}>
-            GARMIN
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+            <div style={{ fontSize: 11, letterSpacing: 6, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>
+              GARMIN
+            </div>
+            {admin && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                {syncMsg && (
+                  <span style={{ fontSize: 11, letterSpacing: 1, fontFamily: "'Barlow Condensed', sans-serif", color: syncMsg.includes('✓') ? '#10b981' : '#f87171' }}>
+                    {syncMsg}
+                  </span>
+                )}
+                <button
+                  onClick={syncGarmin}
+                  disabled={syncing}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6,
+                    color: syncing ? '#475569' : '#94a3b8', fontSize: 10, fontWeight: 700, letterSpacing: 2,
+                    padding: '6px 14px', cursor: syncing ? 'default' : 'pointer', fontFamily: "'Barlow Condensed', sans-serif",
+                  }}
+                >
+                  <svg className={syncing ? 'spin' : undefined} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" />
+                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                  </svg>
+                  {syncing ? 'SYNCING…' : 'SYNC'}
+                </button>
+              </div>
+            )}
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
