@@ -133,6 +133,44 @@ export interface Todo {
   completedAt?: string;   // ISO — repeating tasks check this against the interval
 }
 
+// ── BOARD (Kanban) ──────────────────────────────────────────────────────────────
+
+export interface BoardLabel {
+  id: string;
+  name: string;   // may be blank (colour-only label)
+  color: string;  // hex
+}
+
+export interface ChecklistItem {
+  id: string;
+  text: string;
+  done: boolean;
+}
+
+export interface BoardCard {
+  id: string;
+  title: string;
+  description?: string;
+  labelIds: string[];
+  checklist: ChecklistItem[];
+  dueDate?: string;        // yyyy-MM-dd
+  repeat?: TodoRepeat;
+  completed: boolean;
+  completedAt?: string;    // ISO — repeating cards check this against the interval
+  createdAt: string;       // ISO
+}
+
+export interface BoardList {
+  id: string;
+  title: string;
+  cards: BoardCard[];
+}
+
+export interface Board {
+  lists: BoardList[];
+  labels: BoardLabel[];
+}
+
 // ── THE LAB ───────────────────────────────────────────────────────────────────
 
 export type ProblemStatus = 'Solved' | 'Attempted' | 'Revisit';

@@ -1,7 +1,7 @@
 import { supabase } from './supabase';
-import { WorkoutDefinition, SessionLog, PersonalBest, HealthEntry, UserProfile, LeetCodeEntry, QuantEntry, StravaActivity, Todo } from './types';
+import { WorkoutDefinition, SessionLog, PersonalBest, HealthEntry, UserProfile, LeetCodeEntry, QuantEntry, StravaActivity, Todo, Board } from './types';
 import { defaultWorkouts } from './defaultData';
-import { buildGradScheduleTodos, isGradScheduleText, GRAD_SCHEDULE_VERSION } from './gradSchedule';
+import { defaultBoard } from './board';
 
 // Cache the in-flight promise so concurrent calls in the same render
 // share one network request instead of each firing their own.
@@ -530,45 +530,45 @@ export async function deleteTodo(id: string): Promise<void> {
   await supabase.from('todos').delete().eq('id', id).eq('user_id', userId);
 }
 
-// Seed (and keep up to date) the grad-role push schedule. Runs once per schedule
-// version: when the version bumps, any previously-seeded schedule tasks are cleared
-// and replaced with the current copy, leaving the user's own tasks untouched.
-// Returns the (possibly augmented) list, newest first.
-const GRAD_VERSION_KEY = 'grad_schedule_version';
+// ── Board (Kanban) ──────────────────────────────────────────────────────────
+// The whole board is stored as a single JSON document per user in `todo_board`.
 
-export async function ensureGradSchedule(existing: Todo[]): Promise<Todo[]> {
-  if (typeof window === 'undefined') return existing;
-  if (localStorage.getItem(GRAD_VERSION_KEY) === GRAD_SCHEDULE_VERSION) return existing;
+export interface BoardLoad {
+  board: Board | null;   // null only when the table is missing (needs setup)
+  needsSetup: boolean;
+}
 
+function isMissingTable(error: { code?: string; message?: string }): boolean {
+  return error.code === '42P01'          // Postgres: undefined_table
+    || error.code === 'PGRST205'         // PostgREST: table not found in schema cache
+    || /does not exist|schema cache|could not find/i.test(error.message ?? '');
+}
+
+export async function loadBoard(): Promise<BoardLoad> {
   const userId = await getUserId();
-  if (!userId) return existing;
+  if (!userId) return { board: defaultBoard(), needsSetup: false };
 
-  // Clear previously-seeded schedule tasks (identified by their wording) so the
-  // refreshed copy replaces them rather than duplicating.
-  const stale = existing.filter(t => isGradScheduleText(t.text));
-  await Promise.all(
-    stale.map(t => supabase.from('todos').delete().eq('id', t.id).eq('user_id', userId)),
+  const { data, error } = await supabase
+    .from('todo_board')
+    .select('data')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (error) {
+    if (isMissingTable(error)) return { board: null, needsSetup: true };
+    throw error;
+  }
+  if (!data) return { board: defaultBoard(), needsSetup: false };
+  return { board: (data as { data: Board }).data, needsSetup: false };
+}
+
+export async function saveBoard(board: Board): Promise<void> {
+  const userId = await getUserId();
+  if (!userId) return;
+  await supabase.from('todo_board').upsert(
+    { user_id: userId, data: board, updated_at: new Date().toISOString() },
+    { onConflict: 'user_id' },
   );
-  const kept = existing.filter(t => !isGradScheduleText(t.text));
-
-  const todos = buildGradScheduleTodos();
-  const rows = todos.map(t => ({
-    id: t.id,
-    user_id: userId,
-    text: t.text,
-    completed: false,
-    due_date: t.dueDate ?? null,
-    priority: t.priority,
-    repeat: t.repeat ?? null,
-    created_at: t.createdAt,
-    completed_at: null,
-  }));
-  const { error } = await supabase.from('todos').insert(rows);
-  if (error) throw error;
-
-  localStorage.setItem(GRAD_VERSION_KEY, GRAD_SCHEDULE_VERSION);
-  localStorage.removeItem('grad_schedule_seeded_v1'); // retire the old flag
-  return [...todos, ...kept];
 }
 
 // ── Apple Health Metrics ──────────────────────────────────────────────────────

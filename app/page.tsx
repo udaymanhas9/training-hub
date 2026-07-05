@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { getWorkouts, getProfile, getSessionCount, getSessionDates, getRecentSessions, getLatestHealthEntry, getTodos, saveTodo } from '@/lib/storage';
-import { WorkoutDefinition, SessionLog, Todo } from '@/lib/types';
+import { getWorkouts, getProfile, getSessionCount, getSessionDates, getRecentSessions, getLatestHealthEntry, loadBoard, saveBoard } from '@/lib/storage';
+import { WorkoutDefinition, SessionLog, BoardCard, Board } from '@/lib/types';
+import { isCardDone } from '@/lib/board';
 import { formatLastTrained, getSessionsThisWeek, getCurrentStreak, formatDate, WORKOUT_TYPE_COLORS } from '@/lib/utils';
 import { format } from 'date-fns';
 import { supabase } from '@/lib/supabase';
@@ -18,7 +19,8 @@ export default function DashboardPage() {
   const [currentWeight, setCurrentWeight] = useState<number | null>(null);
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
   const [currentBF, setCurrentBF] = useState<number | null>(null);
-  const [todayTodos, setTodayTodos] = useState<Todo[]>([]);
+  const [todayTodos, setTodayTodos] = useState<BoardCard[]>([]);
+  const boardRef = useRef<Board | null>(null);
   const [todayRun, setTodayRun] = useState<UpcomingWorkout | null>(null);
   const [loading, setLoading] = useState(true);
   const todayStr = format(new Date(), 'yyyy-MM-dd');
@@ -27,14 +29,14 @@ export default function DashboardPage() {
   useEffect(() => {
     async function load() {
       const todayDate = format(new Date(), 'yyyy-MM-dd');
-      const [w, p, count, dates, recent, latestHealth, allTodos] = await Promise.all([
+      const [w, p, count, dates, recent, latestHealth, boardLoad] = await Promise.all([
         getWorkouts(),
         getProfile(),
         getSessionCount(),
         getSessionDates(),
         getRecentSessions(5),
         getLatestHealthEntry(),
-        getTodos(),
+        loadBoard(),
       ]);
       setWorkouts(w);
       setProfileName(p.name);
@@ -46,7 +48,9 @@ export default function DashboardPage() {
         setCurrentWeight(latestHealth.weight);
         setCurrentBF(latestHealth.bodyFatPct ?? null);
       }
-      setTodayTodos(allTodos.filter(t => !t.completed && t.dueDate === todayDate));
+      boardRef.current = boardLoad.board;
+      const cards = boardLoad.board ? boardLoad.board.lists.flatMap(l => l.cards) : [];
+      setTodayTodos(cards.filter(c => c.dueDate === todayDate && !isCardDone(c)));
       setLoading(false);
 
       // Fetch today's scheduled Garmin run (non-blocking, best-effort)
@@ -319,9 +323,18 @@ export default function DashboardPage() {
                   key={todo.id}
                   todo={todo}
                   onToggle={async () => {
-                    const updated = { ...todo, completed: true, completedAt: new Date().toISOString() };
                     setTodayTodos(prev => prev.filter(t => t.id !== todo.id));
-                    await saveTodo(updated);
+                    const b = boardRef.current;
+                    if (!b) return;
+                    const nb: Board = {
+                      ...b,
+                      lists: b.lists.map(l => ({
+                        ...l,
+                        cards: l.cards.map(c => c.id === todo.id ? { ...c, completed: true, completedAt: new Date().toISOString() } : c),
+                      })),
+                    };
+                    boardRef.current = nb;
+                    await saveBoard(nb);
                   }}
                 />
               ))}
@@ -425,14 +438,15 @@ export default function DashboardPage() {
   );
 }
 
-function HomeTodoItem({ todo, onToggle }: { todo: Todo; onToggle: () => void }) {
+function HomeTodoItem({ todo, onToggle }: { todo: BoardCard; onToggle: () => void }) {
   const [done, setDone] = useState(false);
+  const overdue = todo.dueDate && todo.dueDate < format(new Date(), 'yyyy-MM-dd');
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 12,
       padding: '10px 14px', borderRadius: 8,
       background: '#111', border: '1px solid rgba(255,255,255,0.07)',
-      borderLeft: todo.priority === 'high' ? '3px solid rgba(249,115,22,0.5)' : '3px solid transparent',
+      borderLeft: overdue ? '3px solid rgba(248,113,113,0.5)' : '3px solid transparent',
       opacity: done ? 0.4 : 1, transition: 'opacity 0.2s',
     }}>
       <button
@@ -446,17 +460,17 @@ function HomeTodoItem({ todo, onToggle }: { todo: Todo; onToggle: () => void }) 
       >
         <div style={{
           width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-          border: `1.5px solid ${todo.priority === 'high' ? '#f97316' : '#4a5568'}`,
+          border: `1.5px solid ${overdue ? '#f87171' : '#4a5568'}`,
           background: 'transparent',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           transition: 'all 0.15s',
         }} />
       </button>
-      <span style={{ flex: 1, fontSize: 14, color: '#cbd5e1' }}>{todo.text}</span>
-      {todo.priority === 'high' && (
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="#f97316" stroke="#f97316" strokeWidth="1">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-        </svg>
+      <span style={{ flex: 1, fontSize: 14, color: '#cbd5e1' }}>{todo.title}</span>
+      {todo.checklist.length > 0 && (
+        <span style={{ fontSize: 11, fontWeight: 700, color: '#64748b' }}>
+          {todo.checklist.filter(i => i.done).length}/{todo.checklist.length}
+        </span>
       )}
     </div>
   );

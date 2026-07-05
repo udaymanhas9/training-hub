@@ -1,621 +1,489 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { getTodos, saveTodo, deleteTodo, ensureGradSchedule } from '@/lib/storage';
-import { MIN_DELIM } from '@/lib/gradSchedule';
-import { Todo, TodoRepeat } from '@/lib/types';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { loadBoard, saveBoard } from '@/lib/storage';
+import { defaultBoard, newCard, uid, dueMeta, checklistProgress, isCardDone, repeatLabel, locateCard } from '@/lib/board';
+import { Board, BoardCard, BoardLabel } from '@/lib/types';
+import {
+  DndContext, DragOverlay, MouseSensor, TouchSensor, useSensor, useSensors,
+  closestCorners, useDroppable, DragStartEvent, DragEndEvent,
+} from '@dnd-kit/core';
+import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { format } from 'date-fns';
+import CardModal from '@/components/todo/CardModal';
 
-// Split "ideal action · min: fallback" into its two parts for a two-line render.
-function splitMin(text: string): { main: string; min?: string } {
-  const i = text.indexOf(MIN_DELIM);
-  if (i === -1) return { main: text };
-  return { main: text.slice(0, i), min: text.slice(i + MIN_DELIM.length) };
-}
+const BC = "'Barlow Condensed', sans-serif";
 
-// Computed fresh each render so overnight sessions get the correct date
-function getToday()    { return format(new Date(), 'yyyy-MM-dd'); }
-function getTomorrow() { return format(new Date(Date.now() + 86400000), 'yyyy-MM-dd'); }
+const SETUP_SQL = `create table if not exists public.todo_board (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  data jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
 
-type Filter = 'all' | 'today' | 'upcoming' | 'done';
+alter table public.todo_board enable row level security;
 
-// ── Repeat helpers ────────────────────────────────────────────────────────────
-
-const REPEAT_PRESETS: { label: string; value: TodoRepeat }[] = [
-  { label: 'Daily',   value: { type: 'daily' } },
-  { label: 'Weekly',  value: { type: 'weekly' } },
-  { label: 'Monthly', value: { type: 'monthly' } },
-];
-
-function repeatIntervalDays(r: TodoRepeat): number {
-  if (r.type === 'daily')   return 1;
-  if (r.type === 'weekly')  return 7;
-  if (r.type === 'monthly') return 30;
-  return r.every ?? 1;
-}
-
-function repeatLabel(r?: TodoRepeat): string {
-  if (!r) return '';
-  if (r.type === 'daily')   return 'Daily';
-  if (r.type === 'weekly')  return 'Weekly';
-  if (r.type === 'monthly') return 'Monthly';
-  return `Every ${r.every ?? 1}d`;
-}
-
-// A repeating task is "done" only within its interval window
-function isCompleted(t: Todo): boolean {
-  if (!t.completed) return false;
-  if (!t.repeat)    return true;
-  if (!t.completedAt) return false;
-  if (t.repeat.type === 'daily') return t.completedAt.slice(0, 10) === getToday();
-  const diffMs   = Date.now() - new Date(t.completedAt).getTime();
-  const diffDays = diffMs / (1000 * 60 * 60 * 24);
-  return diffDays < repeatIntervalDays(t.repeat);
-}
-
-function dueDateLabel(date?: string): { text: string; color: string } | null {
-  if (!date) return null;
-  const today    = getToday();
-  const tomorrow = getTomorrow();
-  if (date < today)    return { text: 'Overdue',   color: '#f87171' };
-  if (date === today)  return { text: 'Today',     color: '#f97316' };
-  if (date === tomorrow) return { text: 'Tomorrow', color: '#facc15' };
-  return { text: format(new Date(date + 'T00:00:00'), 'MMM d'), color: '#64748b' };
-}
-
-function newTodo(
-  text: string,
-  dueDate?: string,
-  priority: Todo['priority'] = 'normal',
-  repeat?: TodoRepeat,
-): Todo {
-  return {
-    id: crypto.randomUUID(),
-    text,
-    completed: false,
-    dueDate,
-    priority,
-    repeat,
-    createdAt: new Date().toISOString(),
-  };
-}
-
-// ── Page ──────────────────────────────────────────────────────────────────────
+create policy "Users manage their own board"
+  on public.todo_board for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);`;
 
 export default function TodoPage() {
-  const today    = getToday();
-  const tomorrow = getTomorrow();
+  const [board, setBoard]       = useState<Board | null>(null);
+  const [needsSetup, setNeedsSetup] = useState(false);
+  const [loading, setLoading]   = useState(true);
+  const [openCardId, setOpenCardId] = useState<string | null>(null);
+  const [activeCard, setActiveCard] = useState<BoardCard | null>(null);
+  const [filter, setFilter]     = useState<string[]>([]);
 
-  const [todos, setTodos]           = useState<Todo[]>([]);
-  const [loading, setLoading]       = useState(true);
-  const [input, setInput]           = useState('');
-  const [dueDate, setDueDate]       = useState<string | undefined>(undefined);
-  const [priority, setPriority]     = useState<Todo['priority']>('normal');
-  const [repeat, setRepeat]         = useState<TodoRepeat | undefined>(undefined);
-  const [filter, setFilter]         = useState<Filter>('all');
-  const [showDatePicker, setShowDatePicker]   = useState(false);
-  const [showRepeatPicker, setShowRepeatPicker] = useState(false);
-  const [customDays, setCustomDays] = useState('2');
-  const inputRef = useRef<HTMLInputElement>(null);
+  const firstSave = useRef(true);
+  const boardRef  = useRef<Board | null>(null);
+  boardRef.current = board;
 
   useEffect(() => {
-    (async () => {
-      const existing = await getTodos();
-      const t = await ensureGradSchedule(existing);
-      setTodos(t);
-      setLoading(false);
-    })();
+    loadBoard()
+      .then(({ board, needsSetup }) => { setNeedsSetup(needsSetup); setBoard(board); })
+      .catch(err => console.error('board load failed', err))
+      .finally(() => setLoading(false));
   }, []);
 
-  async function addTodo() {
-    const text = input.trim();
-    if (!text) return;
-    const todo = newTodo(text, dueDate, priority, repeat);
-    setTodos(prev => [todo, ...prev]);
-    setInput('');
-    setDueDate(undefined);
-    setPriority('normal');
-    setRepeat(undefined);
-    setShowDatePicker(false);
-    setShowRepeatPicker(false);
-    await saveTodo(todo);
-  }
+  // Debounced autosave
+  useEffect(() => {
+    if (!board) return;
+    if (firstSave.current) { firstSave.current = false; return; }
+    const t = setTimeout(() => saveBoard(board), 500);
+    return () => clearTimeout(t);
+  }, [board]);
 
-  async function toggleTodo(id: string) {
-    const next = todos.map(t => {
-      if (t.id !== id) return t;
-      const currentlyDone = isCompleted(t);
-      if (currentlyDone) {
-        // un-complete: clear flag
-        return { ...t, completed: false, completedAt: undefined };
-      }
-      return { ...t, completed: true, completedAt: new Date().toISOString() };
+  // Flush the latest board when leaving the page
+  useEffect(() => () => { if (!firstSave.current && boardRef.current) saveBoard(boardRef.current); }, []);
+
+  const mutate = useCallback((fn: (b: Board) => Board) => {
+    setBoard(prev => (prev ? fn(prev) : prev));
+  }, []);
+
+  // ── Card / list mutations ──────────────────────────────────────────────────
+  const addCard = (listId: string, title: string) =>
+    mutate(b => ({ ...b, lists: b.lists.map(l => l.id === listId ? { ...l, cards: [...l.cards, newCard(title)] } : l) }));
+
+  const updateCard = (cardId: string, updater: (c: BoardCard) => BoardCard) =>
+    mutate(b => ({ ...b, lists: b.lists.map(l => ({ ...l, cards: l.cards.map(c => c.id === cardId ? updater(c) : c) })) }));
+
+  const deleteCard = (cardId: string) => {
+    mutate(b => ({ ...b, lists: b.lists.map(l => ({ ...l, cards: l.cards.filter(c => c.id !== cardId) })) }));
+    setOpenCardId(null);
+  };
+
+  const moveCardToList = (cardId: string, listId: string) =>
+    mutate(b => {
+      const loc = locateCard(b, cardId);
+      if (!loc) return b;
+      const card = b.lists[loc[0]].cards[loc[1]];
+      return {
+        ...b,
+        lists: b.lists.map(l =>
+          l.id === b.lists[loc[0]].id ? { ...l, cards: l.cards.filter(c => c.id !== cardId) }
+          : l.id === listId ? { ...l, cards: [...l.cards, card] }
+          : l),
+      };
     });
-    setTodos(next);
-    await saveTodo(next.find(t => t.id === id)!);
+
+  const addList = () => mutate(b => ({ ...b, lists: [...b.lists, { id: uid(), title: 'New list', cards: [] }] }));
+  const renameList = (listId: string, title: string) =>
+    mutate(b => ({ ...b, lists: b.lists.map(l => l.id === listId ? { ...l, title } : l) }));
+  const deleteList = (listId: string) =>
+    mutate(b => ({ ...b, lists: b.lists.filter(l => l.id !== listId) }));
+  const moveList = (listId: string, dir: -1 | 1) =>
+    mutate(b => {
+      const i = b.lists.findIndex(l => l.id === listId);
+      const j = i + dir;
+      if (i === -1 || j < 0 || j >= b.lists.length) return b;
+      const lists = [...b.lists];
+      [lists[i], lists[j]] = [lists[j], lists[i]];
+      return { ...b, lists };
+    });
+
+  const updateLabel = (labelId: string, patch: Partial<BoardLabel>) =>
+    mutate(b => ({ ...b, labels: b.labels.map(l => l.id === labelId ? { ...l, ...patch } : l) }));
+
+  // ── Drag and drop (cards across lists) ─────────────────────────────────────
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 180, tolerance: 6 } }),
+  );
+
+  function onDragStart(e: DragStartEvent) {
+    const loc = board && locateCard(board, String(e.active.id));
+    if (loc && board) setActiveCard(board.lists[loc[0]].cards[loc[1]]);
   }
 
-  async function removeTodo(id: string) {
-    setTodos(prev => prev.filter(t => t.id !== id));
-    await deleteTodo(id);
+  function onDragEnd(e: DragEndEvent) {
+    setActiveCard(null);
+    const { active, over } = e;
+    if (!over) return;
+    const activeId = String(active.id);
+    const overId = String(over.id);
+    if (activeId === overId) return;
+
+    mutate(b => {
+      const from = locateCard(b, activeId);
+      if (!from) return b;
+      const lists = b.lists.map(l => ({ ...l, cards: [...l.cards] }));
+      const [card] = lists[from[0]].cards.splice(from[1], 1);
+
+      const overCard = locateCard(b, overId);
+      let tli: number, tci: number;
+      if (overCard) {
+        tli = overCard[0];
+        tci = lists[tli].cards.findIndex(c => c.id === overId);
+        if (tci === -1) tci = lists[tli].cards.length;
+      } else {
+        const li = b.lists.findIndex(l => l.id === overId);
+        tli = li === -1 ? from[0] : li;
+        tci = lists[tli].cards.length;
+      }
+      lists[tli].cards.splice(tci, 0, card);
+      return { ...b, lists };
+    });
   }
 
-  async function updateText(id: string, text: string) {
-    const next = todos.map(t => t.id === id ? { ...t, text } : t);
-    setTodos(next);
-    await saveTodo(next.find(t => t.id === id)!);
+  // ── Derived ────────────────────────────────────────────────────────────────
+  const openCard = board && openCardId ? locateCard(board, openCardId) : null;
+  const openCardData = openCard && board ? board.lists[openCard[0]].cards[openCard[1]] : null;
+  const openCardListId = openCard && board ? board.lists[openCard[0]].id : null;
+
+  const allCards = board ? board.lists.flatMap(l => l.cards) : [];
+  const totalCards = allCards.length;
+  const doneCards = allCards.filter(isCardDone).length;
+  const usedLabelIds = new Set(allCards.flatMap(c => c.labelIds));
+  const filterLabels = board ? board.labels.filter(l => usedLabelIds.has(l.id)) : [];
+
+  // ── Render ─────────────────────────────────────────────────────────────────
+  if (loading) {
+    return <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#334155' }}>Loading…</div>;
   }
 
-  const filtered = todos.filter(t => {
-    const done = isCompleted(t);
-    if (filter === 'today')    return !done && (t.dueDate === today || t.repeat?.type === 'daily');
-    if (filter === 'upcoming') return !done && (!t.dueDate || t.dueDate >= today);
-    if (filter === 'done')     return done;
-    return !done;
-  });
-
-  // Sort: repeating tasks float to top within pending list
-  const sorted = [...filtered].sort((a, b) => {
-    if (a.repeat && !b.repeat) return -1;
-    if (!a.repeat && b.repeat) return 1;
-    return 0;
-  });
-
-  const active   = todos.filter(t => !isCompleted(t)).length;
-  const doneToday = todos.filter(t => isCompleted(t) && t.completedAt?.startsWith(today)).length;
-
-  const dateOptions = [
-    { label: 'Today',    value: today },
-    { label: 'Tomorrow', value: tomorrow },
-    { label: 'No date',  value: undefined as string | undefined },
-  ];
+  if (needsSetup || !board) {
+    return <SetupBanner />;
+  }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 120, overflowX: 'hidden' }}>
+    <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 100, overflowX: 'hidden' }}>
       {/* Header */}
-      <div style={{ borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '32px 24px 24px', background: '#0f0f0f' }}>
-        <div style={{ maxWidth: 680, margin: '0 auto' }}>
-          <div style={{ fontSize: 10, letterSpacing: 6, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>
-            {format(new Date(), 'EEEE, MMMM d').toUpperCase()}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
-            <h1 style={{ fontSize: 36, fontWeight: 900, color: '#f1f5f9', letterSpacing: -1, fontStyle: 'italic', margin: 0 }}>TASKS</h1>
-            <span style={{ fontSize: 13, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>
-              {active} remaining{doneToday > 0 ? ` · ${doneToday} done today` : ''}
-            </span>
-          </div>
+      <div style={{ padding: '28px 20px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', background: '#0f0f0f' }}>
+        <div style={{ fontSize: 10, letterSpacing: 6, color: '#475569', fontFamily: BC, marginBottom: 6 }}>
+          {format(new Date(), 'EEEE, MMMM d').toUpperCase()}
         </div>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
+          <h1 style={{ fontSize: 34, fontWeight: 900, color: '#f1f5f9', letterSpacing: -1, fontStyle: 'italic', margin: 0 }}>BOARD</h1>
+          <span style={{ fontSize: 13, color: '#475569', fontFamily: BC }}>
+            {totalCards} card{totalCards === 1 ? '' : 's'}{doneCards > 0 ? ` · ${doneCards} done` : ''}
+          </span>
+        </div>
+
+        {/* Label filter */}
+        {filterLabels.length > 0 && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 14, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 9, letterSpacing: 2, color: '#334155', fontFamily: BC, fontWeight: 700, marginRight: 2 }}>FILTER</span>
+            {filterLabels.map(l => {
+              const on = filter.includes(l.id);
+              return (
+                <button key={l.id}
+                  onClick={() => setFilter(f => on ? f.filter(x => x !== l.id) : [...f, l.id])}
+                  style={{
+                    height: 24, padding: '0 10px', borderRadius: 6, cursor: 'pointer', fontFamily: 'inherit',
+                    fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 5,
+                    border: on ? '1.5px solid #fff' : '1.5px solid transparent',
+                    background: l.color, color: '#0a0a0a',
+                  }}>
+                  {l.name || '  '}
+                </button>
+              );
+            })}
+            {filter.length > 0 && (
+              <button onClick={() => setFilter([])} style={{
+                height: 24, padding: '0 8px', borderRadius: 6, border: '1px solid rgba(255,255,255,0.1)',
+                background: 'transparent', color: '#64748b', fontSize: 10, fontWeight: 700, letterSpacing: 1,
+                cursor: 'pointer', fontFamily: BC,
+              }}>CLEAR</button>
+            )}
+          </div>
+        )}
       </div>
 
-      <div style={{ maxWidth: 680, margin: '0 auto', padding: '24px 24px 0' }}>
-
-        {/* ── Quick-add bar ────────────────────────────────────────────────── */}
-        <div style={{
-          background: '#111', border: '1px solid rgba(255,255,255,0.08)',
-          borderRadius: 12, marginBottom: 8,
-          transition: 'border-color 0.15s',
-        }}
-          onFocusCapture={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)')}
-          onBlurCapture={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)')}
-        >
-          {/* Text input row */}
-          <div style={{ padding: '4px 4px 4px 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <input
-              ref={inputRef}
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && addTodo()}
-              placeholder="What needs to be done?"
-              style={{
-                flex: 1, background: 'none', border: 'none', outline: 'none',
-                color: '#f1f5f9', fontSize: 15, fontWeight: 500,
-                fontFamily: 'inherit', padding: '10px 0',
-              }}
+      {/* Board */}
+      <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragEnd={onDragEnd} onDragCancel={() => setActiveCard(null)}>
+        <div className="board-scroll">
+          {board.lists.map((list, i) => (
+            <ListColumn
+              key={list.id}
+              list={list}
+              labels={board.labels}
+              filter={filter}
+              isFirst={i === 0}
+              isLast={i === board.lists.length - 1}
+              onOpenCard={setOpenCardId}
+              onAddCard={addCard}
+              onRename={renameList}
+              onDelete={deleteList}
+              onMove={moveList}
             />
-            <button
-              onClick={addTodo}
-              disabled={!input.trim()}
-              style={{
-                height: 40, width: 40, borderRadius: 8, border: 'none',
-                background: input.trim() ? '#3b82f6' : 'rgba(255,255,255,0.05)',
-                color: input.trim() ? '#fff' : '#475569',
-                cursor: input.trim() ? 'pointer' : 'default',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                flexShrink: 0, transition: 'all 0.15s',
-              }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Options row */}
-          <div style={{
-            borderTop: '1px solid rgba(255,255,255,0.05)',
-            padding: '6px 10px', display: 'flex', alignItems: 'center', gap: 4,
-          }}>
-
-            {/* Priority */}
-            <ToolBtn
-              active={priority === 'high'}
-              activeColor="#f97316"
-              activeBg="rgba(249,115,22,0.12)"
-              title="High priority"
-              onClick={() => setPriority(p => p === 'high' ? 'normal' : 'high')}
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill={priority === 'high' ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-              </svg>
-              {priority === 'high' && <span style={{ fontSize: 10, fontWeight: 700 }}>HIGH</span>}
-            </ToolBtn>
-
-            {/* Date */}
-            <div style={{ position: 'relative' }}>
-              <ToolBtn
-                active={!!dueDate}
-                activeColor="#3b82f6"
-                activeBg="rgba(59,130,246,0.12)"
-                title="Set due date"
-                onClick={() => { setShowDatePicker(v => !v); setShowRepeatPicker(false); }}
-              >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="4" width="18" height="18" rx="2" />
-                  <line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
-                </svg>
-                <span style={{ fontSize: 10, fontWeight: 600 }}>
-                  {dueDate ? (dueDate === today ? 'Today' : dueDate === tomorrow ? 'Tomorrow' : format(new Date(dueDate + 'T00:00:00'), 'MMM d')) : 'Date'}
-                </span>
-              </ToolBtn>
-              {showDatePicker && (
-                <Popover onClose={() => setShowDatePicker(false)}>
-                  {dateOptions.map(opt => (
-                    <PopoverOption
-                      key={opt.label}
-                      label={opt.label}
-                      active={dueDate === opt.value}
-                      onClick={() => { setDueDate(opt.value); setShowDatePicker(false); }}
-                    />
-                  ))}
-                  <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)', margin: '4px 0', paddingTop: 4 }}>
-                    <input
-                      type="date" value={dueDate || ''}
-                      onChange={e => { setDueDate(e.target.value || undefined); setShowDatePicker(false); }}
-                      style={{ width: '100%', background: 'transparent', border: 'none', color: '#64748b', fontSize: 12, padding: '6px 12px', cursor: 'pointer', fontFamily: 'inherit', outline: 'none' }}
-                    />
-                  </div>
-                </Popover>
-              )}
-            </div>
-
-            {/* Repeat */}
-            <div style={{ position: 'relative' }}>
-              <ToolBtn
-                active={!!repeat}
-                activeColor="#10b981"
-                activeBg="rgba(16,185,129,0.12)"
-                title="Set repeat"
-                onClick={() => { setShowRepeatPicker(v => !v); setShowDatePicker(false); }}
-              >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="17 1 21 5 17 9" />
-                  <path d="M3 11V9a4 4 0 0 1 4-4h14" />
-                  <polyline points="7 23 3 19 7 15" />
-                  <path d="M21 13v2a4 4 0 0 1-4 4H3" />
-                </svg>
-                <span style={{ fontSize: 10, fontWeight: 600 }}>
-                  {repeat ? repeatLabel(repeat) : 'Repeat'}
-                </span>
-              </ToolBtn>
-              {showRepeatPicker && (
-                <Popover onClose={() => setShowRepeatPicker(false)}>
-                  <PopoverOption label="No repeat" active={!repeat} onClick={() => { setRepeat(undefined); setShowRepeatPicker(false); }} />
-                  <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)', margin: '4px 0' }} />
-                  {REPEAT_PRESETS.map(p => (
-                    <PopoverOption
-                      key={p.label}
-                      label={p.label}
-                      active={repeat?.type === p.value.type}
-                      onClick={() => { setRepeat(p.value); setShowRepeatPicker(false); }}
-                    />
-                  ))}
-                  {/* Custom interval */}
-                  <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)', margin: '4px 0', padding: '6px 8px' }}>
-                    <div style={{ fontSize: 10, color: '#475569', letterSpacing: 2, fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>CUSTOM</div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ fontSize: 12, color: '#94a3b8' }}>Every</span>
-                      <input
-                        type="number" min="1" max="365"
-                        value={customDays}
-                        onChange={e => setCustomDays(e.target.value)}
-                        style={{
-                          width: 44, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-                          borderRadius: 4, color: '#f1f5f9', fontSize: 12, padding: '3px 6px',
-                          fontFamily: 'inherit', outline: 'none', textAlign: 'center',
-                        }}
-                      />
-                      <span style={{ fontSize: 12, color: '#94a3b8' }}>days</span>
-                      <button
-                        onClick={() => {
-                          const n = parseInt(customDays);
-                          if (n > 0) { setRepeat({ type: 'custom', every: n }); setShowRepeatPicker(false); }
-                        }}
-                        style={{
-                          marginLeft: 'auto', padding: '3px 10px', borderRadius: 4, border: 'none',
-                          background: '#10b981', color: '#fff', fontSize: 11, fontWeight: 700,
-                          cursor: 'pointer', fontFamily: 'inherit',
-                        }}
-                      >Set</button>
-                    </div>
-                  </div>
-                </Popover>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* ── Filter tabs ──────────────────────────────────────────────────── */}
-        <div style={{ display: 'flex', gap: 4, marginBottom: 20, marginTop: 16 }}>
-          {(['all', 'today', 'upcoming', 'done'] as Filter[]).map(f => (
-            <button key={f} onClick={() => setFilter(f)} style={{
-              padding: '5px 14px', borderRadius: 6, border: 'none',
-              background: filter === f ? 'rgba(255,255,255,0.08)' : 'transparent',
-              color: filter === f ? '#f1f5f9' : '#475569',
-              fontSize: 10, fontWeight: 700, letterSpacing: 3,
-              cursor: 'pointer', fontFamily: "'Barlow Condensed', sans-serif", transition: 'all 0.15s',
-            }}>{f.toUpperCase()}</button>
           ))}
-          <div style={{ flex: 1 }} />
-          {filter === 'done' && todos.some(t => isCompleted(t)) && (
-            <button
-              onClick={async () => {
-                const toDelete = todos.filter(t => isCompleted(t) && !t.repeat);
-                setTodos(prev => prev.filter(t => !isCompleted(t) || !!t.repeat));
-                await Promise.all(toDelete.map(t => deleteTodo(t.id)));
-              }}
-              style={{
-                padding: '5px 12px', borderRadius: 6, border: '1px solid rgba(248,113,113,0.2)',
-                background: 'transparent', color: '#f87171', fontSize: 10, fontWeight: 700,
-                letterSpacing: 2, cursor: 'pointer', fontFamily: "'Barlow Condensed', sans-serif",
-              }}
-            >CLEAR DONE</button>
-          )}
+          <button onClick={addList} style={{
+            width: 200, flexShrink: 0, alignSelf: 'flex-start', marginTop: 4,
+            padding: '14px', borderRadius: 12, cursor: 'pointer', fontFamily: BC,
+            border: '1px dashed rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.02)',
+            color: '#64748b', fontSize: 12, fontWeight: 700, letterSpacing: 2,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+          }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            ADD LIST
+          </button>
         </div>
 
-        {/* ── Task list ────────────────────────────────────────────────────── */}
-        {loading ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {[1,2,3].map(i => <div key={i} style={{ height: 52, background: 'rgba(255,255,255,0.03)', borderRadius: 10 }} />)}
-          </div>
-        ) : sorted.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '60px 0', color: '#334155' }}>
-            <div style={{ fontSize: 32, marginBottom: 12 }}>✓</div>
-            <div style={{ fontSize: 13, letterSpacing: 3, fontFamily: "'Barlow Condensed', sans-serif" }}>
-              {filter === 'done' ? 'NO COMPLETED TASKS' : 'ALL CLEAR'}
+        <DragOverlay>
+          {activeCard && <CardFace card={activeCard} labels={board.labels} dragging />}
+        </DragOverlay>
+      </DndContext>
+
+      {openCardData && openCardListId && (
+        <CardModal
+          key={openCardData.id}
+          card={openCardData}
+          listTitle={board.lists[openCard![0]].title}
+          currentListId={openCardListId}
+          lists={board.lists.map(l => ({ id: l.id, title: l.title }))}
+          labels={board.labels}
+          onChange={updater => updateCard(openCardData.id, updater)}
+          onClose={() => setOpenCardId(null)}
+          onDelete={() => deleteCard(openCardData.id)}
+          onMove={listId => moveCardToList(openCardData.id, listId)}
+          onUpdateLabel={updateLabel}
+        />
+      )}
+    </div>
+  );
+}
+
+// ── List column ─────────────────────────────────────────────────────────────
+
+function ListColumn({ list, labels, filter, isFirst, isLast, onOpenCard, onAddCard, onRename, onDelete, onMove }: {
+  list: Board['lists'][number]; labels: BoardLabel[]; filter: string[];
+  isFirst: boolean; isLast: boolean;
+  onOpenCard: (id: string) => void;
+  onAddCard: (listId: string, title: string) => void;
+  onRename: (listId: string, title: string) => void;
+  onDelete: (listId: string) => void;
+  onMove: (listId: string, dir: -1 | 1) => void;
+}) {
+  const { setNodeRef, isOver } = useDroppable({ id: list.id });
+  const [composing, setComposing] = useState(false);
+  const [text, setText] = useState('');
+  const [menu, setMenu] = useState(false);
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [titleDraft, setTitleDraft] = useState(list.title);
+
+  const cards = list.cards.filter(c => filter.length === 0 || c.labelIds.some(id => filter.includes(id)));
+
+  function submit() {
+    const t = text.trim();
+    if (t) { onAddCard(list.id, t); setText(''); }
+  }
+
+  return (
+    <div className="board-col" style={{
+      background: '#111214', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12,
+      display: 'flex', flexDirection: 'column', maxHeight: 'calc(100vh - 200px)',
+    }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 8px 10px 14px', position: 'relative' }}>
+        {editingTitle ? (
+          <input
+            autoFocus value={titleDraft}
+            onChange={e => setTitleDraft(e.target.value)}
+            onBlur={() => { setEditingTitle(false); const t = titleDraft.trim(); if (t) onRename(list.id, t); else setTitleDraft(list.title); }}
+            onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); if (e.key === 'Escape') { setEditingTitle(false); setTitleDraft(list.title); } }}
+            style={{ flex: 1, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 5, color: '#f1f5f9', fontSize: 13, fontWeight: 700, padding: '4px 8px', fontFamily: 'inherit', outline: 'none' }}
+          />
+        ) : (
+          <span onClick={() => { setTitleDraft(list.title); setEditingTitle(true); }} style={{ flex: 1, fontSize: 13, fontWeight: 700, color: '#e2e8f0', letterSpacing: 0.5, cursor: 'text' }}>
+            {list.title}
+          </span>
+        )}
+        <span style={{ fontSize: 11, color: '#475569', fontFamily: BC, fontWeight: 700, minWidth: 16, textAlign: 'center' }}>{list.cards.length}</span>
+        <button onClick={() => setMenu(m => !m)} style={{ width: 26, height: 26, borderRadius: 6, border: 'none', background: 'transparent', color: '#64748b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
+        </button>
+        {menu && (
+          <>
+            <div style={{ position: 'fixed', inset: 0, zIndex: 40 }} onClick={() => setMenu(false)} />
+            <div style={{ position: 'absolute', top: 40, right: 8, zIndex: 50, background: '#1c1e22', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: 6, minWidth: 150, boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}>
+              <MenuItem disabled={isFirst} onClick={() => { onMove(list.id, -1); setMenu(false); }}>Move left</MenuItem>
+              <MenuItem disabled={isLast} onClick={() => { onMove(list.id, 1); setMenu(false); }}>Move right</MenuItem>
+              <MenuItem onClick={() => { setTitleDraft(list.title); setEditingTitle(true); setMenu(false); }}>Rename</MenuItem>
+              <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '4px 0' }} />
+              <MenuItem danger onClick={() => { if (list.cards.length === 0 || confirm(`Delete "${list.title}" and its ${list.cards.length} card(s)?`)) onDelete(list.id); setMenu(false); }}>Delete list</MenuItem>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Cards */}
+      <div ref={setNodeRef} className="board-cards" style={{
+        flex: 1, overflowY: 'auto', padding: '2px 8px 8px', minHeight: 12,
+        background: isOver ? 'rgba(59,130,246,0.05)' : 'transparent', transition: 'background 0.15s',
+      }}>
+        <SortableContext items={cards.map(c => c.id)} strategy={verticalListSortingStrategy}>
+          {cards.map(card => (
+            <SortableCard key={card.id} card={card} labels={labels} onOpen={() => onOpenCard(card.id)} />
+          ))}
+        </SortableContext>
+
+        {composing ? (
+          <div style={{ marginTop: 6 }}>
+            <textarea
+              autoFocus value={text} rows={2}
+              onChange={e => setText(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); submit(); } if (e.key === 'Escape') { setComposing(false); setText(''); } }}
+              placeholder="Card title…"
+              style={{ width: '100%', background: '#0c0d0f', border: '1px solid rgba(59,130,246,0.4)', borderRadius: 8, color: '#f1f5f9', fontSize: 13, padding: '8px 10px', fontFamily: 'inherit', outline: 'none', resize: 'none', lineHeight: 1.4 }}
+            />
+            <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
+              <button onClick={submit} style={{ padding: '6px 14px', borderRadius: 6, border: 'none', background: '#3b82f6', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Add card</button>
+              <button onClick={() => { setComposing(false); setText(''); }} style={{ padding: '6px 10px', borderRadius: 6, border: 'none', background: 'transparent', color: '#64748b', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
             </div>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {sorted.map(todo => (
-              <TodoItem
-                key={todo.id}
-                todo={todo}
-                done={isCompleted(todo)}
-                onToggle={() => toggleTodo(todo.id)}
-                onDelete={() => removeTodo(todo.id)}
-                onTextChange={text => updateText(todo.id, text)}
-              />
-            ))}
-          </div>
+          <button onClick={() => setComposing(true)} style={{
+            width: '100%', marginTop: 6, padding: '9px 10px', borderRadius: 8, border: 'none', textAlign: 'left',
+            background: 'transparent', color: '#64748b', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit',
+            display: 'flex', alignItems: 'center', gap: 8,
+          }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add a card
+          </button>
         )}
       </div>
     </div>
   );
 }
 
-// ── Small shared components ───────────────────────────────────────────────────
-
-function ToolBtn({ active, activeColor, activeBg, title, onClick, children }: {
-  active: boolean; activeColor: string; activeBg: string;
-  title: string; onClick: () => void; children: React.ReactNode;
-}) {
+function MenuItem({ children, onClick, disabled, danger }: { children: React.ReactNode; onClick: () => void; disabled?: boolean; danger?: boolean }) {
   return (
-    <button
-      title={title}
-      onClick={onClick}
-      style={{
-        height: 28, borderRadius: 6, border: 'none', cursor: 'pointer',
-        padding: '0 8px', display: 'flex', alignItems: 'center', gap: 5,
-        background: active ? activeBg : 'transparent',
-        color: active ? activeColor : '#475569',
-        transition: 'all 0.15s', flexShrink: 0,
-      }}
-    >{children}</button>
+    <button disabled={disabled} onClick={onClick} style={{
+      display: 'block', width: '100%', textAlign: 'left', padding: '8px 10px', borderRadius: 6, border: 'none',
+      background: 'transparent', color: disabled ? '#334155' : danger ? '#f87171' : '#cbd5e1',
+      fontSize: 13, cursor: disabled ? 'default' : 'pointer', fontFamily: 'inherit',
+    }}>{children}</button>
   );
 }
 
-function Popover({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
-  return (
-    <>
-      <div style={{ position: 'fixed', inset: 0, zIndex: 40 }} onClick={onClose} />
-      <div style={{
-        position: 'absolute', top: '100%', left: 0, marginTop: 6,
-        background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)',
-        borderRadius: 10, padding: 8, zIndex: 50, minWidth: 170,
-        boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
-      }}>{children}</div>
-    </>
-  );
-}
+// ── Card ──────────────────────────────────────────────────────────────────────
 
-function PopoverOption({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        display: 'block', width: '100%', textAlign: 'left',
-        padding: '8px 12px', borderRadius: 6, border: 'none',
-        background: active ? 'rgba(59,130,246,0.12)' : 'transparent',
-        color: active ? '#3b82f6' : '#94a3b8',
-        fontSize: 13, cursor: 'pointer', fontFamily: 'inherit',
-        transition: 'background 0.1s',
-      }}
-      onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.05)'; }}
-      onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
-    >{label}</button>
-  );
-}
-
-// ── TodoItem ─────────────────────────────────────────────────────────────────
-
-function TodoItem({ todo, done, onToggle, onDelete, onTextChange }: {
-  todo: Todo; done: boolean;
-  onToggle: () => void; onDelete: () => void; onTextChange: (text: string) => void;
-}) {
-  const [hovered, setHovered]   = useState(false);
-  const [editing, setEditing]   = useState(false);
-  const [editText, setEditText] = useState(todo.text);
-  const dateInfo = dueDateLabel(todo.dueDate);
-  const overdue  = todo.dueDate && todo.dueDate < getToday() && !done;
-  const { main, min } = splitMin(todo.text);
-
-  function commitEdit() {
-    setEditing(false);
-    const text = editText.trim();
-    if (text && text !== todo.text) onTextChange(text);
-    else setEditText(todo.text);
-  }
-
+function SortableCard({ card, labels, onOpen }: { card: BoardCard; labels: BoardLabel[]; onOpen: () => void }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: card.id });
   return (
     <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      ref={setNodeRef}
+      {...attributes} {...listeners}
+      onClick={onOpen}
       style={{
-        display: 'flex', alignItems: 'center', gap: 12,
-        padding: '12px 14px', borderRadius: 10,
-        background: hovered ? 'rgba(255,255,255,0.03)' : 'transparent',
-        transition: 'background 0.1s',
-        borderLeft: overdue
-          ? '2px solid rgba(248,113,113,0.4)'
-          : todo.priority === 'high' && !done
-            ? '2px solid rgba(249,115,22,0.4)'
-            : '2px solid transparent',
+        transform: CSS.Transform.toString(transform), transition,
+        opacity: isDragging ? 0.35 : 1, marginBottom: 6, touchAction: 'manipulation',
       }}
     >
-      {/* Checkbox — 44×44 tap target wrapping a 22×22 visual circle */}
-      <button
-        onClick={onToggle}
-        style={{
-          width: 44, height: 44, flexShrink: 0,
-          background: 'none', border: 'none', cursor: 'pointer',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          padding: 0, margin: '-11px -11px -11px -11px',
-        }}
-      >
-        <div style={{
-          width: 22, height: 22,
-          borderRadius: '50%',
-          border: done ? 'none' : `1.5px solid ${overdue ? '#f87171' : todo.priority === 'high' ? '#f97316' : '#4a5568'}`,
-          background: done
-            ? (overdue ? '#f87171' : todo.priority === 'high' ? '#f97316' : '#22c55e')
-            : 'transparent',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          transition: 'background 0.15s, border-color 0.15s',
-          flexShrink: 0,
-        }}>
-          {done && (
-            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="2,7 5.5,10.5 12,3.5" />
-            </svg>
-          )}
-        </div>
-      </button>
+      <CardFace card={card} labels={labels} />
+    </div>
+  );
+}
 
-      {/* Text */}
-      {editing ? (
-        <input
-          autoFocus value={editText}
-          onChange={e => setEditText(e.target.value)}
-          onBlur={commitEdit}
-          onKeyDown={e => { if (e.key === 'Enter') commitEdit(); if (e.key === 'Escape') { setEditing(false); setEditText(todo.text); } }}
-          style={{
-            flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)',
-            borderRadius: 6, padding: '4px 8px', color: '#f1f5f9', fontSize: 14,
-            outline: 'none', fontFamily: 'inherit',
-          }}
-        />
-      ) : (
-        <div
-          onDoubleClick={() => !done && setEditing(true)}
-          style={{ flex: 1, minWidth: 0, cursor: 'text' }}
-        >
-          <span style={{
-            display: 'block', fontSize: 14, color: done ? '#334155' : '#cbd5e1',
-            textDecoration: done ? 'line-through' : 'none', lineHeight: 1.4,
-          }}>{main}</span>
-          {min && (
-            <span style={{
-              display: 'block', fontSize: 12, lineHeight: 1.35, marginTop: 3,
-              color: done ? '#2a3340' : '#64748b',
-            }}>
-              <span style={{
-                fontSize: 8.5, fontWeight: 800, letterSpacing: 1.5, marginRight: 5,
-                color: done ? '#2a3340' : '#475569',
-                fontFamily: "'Barlow Condensed', sans-serif",
-                textTransform: 'uppercase', verticalAlign: 1,
-              }}>Min</span>
-              {min}
-            </span>
-          )}
+function CardFace({ card, labels, dragging }: { card: BoardCard; labels: BoardLabel[]; dragging?: boolean }) {
+  const done = isCardDone(card);
+  const due = dueMeta(card.dueDate, done);
+  const prog = checklistProgress(card);
+  const cardLabels = card.labelIds.map(id => labels.find(l => l.id === id)).filter(Boolean) as BoardLabel[];
+  const hasFooter = !!due || prog.total > 0 || !!card.repeat || !!card.description;
+
+  return (
+    <div style={{
+      background: '#191b1f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8,
+      padding: '9px 11px', cursor: 'pointer', boxShadow: dragging ? '0 12px 28px rgba(0,0,0,0.5)' : 'none',
+      transform: dragging ? 'rotate(2deg)' : 'none', opacity: done ? 0.6 : 1,
+    }}>
+      {cardLabels.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 7 }}>
+          {cardLabels.map(l => (
+            <span key={l.id} title={l.name} style={{
+              height: l.name ? 18 : 7, minWidth: 34, padding: l.name ? '0 7px' : 0, borderRadius: 4,
+              background: l.color, color: '#0a0a0a', fontSize: 10, fontWeight: 800,
+              display: 'flex', alignItems: 'center', overflow: 'hidden', whiteSpace: 'nowrap',
+            }}>{l.name}</span>
+          ))}
         </div>
       )}
 
-      {/* Badges */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-        {todo.repeat && (
-          <span style={{
-            fontSize: 9, fontWeight: 700, letterSpacing: 1.5,
-            color: done ? '#334155' : '#10b981',
-            fontFamily: "'Barlow Condensed', sans-serif",
-            display: 'flex', alignItems: 'center', gap: 3,
-          }}>
-            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="17 1 21 5 17 9" />
-              <path d="M3 11V9a4 4 0 0 1 4-4h14" />
-              <polyline points="7 23 3 19 7 15" />
-              <path d="M21 13v2a4 4 0 0 1-4 4H3" />
-            </svg>
-            {repeatLabel(todo.repeat).toUpperCase()}
-          </span>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+        {done && (
+          <div style={{ width: 16, height: 16, borderRadius: '50%', background: '#22c55e', flexShrink: 0, marginTop: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="#0a0a0a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="2,7 5.5,10.5 12,3.5"/></svg>
+          </div>
         )}
-        {todo.priority === 'high' && !done && (
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="#f97316" stroke="#f97316" strokeWidth="1">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-          </svg>
-        )}
-        {dateInfo && (
-          <span style={{
-            fontSize: 10, fontWeight: 600, letterSpacing: 1,
-            color: done ? '#334155' : dateInfo.color,
-            fontFamily: "'Barlow Condensed', sans-serif",
-          }}>{dateInfo.text}</span>
-        )}
-        <button
-          onClick={onDelete}
-          style={{
-            width: 24, height: 24, borderRadius: 6, border: 'none',
-            background: 'transparent', color: '#475569',
-            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            opacity: hovered ? 1 : 0, transition: 'opacity 0.1s, color 0.1s',
-          }}
-          onMouseEnter={e => (e.currentTarget.style.color = '#f87171')}
-          onMouseLeave={e => (e.currentTarget.style.color = '#475569')}
-        >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        </button>
+        <span style={{ flex: 1, fontSize: 13.5, lineHeight: 1.4, color: done ? '#64748b' : '#e2e8f0', textDecoration: done ? 'line-through' : 'none' }}>{card.title}</span>
       </div>
+
+      {hasFooter && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+          {due && (
+            <span style={{ height: 20, padding: '0 7px', borderRadius: 5, background: due.bg, color: due.fg, fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4 }}>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="9"/><polyline points="12 8 12 12 15 14"/></svg>
+              {due.text}
+            </span>
+          )}
+          {card.repeat && (
+            <span style={{ fontSize: 10, fontWeight: 700, color: '#10b981', fontFamily: BC, letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 3 }}>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+              {repeatLabel(card.repeat).toUpperCase()}
+            </span>
+          )}
+          {prog.total > 0 && (
+            <span style={{ fontSize: 11, fontWeight: 700, color: prog.done === prog.total ? '#22c55e' : '#64748b', display: 'flex', alignItems: 'center', gap: 3 }}>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              {prog.done}/{prog.total}
+            </span>
+          )}
+          {card.description && (
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2" strokeLinecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="14" y2="17"/></svg>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Setup banner (shown until the todo_board table exists) ──────────────────────
+
+function SetupBanner() {
+  const [copied, setCopied] = useState(false);
+  return (
+    <div style={{ maxWidth: 640, margin: '0 auto', padding: '48px 24px' }}>
+      <h1 style={{ fontSize: 28, fontWeight: 900, color: '#f1f5f9', fontStyle: 'italic', letterSpacing: -0.5 }}>ONE-TIME SETUP</h1>
+      <p style={{ color: '#94a3b8', fontSize: 14, lineHeight: 1.6, marginTop: 12 }}>
+        The board needs a <code style={{ color: '#93c5fd' }}>todo_board</code> table. Open your Supabase project → <b>SQL Editor</b>, paste this, and run it. Then reload.
+      </p>
+      <div style={{ position: 'relative', marginTop: 16 }}>
+        <pre style={{ background: '#0c0d0f', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: 16, overflowX: 'auto', fontSize: 12, color: '#cbd5e1', fontFamily: "'JetBrains Mono', monospace", lineHeight: 1.6 }}>{SETUP_SQL}</pre>
+        <button onClick={() => { navigator.clipboard.writeText(SETUP_SQL); setCopied(true); setTimeout(() => setCopied(false), 1500); }} style={{
+          position: 'absolute', top: 10, right: 10, padding: '5px 12px', borderRadius: 6, border: '1px solid rgba(255,255,255,0.15)',
+          background: '#1c1e22', color: copied ? '#4ade80' : '#cbd5e1', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: BC, letterSpacing: 1,
+        }}>{copied ? 'COPIED' : 'COPY'}</button>
+      </div>
+      <button onClick={() => location.reload()} style={{
+        marginTop: 20, padding: '10px 20px', borderRadius: 8, border: 'none', background: '#3b82f6', color: '#fff',
+        fontSize: 12, fontWeight: 700, letterSpacing: 2, cursor: 'pointer', fontFamily: BC,
+      }}>I&apos;VE RUN IT — RELOAD</button>
     </div>
   );
 }

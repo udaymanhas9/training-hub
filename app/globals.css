@@ -42,3 +42,46 @@ button, a, input, select { touch-action: manipulation; }
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 input[type="number"] { -moz-appearance: textfield; }
+
+/* ── Kanban board ─────────────────────────────────────────────────────────── */
+.board-scroll {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 4px 20px 24px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.12) transparent;
+}
+.board-scroll::-webkit-scrollbar { height: 8px; }
+.board-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+.board-scroll::-webkit-scrollbar-track { background: transparent; }
+.board-col { width: 290px; flex-shrink: 0; }
+.board-cards { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; }
+.board-cards::-webkit-scrollbar { width: 6px; }
+.board-cards::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+@media (max-width: 767px) {
+  .board-scroll { scroll-snap-type: x proximity; padding: 4px 16px 24px; gap: 10px; }
+  .board-col { width: 84vw; scroll-snap-align: start; }
+}
+
+/* Card detail: centred modal on desktop, bottom sheet on mobile */
+.card-sheet-panel {
+  width: 100%;
+  max-width: 560px;
+  max-height: 85vh;
+  border-radius: 16px;
+  animation: fadeIn 0.18s ease;
+}
+@media (max-width: 640px) {
+  .card-sheet-overlay { align-items: flex-end !important; padding: 0 !important; }
+  .card-sheet-panel {
+    max-width: 100%;
+    max-height: 92vh;
+    border-radius: 20px 20px 0 0;
+    animation: sheetUp 0.22s ease;
+  }
+}
+@keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
