@@ -15,7 +15,7 @@ const CARD: React.CSSProperties = {
 };
 
 const PUBLIC_ROUTES = ['/', '/workout/*', '/calendar', '/progress', '/stats', '/review', '/runs'];
-const ADMIN_ROUTES  = ['/lab/*', '/bereal', '/admin'];
+const ADMIN_ROUTES  = ['/lab/*', '/blogs', '/admin'];
 
 function Badge({ label, color }: { label: string; color: string }) {
   return (
@@ -102,7 +102,7 @@ export default function AdminPage() {
             {/* Admin-only sections */}
             <div style={{ padding: '16px 18px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-                <div style={{ fontSize: 15, fontWeight: 600, color: '#fff' }}>The Lab · BeReal · Admin</div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: '#fff' }}>The Lab · Blogs · Admin</div>
                 <Badge label="Admin only" color="#fbbf24" />
               </div>
               <div style={{ fontSize: 13, color: '#444', marginBottom: 8 }}>

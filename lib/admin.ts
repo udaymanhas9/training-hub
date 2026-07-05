@@ -1,6 +1,6 @@
 export const ADMIN_EMAIL = 'udaymanhas9@gmail.com';
 
-export const ADMIN_ONLY_PREFIXES = ['/lab', '/bereal', '/admin'];
+export const ADMIN_ONLY_PREFIXES = ['/lab', '/blogs', '/admin'];
 
 export function isAdminPath(pathname: string): boolean {
   return ADMIN_ONLY_PREFIXES.some(

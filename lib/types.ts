@@ -171,6 +171,21 @@ export interface Board {
   labels: BoardLabel[];
 }
 
+// ── BLOG ────────────────────────────────────────────────────────────────────────
+
+export interface BlogPost {
+  id: string;
+  title: string;
+  subtitle?: string;
+  coverImage?: string;   // URL
+  body: string;          // markdown
+  author?: string;
+  date: string;          // yyyy-MM-dd
+  published: boolean;
+  createdAt: string;     // ISO
+  updatedAt?: string;    // ISO
+}
+
 // ── THE LAB ───────────────────────────────────────────────────────────────────
 
 export type ProblemStatus = 'Solved' | 'Attempted' | 'Revisit';

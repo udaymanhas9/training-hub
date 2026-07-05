@@ -1,4 +1,4 @@
-const CACHE = 'training-hub-v1';
+const CACHE = 'training-hub-v2';
 
 // Shell assets to cache on install so the app loads offline
 const PRECACHE = [
@@ -66,25 +66,25 @@ self.addEventListener('fetch', event => {
   );
 });
 
-// ── Push notifications (BeReal) ───────────────────────────────────────────────
+// ── Push notifications ────────────────────────────────────────────────────────
 
 self.addEventListener('push', event => {
   const data = event.data?.json() ?? {};
   event.waitUntil(
-    self.registration.showNotification(data.title ?? '📸 Time to BeReal!', {
-      body:     data.body ?? "What are you up to right now?",
+    self.registration.showNotification(data.title ?? 'Training Hub', {
+      body:     data.body ?? '',
       icon:     '/IconKitchen-Output/web/icon-192.png',
       badge:    '/IconKitchen-Output/web/icon-192.png',
-      tag:      'bereal-daily',
+      tag:      data.tag ?? 'training-hub',
       renotify: true,
-      data:     { url: '/bereal' },
+      data:     { url: data.url ?? '/' },
     })
   );
 });
 
 self.addEventListener('notificationclick', event => {
   event.notification.close();
-  const url = event.notification.data?.url ?? '/bereal';
+  const url = event.notification.data?.url ?? '/';
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
       for (const client of list) {

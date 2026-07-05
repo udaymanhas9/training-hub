@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { WorkoutDefinition, SessionLog, PersonalBest, HealthEntry, UserProfile, LeetCodeEntry, QuantEntry, StravaActivity, Todo, Board } from './types';
+import { WorkoutDefinition, SessionLog, PersonalBest, HealthEntry, UserProfile, LeetCodeEntry, QuantEntry, StravaActivity, Todo, Board, BlogPost } from './types';
 import { defaultWorkouts } from './defaultData';
 import { defaultBoard } from './board';
 
@@ -569,6 +569,81 @@ export async function saveBoard(board: Board): Promise<void> {
     { user_id: userId, data: board, updated_at: new Date().toISOString() },
     { onConflict: 'user_id' },
   );
+}
+
+// ── Blog ────────────────────────────────────────────────────────────────────
+
+function mapPost(row: Record<string, unknown>): BlogPost {
+  return {
+    id: row.id as string,
+    title: (row.title as string) ?? '',
+    subtitle: (row.subtitle as string) ?? undefined,
+    coverImage: (row.cover_image as string) ?? undefined,
+    body: (row.body as string) ?? '',
+    author: (row.author as string) ?? undefined,
+    date: row.date as string,
+    published: (row.published as boolean) ?? true,
+    createdAt: row.created_at as string,
+    updatedAt: (row.updated_at as string) ?? undefined,
+  };
+}
+
+export interface BlogLoad {
+  posts: BlogPost[];
+  needsSetup: boolean;
+}
+
+export async function getBlogPosts(): Promise<BlogLoad> {
+  const userId = await getUserId();
+  if (!userId) return { posts: [], needsSetup: false };
+  const { data, error } = await supabase
+    .from('blog_posts')
+    .select('*')
+    .eq('user_id', userId)
+    .order('date', { ascending: false })
+    .order('created_at', { ascending: false });
+  if (error) {
+    if (isMissingTable(error)) return { posts: [], needsSetup: true };
+    throw error;
+  }
+  return { posts: (data || []).map(mapPost), needsSetup: false };
+}
+
+export async function getBlogPost(id: string): Promise<BlogPost | null> {
+  const userId = await getUserId();
+  if (!userId) return null;
+  const { data, error } = await supabase
+    .from('blog_posts')
+    .select('*')
+    .eq('id', id)
+    .eq('user_id', userId)
+    .maybeSingle();
+  if (error || !data) return null;
+  return mapPost(data);
+}
+
+export async function saveBlogPost(post: BlogPost): Promise<void> {
+  const userId = await getUserId();
+  if (!userId) return;
+  await supabase.from('blog_posts').upsert({
+    id: post.id,
+    user_id: userId,
+    title: post.title,
+    subtitle: post.subtitle ?? null,
+    cover_image: post.coverImage ?? null,
+    body: post.body,
+    author: post.author ?? null,
+    date: post.date,
+    published: post.published,
+    created_at: post.createdAt,
+    updated_at: new Date().toISOString(),
+  }, { onConflict: 'id' });
+}
+
+export async function deleteBlogPost(id: string): Promise<void> {
+  const userId = await getUserId();
+  if (!userId) return;
+  await supabase.from('blog_posts').delete().eq('id', id).eq('user_id', userId);
 }
 
 // ── Apple Health Metrics ──────────────────────────────────────────────────────
