@@ -67,7 +67,7 @@ export default function CardModal({
     onChange(c => ({ ...c, checklist: c.checklist.filter(i => i.id !== id) }));
   }
   function toggleComplete() {
-    onChange(c => c.completed
+    onChange(c => isCardDone(c)
       ? { ...c, completed: false, completedAt: undefined }
       : { ...c, completed: true, completedAt: new Date().toISOString() });
   }
