@@ -1,5 +1,5 @@
 import { Board, BoardCard, BoardLabel, BoardList, TodoRepeat } from './types';
-import { format } from 'date-fns';
+import { format, startOfWeek, startOfMonth } from 'date-fns';
 
 export function uid(): string {
   return crypto.randomUUID();
@@ -54,15 +54,29 @@ export function repeatLabel(r?: TodoRepeat): string {
   return `Every ${r.every ?? 1}d`;
 }
 
-// A repeating card counts as done only within its current interval window,
-// so it re-surfaces as a task once the interval has elapsed.
+// A repeating card counts as done only within the current calendar period,
+// so it re-surfaces as a task when that period rolls over (all in local time):
+//   daily   → resets at local midnight
+//   weekly  → resets Monday 00:00
+//   monthly → resets on the 1st
+//   custom  → rolling window of N days from completion
 export function isCardDone(card: BoardCard): boolean {
   if (!card.completed) return false;
   if (!card.repeat)    return true;
   if (!card.completedAt) return false;
-  if (card.repeat.type === 'daily') return card.completedAt.slice(0, 10) === todayStr();
-  const days = (Date.now() - new Date(card.completedAt).getTime()) / 86400000;
-  return days < intervalDays(card.repeat);
+  const completed = new Date(card.completedAt);
+  switch (card.repeat.type) {
+    case 'daily':
+      return format(completed, 'yyyy-MM-dd') === todayStr();
+    case 'weekly':
+      return completed >= startOfWeek(new Date(), { weekStartsOn: 1 }); // Monday 00:00
+    case 'monthly':
+      return completed >= startOfMonth(new Date());
+    case 'custom': {
+      const days = (Date.now() - completed.getTime()) / 86400000;
+      return days < intervalDays(card.repeat);
+    }
+  }
 }
 
 // Colour-coded due-date pill, Trello-style.
