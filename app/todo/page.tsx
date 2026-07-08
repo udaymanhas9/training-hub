@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { loadBoard, saveBoard } from '@/lib/storage';
-import { defaultBoard, newCard, uid, dueMeta, checklistProgress, isCardDone, repeatLabel, locateCard } from '@/lib/board';
+import { defaultBoard, newCard, uid, dueMeta, checklistProgress, isCardDone, repeatLabel, locateCard, normalizeRepeats } from '@/lib/board';
 import { Board, BoardCard, BoardLabel } from '@/lib/types';
 import {
   DndContext, DragOverlay, MouseSensor, TouchSensor, useSensor, useSensors,
@@ -42,7 +42,16 @@ export default function TodoPage() {
 
   useEffect(() => {
     loadBoard()
-      .then(({ board, needsSetup }) => { setNeedsSetup(needsSetup); setBoard(board); })
+      .then(({ board, needsSetup }) => {
+        setNeedsSetup(needsSetup);
+        if (board) {
+          const { board: normalized, changed } = normalizeRepeats(board);
+          setBoard(normalized);
+          if (changed) saveBoard(normalized); // persist the roll-over
+        } else {
+          setBoard(board);
+        }
+      })
       .catch(err => console.error('board load failed', err))
       .finally(() => setLoading(false));
   }, []);

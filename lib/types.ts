@@ -158,6 +158,7 @@ export interface BoardCard {
   completed: boolean;
   completedAt?: string;    // ISO — repeating cards check this against the interval
   createdAt: string;       // ISO
+  periodKey?: string;      // repeating cards: the calendar period they were last placed in
 }
 
 export interface BoardList {

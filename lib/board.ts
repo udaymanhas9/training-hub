@@ -79,6 +79,59 @@ export function isCardDone(card: BoardCard): boolean {
   }
 }
 
+// A stable key for the current calendar period of a repeat, in local time.
+// Custom (every N days) has no calendar anchor, so it returns null.
+export function currentPeriodKey(r: TodoRepeat): string | null {
+  const now = new Date();
+  if (r.type === 'daily')   return 'd' + format(now, 'yyyy-MM-dd');
+  if (r.type === 'weekly')  return 'w' + format(startOfWeek(now, { weekStartsOn: 1 }), 'yyyy-MM-dd');
+  if (r.type === 'monthly') return 'm' + format(startOfMonth(now), 'yyyy-MM');
+  return null;
+}
+
+// Roll repeating cards into the current period: when the calendar boundary is
+// crossed (local midnight / Monday / 1st), a repeating card — finished or not —
+// returns to the first list and clears its done state, so it comes back around.
+// First encounter just adopts the current period (no disruptive move). Custom
+// interval cards are left to isCardDone()'s rolling window.
+export function normalizeRepeats(board: Board): { board: Board; changed: boolean } {
+  if (board.lists.length === 0) return { board, changed: false };
+  let changed = false;
+
+  const moved: BoardCard[] = [];
+  const lists = board.lists.map((list, li) => {
+    const keep: BoardCard[] = [];
+    for (const card of list.cards) {
+      const key = card.repeat ? currentPeriodKey(card.repeat) : null;
+      if (!key) { keep.push(card); continue; }
+
+      if (card.periodKey === undefined) {
+        keep.push({ ...card, periodKey: key });   // first sight — adopt, don't move
+        changed = true;
+      } else if (card.periodKey !== key) {
+        const reset = {
+          ...card,
+          completed: false,
+          completedAt: undefined,
+          periodKey: key,
+          checklist: card.checklist.map(i => ({ ...i, done: false })), // uncheck subtasks
+        };
+        changed = true;
+        if (li === 0) keep.push(reset);            // already home
+        else moved.push(reset);                    // pull back to first list
+      } else {
+        keep.push(card);
+      }
+    }
+    return { ...list, cards: keep };
+  });
+
+  if (moved.length > 0) {
+    lists[0] = { ...lists[0], cards: [...lists[0].cards, ...moved] };
+  }
+  return changed ? { board: { ...board, lists }, changed } : { board, changed: false };
+}
+
 // Colour-coded due-date pill, Trello-style.
 export function dueMeta(
   dueDate: string | undefined,
