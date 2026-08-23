@@ -12,6 +12,7 @@ export interface FinanceItem {
   currentCost: number | null;
   priceSelector: string | null;
   trackEnabled: boolean;
+  purchased: boolean;
   lowestPrice: number | null;
   lastNotifiedPrice: number | null;
   sortOrder: number;
@@ -49,6 +50,7 @@ interface FinanceRow {
   current_cost: number | null;
   price_selector: string | null;
   track_enabled: boolean;
+  purchased: boolean;
   lowest_price: number | null;
   last_notified_price: number | null;
   sort_order: number;
@@ -65,6 +67,7 @@ function rowToItem(r: FinanceRow): FinanceItem {
     currentCost: r.current_cost,
     priceSelector: r.price_selector,
     trackEnabled: r.track_enabled,
+    purchased: r.purchased,
     lowestPrice: r.lowest_price,
     lastNotifiedPrice: r.last_notified_price,
     sortOrder: r.sort_order,
@@ -140,7 +143,7 @@ export async function addFinanceItem(draft: NewFinanceItem): Promise<FinanceItem
 
 export async function updateFinanceItem(
   id: string,
-  patch: Partial<Pick<FinanceItem, 'name' | 'link' | 'currentCost' | 'priceSelector' | 'trackEnabled' | 'lowestPrice'>>,
+  patch: Partial<Pick<FinanceItem, 'name' | 'link' | 'currentCost' | 'priceSelector' | 'trackEnabled' | 'lowestPrice' | 'purchased'>>,
 ): Promise<void> {
   const userId = await getUserId();
   if (!userId) return;
@@ -152,6 +155,7 @@ export async function updateFinanceItem(
   if (patch.priceSelector !== undefined) update.price_selector = patch.priceSelector;
   if (patch.trackEnabled !== undefined)  update.track_enabled = patch.trackEnabled;
   if (patch.lowestPrice !== undefined)   update.lowest_price = patch.lowestPrice;
+  if (patch.purchased !== undefined)     update.purchased = patch.purchased;
 
   const { error } = await supabase
     .from('finance_items')
@@ -240,7 +244,7 @@ export function formatMoney(n: number | null | undefined): string {
   return '£' + n.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-/** Sum of current costs, ignoring rows with no price. */
+/** Sum of current costs of not-yet-bought rows (money still to spend). */
 export function totalCost(items: FinanceItem[]): number {
-  return items.reduce((s, i) => s + (i.currentCost ?? 0), 0);
+  return items.reduce((s, i) => s + (i.purchased ? 0 : i.currentCost ?? 0), 0);
 }

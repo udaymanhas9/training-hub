@@ -94,7 +94,10 @@ export default function WishlistPage() {
   }, [refresh]);
 
   const visible = useMemo(
-    () => (items ?? []).filter(i => i.kind === tab),
+    // Bought items sink to the bottom; order is otherwise preserved (stable sort).
+    () => (items ?? [])
+      .filter(i => i.kind === tab)
+      .sort((a, b) => Number(a.purchased) - Number(b.purchased)),
     [items, tab],
   );
 
@@ -257,6 +260,15 @@ export default function WishlistPage() {
     }
   }
 
+  async function togglePurchased(item: FinanceItem) {
+    try {
+      await updateFinanceItem(item.id, { purchased: !item.purchased });
+      await refresh();
+    } catch (err) {
+      console.error('toggle purchased failed', err);
+    }
+  }
+
   async function toggleTrack(item: FinanceItem) {
     try {
       await updateFinanceItem(item.id, { trackEnabled: !item.trackEnabled });
@@ -406,8 +418,9 @@ export default function WishlistPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: isWish ? 720 : 520 }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                  <th style={{ padding: '11px 6px 11px 14px', fontSize: 11, letterSpacing: 2, color: '#64748b', fontWeight: 700, width: 28 }} title="Bought">✓</th>
                   {['ITEM', 'CURRENT', ...(isWish ? ['LOW', 'VS LOW', 'TRACK'] : []), 'LINK', ''].map((h, i) => (
-                    <th key={i} style={{ textAlign: i === 0 ? 'left' : 'left', padding: '11px 14px', fontSize: 11, letterSpacing: 2, color: '#64748b', fontWeight: 700 }}>{h}</th>
+                    <th key={i} style={{ textAlign: 'left', padding: '11px 14px', fontSize: 11, letterSpacing: 2, color: '#64748b', fontWeight: 700 }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -415,13 +428,19 @@ export default function WishlistPage() {
                 {visible.map(item => {
                   const editing = editId === item.id;
                   const delta = isWish ? fmtDelta(item.currentCost, item.lowestPrice) : null;
+                  const bought = item.purchased;
                   return (
-                    <tr key={item.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                    <tr key={item.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', opacity: bought ? 0.5 : 1 }}>
+                      {/* Bought checkbox */}
+                      <td style={{ padding: '10px 6px 10px 14px', textAlign: 'center' }}>
+                        <input type="checkbox" checked={bought} onChange={() => togglePurchased(item)} title="Mark as bought"
+                          style={{ cursor: 'pointer', width: 16, height: 16, accentColor: '#10b981' }} />
+                      </td>
                       {/* Name */}
                       <td style={{ padding: '10px 14px' }}>
                         {editing
                           ? <input style={{ ...inputStyle, width: '100%', minWidth: 120 }} value={draft.name} onChange={e => setDraft(d => ({ ...d, name: e.target.value }))} />
-                          : <span style={{ fontSize: 15, fontWeight: 600, color: '#f1f5f9' }}>{item.name}</span>}
+                          : <span style={{ fontSize: 15, fontWeight: 600, color: '#f1f5f9', textDecoration: bought ? 'line-through' : 'none' }}>{item.name}</span>}
                       </td>
                       {/* Current cost */}
                       <td style={{ padding: '10px 14px' }}>

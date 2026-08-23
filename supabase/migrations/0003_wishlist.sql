@@ -24,6 +24,7 @@ create table public.finance_items (
   current_cost        numeric,
   price_selector      text,               -- optional CSS override for scraping
   track_enabled       boolean not null default true,
+  purchased           boolean not null default false,  -- bought → struck through, sorts to bottom
   lowest_price        numeric,            -- cached all-time low (wishlist)
   last_notified_price numeric,            -- dedupes the low alert
   sort_order          bigint not null default 0,  -- holds Date.now() ms values
