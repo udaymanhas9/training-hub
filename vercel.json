@@ -1,1 +1,5 @@
-{}
+{
+  "crons": [
+    { "path": "/api/finance/track", "schedule": "0 8 * * *" }
+  ]
+}

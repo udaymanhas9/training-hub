@@ -14,6 +14,7 @@ const TRAINING_NAV = [
   { href: '/calendar', label: 'CALENDAR', icon: CalendarIcon },
   { href: '/progress', label: 'PROGRESS', icon: ProgressIcon },
   { href: '/stats', label: 'STATS', icon: StatsIcon },
+  { href: '/wishlist', label: 'WISHLIST', icon: WishlistIcon },
   { href: '/review', label: 'REVIEW', icon: ReviewIcon },
 ];
 
@@ -101,6 +102,15 @@ function TodoIcon({ active }: { active: boolean }) {
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? 'currentColor' : '#475569'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="9 11 12 14 22 4" />
       <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+    </svg>
+  );
+}
+
+function WishlistIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? 'currentColor' : '#475569'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+      <line x1="7" y1="7" x2="7.01" y2="7" />
     </svg>
   );
 }
