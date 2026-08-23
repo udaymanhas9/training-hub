@@ -26,7 +26,7 @@ create table public.finance_items (
   track_enabled       boolean not null default true,
   lowest_price        numeric,            -- cached all-time low (wishlist)
   last_notified_price numeric,            -- dedupes the low alert
-  sort_order          integer not null default 0,
+  sort_order          bigint not null default 0,  -- holds Date.now() ms values
   created_at          timestamptz not null default now(),
   updated_at          timestamptz not null default now()
 );

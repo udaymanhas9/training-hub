@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   loadFinanceItems, addFinanceItem, updateFinanceItem, deleteFinanceItem,
-  loadPriceHistory, setWishlistCost,
+  loadPriceHistory, setWishlistCost, fetchPriceForUrl,
   FinanceItem, FinanceKind, PricePoint, formatMoney, totalCost,
 } from '@/lib/finance';
 import PriceChart from '@/components/finance/PriceChart';
@@ -64,6 +64,8 @@ export default function WishlistPage() {
   const [link, setLink]         = useState('');
   const [track, setTrack]       = useState(true);
   const [saving, setSaving]     = useState(false);
+  const [fetchingPrice, setFetchingPrice] = useState(false);
+  const [fetchingRow, setFetchingRow]     = useState<string | null>(null);
 
   // Inline edit + chart selection
   const [editId, setEditId]           = useState<string | null>(null);
@@ -157,12 +159,25 @@ export default function WishlistPage() {
     if (!nm || saving) return;
     setSaving(true);
     try {
-      const parsedCost = cost.trim() === '' ? null : parseFloat(cost);
+      const parsed = cost.trim() === '' ? null : parseFloat(cost);
+      let finalCost = parsed !== null && !Number.isNaN(parsed) ? parsed : null;
+
+      // No price entered but a link is given → pull the live price and use it.
+      const url = link.trim();
+      if (finalCost === null && url && session?.access_token) {
+        setFetchingPrice(true);
+        finalCost = await fetchPriceForUrl(url, session.access_token);
+        setFetchingPrice(false);
+        if (finalCost === null) {
+          alert("Couldn't read a price from that link — adding without one. You can edit it or set a selector later.");
+        }
+      }
+
       await addFinanceItem({
         kind: tab,
         name: nm,
-        link: link.trim(),
-        currentCost: parsedCost !== null && !Number.isNaN(parsedCost) ? parsedCost : null,
+        link: url,
+        currentCost: finalCost,
         trackEnabled: tab === 'wishlist' ? track : false,
       });
       setName(''); setCost(''); setLink(''); setTrack(true);
@@ -171,7 +186,33 @@ export default function WishlistPage() {
       console.error('add failed', err);
       alert('Could not add item. See console.');
     } finally {
+      setFetchingPrice(false);
       setSaving(false);
+    }
+  }
+
+  // Pull the live price for one existing item and overwrite its current cost.
+  async function fetchRowPrice(item: FinanceItem) {
+    const token = session?.access_token;
+    if (!token || !item.link || fetchingRow) return;
+    setFetchingRow(item.id);
+    try {
+      const price = await fetchPriceForUrl(item.link, token, item.priceSelector);
+      if (price === null) {
+        alert("Couldn't read a price from that link.");
+        return;
+      }
+      if (item.kind === 'wishlist') {
+        await setWishlistCost(item, price);
+      } else {
+        await updateFinanceItem(item.id, { currentCost: price });
+      }
+      await refresh();
+    } catch (err) {
+      console.error('row price fetch failed', err);
+      alert('Could not fetch price. See console.');
+    } finally {
+      setFetchingRow(null);
     }
   }
 
@@ -350,7 +391,7 @@ export default function WishlistPage() {
             fontSize: 13, fontWeight: 800, letterSpacing: 2, fontFamily: BC, opacity: saving ? 0.6 : 1,
           }}
         >
-          {saving ? 'ADDING…' : 'ADD'}
+          {fetchingPrice ? 'FETCHING PRICE…' : saving ? 'ADDING…' : 'ADD'}
         </button>
       </div>
 
@@ -425,6 +466,13 @@ export default function WishlistPage() {
                           </>
                         ) : (
                           <>
+                            {item.link && (
+                              <button onClick={() => fetchRowPrice(item)} disabled={fetchingRow === item.id}
+                                title="Pull live price from link and overwrite current cost"
+                                style={actionBtn(fetchingRow === item.id ? '#64748b' : ACCENT)}>
+                                {fetchingRow === item.id ? '…' : '↻ Price'}
+                              </button>
+                            )}
                             {isWish && <button onClick={() => setChartId(item.id)} style={actionBtn(chartId === item.id ? ACCENT : '#64748b')}>Chart</button>}
                             <button onClick={() => startEdit(item)} style={actionBtn('#94a3b8')}>Edit</button>
                             <button onClick={() => handleDelete(item)} style={actionBtn('#f87171')}>Del</button>

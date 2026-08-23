@@ -174,6 +174,25 @@ export async function setWishlistCost(item: FinanceItem, newCost: number): Promi
   return newLow;
 }
 
+/**
+ * Ask the server to fetch the live price for a URL (server-side scrape).
+ * Returns the price, or null if the site didn't expose one we can read.
+ */
+export async function fetchPriceForUrl(
+  url: string,
+  accessToken: string,
+  selector?: string | null,
+): Promise<number | null> {
+  const res = await fetch('/api/finance/scrape', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+    body: JSON.stringify({ url, selector: selector ?? null }),
+  });
+  if (!res.ok) return null;
+  const json = await res.json();
+  return typeof json.price === 'number' ? json.price : null;
+}
+
 export async function recordPricePoint(itemId: string, price: number): Promise<void> {
   const { error } = await supabase
     .from('price_history')
