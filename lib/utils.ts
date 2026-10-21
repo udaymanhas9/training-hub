@@ -1,24 +1,24 @@
 import { format, formatDistanceToNow, parseISO } from 'date-fns';
 
 export const TAG_COLORS: Record<string, string> = {
-  "💪 Main Lift": "#ef4444",
-  "⚡ Power": "#8b5cf6",
-  Hypertrophy: "#f59e0b",
-  Endurance: "#10b981",
-  Isolation: "#06b6d4",
-  "Posterior Chain": "#f97316",
-  Activation: "#84cc16",
-  Mobility: "#ec4899",
-  Cardio: "#3b82f6",
-  Stretch: "#64748b",
+  "💪 Main Lift": "var(--danger)",
+  "⚡ Power": "var(--violet)",
+  Hypertrophy: "var(--warning)",
+  Endurance: "var(--success)",
+  Isolation: "var(--cyan)",
+  "Posterior Chain": "var(--orange)",
+  Activation: "var(--lime)",
+  Mobility: "var(--magenta)",
+  Cardio: "var(--info)",
+  Stretch: "var(--text-subtle)",
 };
 
 export const WORKOUT_TYPE_COLORS: Record<string, string> = {
-  legs: '#ef4444',
-  push: '#f97316',
-  pull: '#3b82f6',
-  run: '#10b981',
-  custom: '#8b5cf6',
+  legs: 'var(--danger)',
+  push: 'var(--orange)',
+  pull: 'var(--info)',
+  run: 'var(--success)',
+  custom: 'var(--violet)',
 };
 
 export function formatLastTrained(dateStr: string | undefined): string {

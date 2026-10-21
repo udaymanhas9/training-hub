@@ -30,7 +30,7 @@ export default function PBTable({ pbs, workouts, weightUnit = 'kg' }: PBTablePro
 
   function getWorkoutColor(workoutId: string): string {
     const w = workouts.find(x => x.id === workoutId);
-    return w?.accentColor || WORKOUT_TYPE_COLORS[w?.type || 'custom'] || '#8b5cf6';
+    return w?.accentColor || WORKOUT_TYPE_COLORS[w?.type || 'custom'] || 'var(--violet)';
   }
 
   const sorted = [...pbs].sort((a, b) => {
@@ -55,15 +55,15 @@ export default function PBTable({ pbs, workouts, weightUnit = 'kg' }: PBTablePro
   ];
 
   return (
-    <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, overflow: 'hidden' }}>
+    <div style={{ background: 'var(--surface-2)', border: '1px solid rgb(var(--ink-rgb) / 0.07)', borderRadius: 10, overflow: 'hidden' }}>
       {/* Table header */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 60px 110px 100px', gap: 0, padding: '10px 18px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 60px 110px 100px', gap: 0, padding: '10px 18px', borderBottom: '1px solid rgb(var(--ink-rgb) / 0.07)' }}>
         {cols.map(({ key, label }) => (
           <div
             key={label}
             onClick={() => key && handleSort(key)}
             style={{
-              fontSize: 9, letterSpacing: 3, color: key && sortKey === key ? '#f1f5f9' : '#475569',
+              fontSize: 9, letterSpacing: 3, color: key && sortKey === key ? 'var(--text)' : 'var(--text-faint)',
               fontFamily: "'Barlow Condensed', sans-serif", cursor: key ? 'pointer' : 'default',
               display: 'flex', alignItems: 'center', gap: 4,
             }}
@@ -81,21 +81,21 @@ export default function PBTable({ pbs, workouts, weightUnit = 'kg' }: PBTablePro
           <div key={pb.exerciseId} style={{
             display: 'grid', gridTemplateColumns: '1fr 100px 60px 110px 100px', gap: 0,
             padding: '12px 18px', alignItems: 'center',
-            borderBottom: i < sorted.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none',
-            background: recent ? 'rgba(245,158,11,0.04)' : 'transparent',
+            borderBottom: i < sorted.length - 1 ? '1px solid rgb(var(--ink-rgb) / 0.04)' : 'none',
+            background: recent ? 'rgb(var(--warning-rgb) / 0.04)' : 'transparent',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               {recent && <span style={{ fontSize: 14 }}>🏆</span>}
-              <span style={{ fontSize: 14, fontWeight: 600, color: '#f1f5f9' }}>{pb.exerciseName}</span>
+              <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{pb.exerciseName}</span>
             </div>
-            <div style={{ fontSize: 16, fontWeight: 900, color: recent ? '#fbbf24' : '#f1f5f9' }}>
+            <div style={{ fontSize: 16, fontWeight: 900, color: recent ? 'var(--warning-2)' : 'var(--text)' }}>
               {displayWeight(pb.weight)}
             </div>
-            <div style={{ fontSize: 13, color: '#94a3b8', fontFamily: "'Barlow Condensed', sans-serif" }}>{pb.reps}</div>
-            <div style={{ fontSize: 12, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif" }}>{formatDate(pb.date)}</div>
+            <div style={{ fontSize: 13, color: 'var(--text-muted)', fontFamily: "'Barlow Condensed', sans-serif" }}>{pb.reps}</div>
+            <div style={{ fontSize: 12, color: 'var(--text-subtle)', fontFamily: "'Barlow Condensed', sans-serif" }}>{formatDate(pb.date)}</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: color }} />
-              <span style={{ fontSize: 11, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>
+              <span style={{ fontSize: 11, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif" }}>
                 {workouts.find(w => w.id === pb.workoutId)?.name || '—'}
               </span>
             </div>

@@ -7,12 +7,13 @@ import { WorkoutDefinition, WorkoutType } from '@/lib/types';
 import WorkoutEditorCanvas from '@/components/editor/WorkoutEditorCanvas';
 import BackButton from '@/components/ui/BackButton';
 import { generateId, WORKOUT_TYPE_COLORS } from '@/lib/utils';
+import { ACCENT_CHOICES, DEFAULT_CUSTOM_COLOR } from '@/lib/theme';
 
 const BLANK_WORKOUT: WorkoutDefinition = {
   id: '',
   name: 'NEW WORKOUT',
   type: 'custom',
-  accentColor: '#8b5cf6',
+  accentColor: DEFAULT_CUSTOM_COLOR,
   tagline: '',
   duration: '60 min',
   note: '',
@@ -58,29 +59,29 @@ export default function EditPage() {
 
   if (!workout) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#0a0a0a' }}>
-        <div style={{ fontSize: 16, color: '#475569', letterSpacing: 3 }}>LOADING...</div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg)' }}>
+        <div style={{ fontSize: 16, color: 'var(--text-faint)', letterSpacing: 3 }}>LOADING...</div>
       </div>
     );
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 60 }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingBottom: 60 }}>
       {/* Header */}
       <div style={{
-        background: '#111', borderBottom: '1px solid rgba(255,255,255,0.07)',
+        background: 'var(--surface-2)', borderBottom: '1px solid rgb(var(--ink-rgb) / 0.07)',
         padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
         position: 'sticky', top: 0, zIndex: 50,
       }}>
         <BackButton />
-        <div style={{ fontSize: 16, fontWeight: 900, color: '#f1f5f9', letterSpacing: 2, flex: 1, textAlign: 'center' }}>
+        <div style={{ fontSize: 16, fontWeight: 900, color: 'var(--text)', letterSpacing: 2, flex: 1, textAlign: 'center' }}>
           {isNew ? 'CREATE WORKOUT' : 'EDIT WORKOUT'}
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           {!isNew && (
             <button
               onClick={handleDelete}
-              style={{ background: 'transparent', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 6, color: '#ef4444', fontSize: 11, letterSpacing: 2, padding: '6px 14px', cursor: 'pointer', fontFamily: "'Barlow Condensed', sans-serif" }}
+              style={{ background: 'transparent', border: '1px solid rgb(var(--danger-rgb) / 0.3)', borderRadius: 6, color: 'var(--danger)', fontSize: 11, letterSpacing: 2, padding: '6px 14px', cursor: 'pointer', fontFamily: "'Barlow Condensed', sans-serif" }}
             >
               DELETE
             </button>
@@ -88,8 +89,8 @@ export default function EditPage() {
           <button
             onClick={() => handleSave(workout)}
             style={{
-              background: saved ? '#10b981' : '#8b5cf6',
-              border: 'none', borderRadius: 6, color: '#fff', fontSize: 11,
+              background: saved ? 'var(--success)' : 'var(--violet)',
+              border: 'none', borderRadius: 6, color: 'var(--text-strong)', fontSize: 11,
               fontWeight: 900, letterSpacing: 2, padding: '6px 16px', cursor: 'pointer',
               fontFamily: "'Barlow Condensed', sans-serif", transition: 'background 0.2s',
             }}
@@ -101,39 +102,39 @@ export default function EditPage() {
 
       <div style={{ maxWidth: 760, margin: '0 auto', padding: '24px 24px 0' }}>
         {/* Workout Meta */}
-        <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '20px 24px', marginBottom: 24 }}>
-          <div style={{ fontSize: 11, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 16 }}>WORKOUT DETAILS</div>
+        <div style={{ background: 'var(--surface-2)', border: '1px solid rgb(var(--ink-rgb) / 0.07)', borderRadius: 10, padding: '20px 24px', marginBottom: 24 }}>
+          <div style={{ fontSize: 11, letterSpacing: 4, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 16 }}>WORKOUT DETAILS</div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>NAME</div>
+              <div style={{ fontSize: 9, letterSpacing: 3, color: 'var(--text-subtle)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>NAME</div>
               <input
                 value={workout.name}
                 onChange={e => setWorkout(w => w ? { ...w, name: e.target.value.toUpperCase() } : w)}
-                style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#f1f5f9', padding: '10px 12px', fontSize: 16, fontWeight: 900, fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 1 }}
+                style={{ width: '100%', background: 'var(--surface)', border: '1px solid rgb(var(--ink-rgb) / 0.1)', borderRadius: 6, color: 'var(--text)', padding: '10px 12px', fontSize: 16, fontWeight: 900, fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 1 }}
               />
             </div>
             <div>
-              <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>TAGLINE</div>
+              <div style={{ fontSize: 9, letterSpacing: 3, color: 'var(--text-subtle)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>TAGLINE</div>
               <input
                 value={workout.tagline}
                 onChange={e => setWorkout(w => w ? { ...w, tagline: e.target.value } : w)}
                 placeholder="e.g. Chest · Shoulders · Arms"
-                style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#f1f5f9', padding: '10px 12px', fontSize: 14, fontFamily: "'Barlow Condensed', sans-serif" }}
+                style={{ width: '100%', background: 'var(--surface)', border: '1px solid rgb(var(--ink-rgb) / 0.1)', borderRadius: 6, color: 'var(--text)', padding: '10px 12px', fontSize: 14, fontFamily: "'Barlow Condensed', sans-serif" }}
               />
             </div>
             <div>
-              <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>DURATION</div>
+              <div style={{ fontSize: 9, letterSpacing: 3, color: 'var(--text-subtle)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>DURATION</div>
               <input
                 value={workout.duration}
                 onChange={e => setWorkout(w => w ? { ...w, duration: e.target.value } : w)}
                 placeholder="e.g. 60 min"
-                style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#f1f5f9', padding: '10px 12px', fontSize: 14, fontFamily: "'Barlow Condensed', sans-serif" }}
+                style={{ width: '100%', background: 'var(--surface)', border: '1px solid rgb(var(--ink-rgb) / 0.1)', borderRadius: 6, color: 'var(--text)', padding: '10px 12px', fontSize: 14, fontFamily: "'Barlow Condensed', sans-serif" }}
               />
             </div>
             <div>
-              <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>ACCENT COLOR</div>
+              <div style={{ fontSize: 9, letterSpacing: 3, color: 'var(--text-subtle)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>ACCENT COLOR</div>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                {['#ef4444', '#f97316', '#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899'].map(color => (
+                {ACCENT_CHOICES.map(color => (
                   <button
                     key={color}
                     onClick={() => setWorkout(w => w ? { ...w, accentColor: color } : w)}
@@ -148,12 +149,12 @@ export default function EditPage() {
             </div>
           </div>
           <div style={{ marginTop: 16 }}>
-            <div style={{ fontSize: 9, letterSpacing: 3, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>COACH NOTE (optional)</div>
+            <div style={{ fontSize: 9, letterSpacing: 3, color: 'var(--text-subtle)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>COACH NOTE (optional)</div>
             <input
               value={workout.note || ''}
               onChange={e => setWorkout(w => w ? { ...w, note: e.target.value } : w)}
               placeholder="Any important notes for this workout..."
-              style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#f1f5f9', padding: '10px 12px', fontSize: 14, fontFamily: "'Barlow Condensed', sans-serif" }}
+              style={{ width: '100%', background: 'var(--surface)', border: '1px solid rgb(var(--ink-rgb) / 0.1)', borderRadius: 6, color: 'var(--text)', padding: '10px 12px', fontSize: 14, fontFamily: "'Barlow Condensed', sans-serif" }}
             />
           </div>
         </div>
@@ -171,7 +172,7 @@ export default function EditPage() {
             style={{
               width: '100%', padding: '16px', background: workout.accentColor,
               border: 'none', borderRadius: 8, fontSize: 18, fontWeight: 900,
-              color: '#000', letterSpacing: 3, cursor: 'pointer',
+              color: 'var(--scrim)', letterSpacing: 3, cursor: 'pointer',
               fontFamily: "'Barlow Condensed', sans-serif",
             }}
           >

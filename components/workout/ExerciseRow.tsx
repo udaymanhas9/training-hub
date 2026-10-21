@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Exercise, ExerciseLog, SetLog } from '@/lib/types';
 import { TAG_COLORS } from '@/lib/utils';
 import SetLoggerInline from './SetLoggerInline';
+import { tint } from '@/lib/theme';
 
 interface ExerciseRowProps {
   exercise: Exercise;
@@ -32,7 +33,7 @@ export default function ExerciseRow({
 }: ExerciseRowProps) {
   const [showLastTime, setShowLastTime] = useState(false);
   const [showLogger, setShowLogger]     = useState(false);
-  const tagColor  = TAG_COLORS[exercise.tag] || '#475569';
+  const tagColor  = TAG_COLORS[exercise.tag] || 'var(--text-faint)';
   const loggedSets = exerciseLog?.sets || [];
 
   return (
@@ -40,7 +41,7 @@ export default function ExerciseRow({
       className="ex-row"
       style={{
         padding: '14px 16px',
-        borderBottom: isLast ? 'none' : '1px solid #1a1a1a',
+        borderBottom: isLast ? 'none' : '1px solid var(--surface-4)',
         opacity: done ? 0.45 : 1,
         transition: 'opacity 0.2s',
       }}
@@ -61,12 +62,12 @@ export default function ExerciseRow({
         >
           <div style={{
             width: 22, height: 22, borderRadius: 5,
-            border: `2px solid ${done ? phaseColor : '#334155'}`,
+            border: `2px solid ${done ? phaseColor : 'var(--text-ghost)'}`,
             background: done ? phaseColor : 'transparent',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             flexShrink: 0,
           }}>
-            {done && <span style={{ color: '#000', fontSize: 13, fontWeight: 900 }}>✓</span>}
+            {done && <span style={{ color: 'var(--scrim)', fontSize: 13, fontWeight: 900 }}>✓</span>}
           </div>
         </button>
 
@@ -78,8 +79,8 @@ export default function ExerciseRow({
               <button
                 onClick={() => setShowLastTime(p => !p)}
                 style={{
-                  background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-                  borderRadius: 4, padding: '3px 8px', fontSize: 10, color: '#475569',
+                  background: 'rgb(var(--ink-rgb) / 0.04)', border: '1px solid rgb(var(--ink-rgb) / 0.08)',
+                  borderRadius: 4, padding: '3px 8px', fontSize: 10, color: 'var(--text-faint)',
                   cursor: 'pointer', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 1,
                 }}
               >
@@ -89,8 +90,8 @@ export default function ExerciseRow({
                 <div style={{ marginTop: 6, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                   {lastSets.map((s, i) => (
                     <span key={i} style={{
-                      fontSize: 11, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif",
-                      background: 'rgba(255,255,255,0.04)', padding: '2px 6px', borderRadius: 3,
+                      fontSize: 11, color: 'var(--text-subtle)', fontFamily: "'Barlow Condensed', sans-serif",
+                      background: 'rgb(var(--ink-rgb) / 0.04)', padding: '2px 6px', borderRadius: 3,
                     }}>
                       {s.weight > 0 ? `${s.weight}${s.unit}` : 'BW'} × {s.reps}
                     </span>
@@ -103,7 +104,7 @@ export default function ExerciseRow({
           {/* Name */}
           <div style={{
             fontSize: 17, fontWeight: 700, letterSpacing: 0.5,
-            color: done ? '#475569' : '#f1f5f9',
+            color: done ? 'var(--text-faint)' : 'var(--text)',
             textDecoration: done ? 'line-through' : 'none',
             lineHeight: 1.2,
           }}>
@@ -115,28 +116,28 @@ export default function ExerciseRow({
             <span style={{
               fontSize: 9, letterSpacing: 2, fontWeight: 600,
               padding: '2px 7px', borderRadius: 3,
-              background: tagColor + '22', color: tagColor,
-              border: `1px solid ${tagColor}44`,
+              background: tint(tagColor, 0.13), color: tagColor,
+              border: `1px solid ${tint(tagColor, 0.27)}`,
               fontFamily: "'Barlow Condensed', sans-serif",
             }}>{exercise.tag}</span>
 
             {exercise.sets && (
               <span style={{
                 fontSize: 12, fontWeight: 900, color: phaseColor,
-                background: phaseColor + '18', padding: '2px 8px', borderRadius: 4,
+                background: tint(phaseColor, 0.09), padding: '2px 8px', borderRadius: 4,
               }}>{exercise.sets} sets</span>
             )}
             {exercise.reps && (
               <span style={{
-                fontSize: 12, fontWeight: 600, color: '#cbd5e1',
-                background: 'rgba(255,255,255,0.06)', padding: '2px 8px', borderRadius: 4,
+                fontSize: 12, fontWeight: 600, color: 'var(--text-soft-2)',
+                background: 'rgb(var(--ink-rgb) / 0.06)', padding: '2px 8px', borderRadius: 4,
                 fontFamily: "'Barlow Condensed', sans-serif",
               }}>{exercise.reps}</span>
             )}
             {exercise.rest && (
               <span style={{
-                fontSize: 12, color: '#94a3b8',
-                background: 'rgba(255,255,255,0.04)', padding: '2px 8px', borderRadius: 4,
+                fontSize: 12, color: 'var(--text-muted)',
+                background: 'rgb(var(--ink-rgb) / 0.04)', padding: '2px 8px', borderRadius: 4,
                 fontFamily: "'Barlow Condensed', sans-serif",
               }}>{exercise.rest} rest</span>
             )}
@@ -145,19 +146,19 @@ export default function ExerciseRow({
           {/* Intensity / warmup / notes */}
           {exercise.intensity && (
             <div style={{ marginTop: 5 }}>
-              <span style={{ fontSize: 11, letterSpacing: 1, color: '#f59e0b', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>
+              <span style={{ fontSize: 11, letterSpacing: 1, color: 'var(--warning)', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>
                 🎯 {exercise.intensity}
               </span>
             </div>
           )}
           {exercise.warmupSets && (
-            <div style={{ marginTop: 5, padding: '5px 8px', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.18)', borderRadius: 4 }}>
-              <span style={{ fontSize: 11, color: '#d97706', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>WARM-UP: </span>
-              <span style={{ fontSize: 11, color: '#78716c', fontFamily: "'Barlow Condensed', sans-serif" }}>{exercise.warmupSets}</span>
+            <div style={{ marginTop: 5, padding: '5px 8px', background: 'rgb(var(--warning-rgb) / 0.08)', border: '1px solid rgb(var(--warning-rgb) / 0.18)', borderRadius: 4 }}>
+              <span style={{ fontSize: 11, color: 'var(--warning-dark)', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>WARM-UP: </span>
+              <span style={{ fontSize: 11, color: 'var(--stone)', fontFamily: "'Barlow Condensed', sans-serif" }}>{exercise.warmupSets}</span>
             </div>
           )}
           {exercise.notes && (
-            <div style={{ fontSize: 12, color: '#64748b', marginTop: 5, fontFamily: "'Barlow Condensed', sans-serif", lineHeight: 1.4 }}>
+            <div style={{ fontSize: 12, color: 'var(--text-subtle)', marginTop: 5, fontFamily: "'Barlow Condensed', sans-serif", lineHeight: 1.4 }}>
               {exercise.notes}
             </div>
           )}
@@ -168,8 +169,8 @@ export default function ExerciseRow({
             style={{
               marginTop: 10,
               background: 'transparent',
-              border: `1px solid ${showLogger ? phaseColor + '60' : 'rgba(255,255,255,0.1)'}`,
-              borderRadius: 4, color: showLogger ? phaseColor : '#64748b',
+              border: `1px solid ${showLogger ? tint(phaseColor, 0.38) : 'rgb(var(--ink-rgb) / 0.1)'}`,
+              borderRadius: 4, color: showLogger ? phaseColor : 'var(--text-subtle)',
               fontSize: 11, letterSpacing: 2, padding: '6px 12px', cursor: 'pointer',
               fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700,
             }}

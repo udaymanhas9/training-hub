@@ -4,6 +4,7 @@ import Model, { MuscleType, ModelType } from 'react-body-highlighter';
 import type { IExerciseData } from 'react-body-highlighter';
 import { WorkoutType } from '@/lib/types';
 import { MUSCLE_DISPLAY } from '@/lib/muscleMap';
+import { tint } from '@/lib/theme';
 
 type Muscle = typeof MuscleType[keyof typeof MuscleType];
 
@@ -41,13 +42,13 @@ export default function MuscleDiagram({ workoutType, accentColor, muscles }: Pro
 
   return (
     <div style={{
-      background: 'rgba(255,255,255,0.03)',
-      border: '1px solid rgba(255,255,255,0.08)',
+      background: 'rgb(var(--ink-rgb) / 0.03)',
+      border: '1px solid rgb(var(--ink-rgb) / 0.08)',
       borderRadius: 12,
       padding: '20px 24px',
     }}>
       <div style={{
-        fontSize: 10, letterSpacing: 3, color: '#475569',
+        fontSize: 10, letterSpacing: 3, color: 'var(--text-faint)',
         fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 16,
       }}>
         MUSCLES TARGETED
@@ -55,24 +56,24 @@ export default function MuscleDiagram({ workoutType, accentColor, muscles }: Pro
 
       <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
         <div style={{ textAlign: 'center', flex: 1 }}>
-          <div style={{ fontSize: 9, letterSpacing: 2, color: '#475569', marginBottom: 8, fontFamily: "'Barlow Condensed', sans-serif" }}>FRONT</div>
+          <div style={{ fontSize: 9, letterSpacing: 2, color: 'var(--text-faint)', marginBottom: 8, fontFamily: "'Barlow Condensed', sans-serif" }}>FRONT</div>
           <Model
             data={exerciseData}
             style={wrapperStyle}
             svgStyle={svgStyle}
             type={ModelType.ANTERIOR}
-            bodyColor="#3e4248"
+            bodyColor="var(--text-neutral-ghost)"
             highlightedColors={[accentColor]}
           />
         </div>
         <div style={{ textAlign: 'center', flex: 1 }}>
-          <div style={{ fontSize: 9, letterSpacing: 2, color: '#475569', marginBottom: 8, fontFamily: "'Barlow Condensed', sans-serif" }}>BACK</div>
+          <div style={{ fontSize: 9, letterSpacing: 2, color: 'var(--text-faint)', marginBottom: 8, fontFamily: "'Barlow Condensed', sans-serif" }}>BACK</div>
           <Model
             data={exerciseData}
             style={wrapperStyle}
             svgStyle={svgStyle}
             type={ModelType.POSTERIOR}
-            bodyColor="#3e4248"
+            bodyColor="var(--text-neutral-ghost)"
             highlightedColors={[accentColor]}
           />
         </div>
@@ -85,8 +86,8 @@ export default function MuscleDiagram({ workoutType, accentColor, muscles }: Pro
               fontSize: 10,
               letterSpacing: 1,
               color: accentColor,
-              background: `${accentColor}18`,
-              border: `1px solid ${accentColor}45`,
+              background: `${tint(accentColor, 0.09)}`,
+              border: `1px solid ${tint(accentColor, 0.27)}`,
               borderRadius: 4,
               padding: '3px 8px',
               fontFamily: "'Barlow Condensed', sans-serif",

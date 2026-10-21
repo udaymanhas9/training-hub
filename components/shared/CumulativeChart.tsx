@@ -26,10 +26,10 @@ interface DayBucket {
 }
 
 const SERIES = [
-  { key: 'training', color: '#ef4444', label: 'Training' },
-  { key: 'leetcode', color: '#00b8a3', label: 'LeetCode' },
-  { key: 'quant',    color: '#8b5cf6', label: 'Quant'    },
-  { key: 'commits',  color: '#f59e0b', label: 'Commits'  },
+  { key: 'training', color: 'var(--danger)', label: 'Training' },
+  { key: 'leetcode', color: 'var(--brand-leetcode-teal)', label: 'LeetCode' },
+  { key: 'quant',    color: 'var(--violet)', label: 'Quant'    },
+  { key: 'commits',  color: 'var(--warning)', label: 'Commits'  },
 ] as const;
 
 const RANGES = [
@@ -62,7 +62,7 @@ export default function CumulativeChart({ sessions, leetcode, quant, githubDays,
     return (
       <div style={{
         height: 240, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        color: '#737373', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: 2,
+        color: 'var(--text-neutral)', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: 2,
       }}>
         NO DATA YET
       </div>
@@ -129,10 +129,10 @@ export default function CumulativeChart({ sessions, leetcode, quant, githubDays,
     if (!active || !payload?.length) return null;
     return (
       <div style={{
-        background: '#0a0a0a', border: '1px solid rgba(255,42,42,0.3)',
+        background: 'var(--bg)', border: '1px solid rgb(var(--accent-rgb) / 0.3)',
         padding: '10px 14px', fontFamily: MONO, fontSize: 11,
       }}>
-        <div style={{ color: '#737373', marginBottom: 6, letterSpacing: 2 }}>
+        <div style={{ color: 'var(--text-neutral)', marginBottom: 6, letterSpacing: 2 }}>
           {label ? (() => { try { return format(parseISO(label), 'EEE, MMM d yyyy'); } catch { return label; } })() : ''}
         </div>
         {payload.map(p => (
@@ -153,9 +153,9 @@ export default function CumulativeChart({ sessions, leetcode, quant, githubDays,
             key={label}
             onClick={() => setRange(label)}
             style={{
-              background: range === label ? 'rgba(255,42,42,0.12)' : 'transparent',
-              border: `1px solid ${range === label ? 'rgba(255,42,42,0.5)' : 'rgba(255,255,255,0.08)'}`,
-              color: range === label ? '#FF2A2A' : '#737373',
+              background: range === label ? 'rgb(var(--accent-rgb) / 0.12)' : 'transparent',
+              border: `1px solid ${range === label ? 'rgb(var(--accent-rgb) / 0.5)' : 'rgb(var(--ink-rgb) / 0.08)'}`,
+              color: range === label ? 'var(--accent)' : 'var(--text-neutral)',
               padding: '4px 10px', fontSize: 9, letterSpacing: 2,
               cursor: 'pointer', fontFamily: MONO,
             }}
@@ -167,20 +167,20 @@ export default function CumulativeChart({ sessions, leetcode, quant, githubDays,
 
       <ResponsiveContainer width="100%" height={280}>
         <AreaChart data={buckets} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,42,42,0.08)" />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--accent-rgb) / 0.08)" />
           <XAxis
             dataKey="date"
             ticks={weeklyTicks}
             tickFormatter={(value: string) => {
               try { return format(parseISO(value), 'MMM d'); } catch { return value; }
             }}
-            stroke="#737373"
-            tick={{ fill: '#737373', fontFamily: MONO, fontSize: 9 }}
+            stroke="var(--text-neutral)"
+            tick={{ fill: 'var(--text-neutral)', fontFamily: MONO, fontSize: 9 }}
             tickLine={false}
           />
           <YAxis
-            stroke="#737373"
-            tick={{ fill: '#737373', fontFamily: MONO, fontSize: 9 }}
+            stroke="var(--text-neutral)"
+            tick={{ fill: 'var(--text-neutral)', fontFamily: MONO, fontSize: 9 }}
             tickLine={false}
             axisLine={false}
           />

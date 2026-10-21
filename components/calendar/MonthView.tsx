@@ -38,37 +38,37 @@ export default function MonthView({ sessions, workouts, onDayClick, selectedDay,
 
   function getWorkoutColor(workoutId: string): string {
     const w = workouts.find(x => x.id === workoutId);
-    if (w) return w.accentColor || WORKOUT_TYPE_COLORS[w.type] || '#8b5cf6';
-    return '#8b5cf6';
+    if (w) return w.accentColor || WORKOUT_TYPE_COLORS[w.type] || 'var(--violet)';
+    return 'var(--violet)';
   }
 
   const WEEK_DAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
 
   return (
-    <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, overflow: 'hidden' }}>
+    <div style={{ background: 'var(--surface-2)', border: '1px solid rgb(var(--ink-rgb) / 0.07)', borderRadius: 10, overflow: 'hidden' }}>
       {/* Navigation */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid rgb(var(--ink-rgb) / 0.07)' }}>
         <button
           onClick={() => setCurrentMonth(m => { const d = new Date(m); d.setMonth(d.getMonth() - 1); return d; })}
-          style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#94a3b8', padding: '6px 14px', cursor: 'pointer', fontSize: 14, fontFamily: "'Barlow Condensed', sans-serif', letterSpacing: 2" }}
+          style={{ background: 'transparent', border: '1px solid rgb(var(--ink-rgb) / 0.1)', borderRadius: 6, color: 'var(--text-muted)', padding: '6px 14px', cursor: 'pointer', fontSize: 14, fontFamily: "'Barlow Condensed', sans-serif', letterSpacing: 2" }}
         >
           ‹
         </button>
-        <div style={{ fontSize: 20, fontWeight: 900, color: '#f1f5f9', letterSpacing: 2, fontStyle: 'italic' }}>
+        <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--text)', letterSpacing: 2, fontStyle: 'italic' }}>
           {format(currentMonth, 'MMMM yyyy').toUpperCase()}
         </div>
         <button
           onClick={() => setCurrentMonth(m => { const d = new Date(m); d.setMonth(d.getMonth() + 1); return d; })}
-          style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: '#94a3b8', padding: '6px 14px', cursor: 'pointer', fontSize: 14, fontFamily: "'Barlow Condensed', sans-serif" }}
+          style={{ background: 'transparent', border: '1px solid rgb(var(--ink-rgb) / 0.1)', borderRadius: 6, color: 'var(--text-muted)', padding: '6px 14px', cursor: 'pointer', fontSize: 14, fontFamily: "'Barlow Condensed', sans-serif" }}
         >
           ›
         </button>
       </div>
 
       {/* Weekday headers */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', borderBottom: '1px solid rgb(var(--ink-rgb) / 0.05)' }}>
         {WEEK_DAYS.map(d => (
-          <div key={d} style={{ padding: '8px 0', textAlign: 'center', fontSize: 9, letterSpacing: 3, color: '#334155', fontFamily: "'Barlow Condensed', sans-serif" }}>
+          <div key={d} style={{ padding: '8px 0', textAlign: 'center', fontSize: 9, letterSpacing: 3, color: 'var(--text-ghost)', fontFamily: "'Barlow Condensed', sans-serif" }}>
             {d}
           </div>
         ))}
@@ -92,19 +92,19 @@ export default function MonthView({ sessions, workouts, onDayClick, selectedDay,
               style={{
                 padding: '8px 6px',
                 minHeight: 56,
-                borderRight: '1px solid rgba(255,255,255,0.04)',
-                borderBottom: '1px solid rgba(255,255,255,0.04)',
-                background: isSelected ? 'rgba(59,130,246,0.1)' : today ? 'rgba(255,255,255,0.03)' : 'transparent',
+                borderRight: '1px solid rgb(var(--ink-rgb) / 0.04)',
+                borderBottom: '1px solid rgb(var(--ink-rgb) / 0.04)',
+                background: isSelected ? 'rgb(var(--info-rgb) / 0.1)' : today ? 'rgb(var(--ink-rgb) / 0.03)' : 'transparent',
                 cursor: hasActivity ? 'pointer' : 'default',
                 transition: 'background 0.15s',
                 position: 'relative',
               }}
-              onMouseEnter={e => { if (hasActivity) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isSelected ? 'rgba(59,130,246,0.1)' : today ? 'rgba(255,255,255,0.03)' : 'transparent'; }}
+              onMouseEnter={e => { if (hasActivity) (e.currentTarget as HTMLElement).style.background = 'rgb(var(--ink-rgb) / 0.04)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isSelected ? 'rgb(var(--info-rgb) / 0.1)' : today ? 'rgb(var(--ink-rgb) / 0.03)' : 'transparent'; }}
             >
               <div style={{
                 fontSize: 12, fontWeight: today ? 900 : 500,
-                color: !inMonth ? '#1e293b' : today ? '#3b82f6' : isSelected ? '#60a5fa' : '#94a3b8',
+                color: !inMonth ? 'var(--surface-blue)' : today ? 'var(--info)' : isSelected ? 'var(--info-2)' : 'var(--text-muted)',
                 marginBottom: 4,
               }}>
                 {format(day, 'd')}
@@ -121,12 +121,12 @@ export default function MonthView({ sessions, workouts, onDayClick, selectedDay,
                 {dayStrava.slice(0, 2).map((a, i) => (
                   <div key={`s${i}`} title={a.name} style={{
                     width: 7, height: 7, borderRadius: 1,
-                    background: '#fc4c02',
+                    background: 'var(--brand-strava)',
                     flexShrink: 0,
                   }} />
                 ))}
                 {(daySessions.length + dayStrava.length) > 4 && (
-                  <span style={{ fontSize: 8, color: '#475569' }}>+{daySessions.length + dayStrava.length - 4}</span>
+                  <span style={{ fontSize: 8, color: 'var(--text-faint)' }}>+{daySessions.length + dayStrava.length - 4}</span>
                 )}
               </div>
             </div>
@@ -135,17 +135,17 @@ export default function MonthView({ sessions, workouts, onDayClick, selectedDay,
       </div>
 
       {/* Legend */}
-      <div style={{ padding: '12px 20px', borderTop: '1px solid rgba(255,255,255,0.07)', display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+      <div style={{ padding: '12px 20px', borderTop: '1px solid rgb(var(--ink-rgb) / 0.07)', display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {workouts.slice(0, 4).map(w => (
           <div key={w.id} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: w.accentColor || '#8b5cf6' }} />
-            <span style={{ fontSize: 10, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 1 }}>{w.name}</span>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: w.accentColor || 'var(--violet)' }} />
+            <span style={{ fontSize: 10, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 1 }}>{w.name}</span>
           </div>
         ))}
         {stravaActivities.length > 0 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{ width: 8, height: 8, borderRadius: 1, background: '#fc4c02' }} />
-            <span style={{ fontSize: 10, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 1 }}>Strava</span>
+            <div style={{ width: 8, height: 8, borderRadius: 1, background: 'var(--brand-strava)' }} />
+            <span style={{ fontSize: 10, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 1 }}>Strava</span>
           </div>
         )}
       </div>

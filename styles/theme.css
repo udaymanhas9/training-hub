@@ -1,0 +1,179 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   THEME — the ONLY place palette values live.
+   Tier 1  primitives  (--gray-*, --red-*, …)  raw palette; components never use these.
+   Tier 2  semantic    (--bg, --text-faint, --accent …)  named by role; themes remap these.
+   Colours that need alpha also expose a channel triplet: --accent-rgb: 255 42 42
+   → rgb(var(--accent-rgb) / .15).   Overlay ink flips per theme via --ink-rgb.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root,
+[data-theme="dark"] {
+  /* ── Tier 1: primitives ─────────────────────────────────────────────── */
+  --neutral-950: #0a0a0a; --neutral-925: #0d0d0d; --neutral-915: #0f0f0f;
+  --neutral-900: #111111; --neutral-880: #161616; --neutral-860: #1a1a1a;
+  --neutral-820: #1e1e1e; --neutral-780: #2a2a2a; --neutral-700: #444444;
+  --neutral-680: #4a4a4a; --neutral-650: #555555; --neutral-600: #666666;
+  --neutral-500: #737373; --neutral-450: #888888; --neutral-200: #e5e5e5;
+  --neutral-0: #ffffff;   --neutral-1000: #000000; --neutral-870: #222222;
+
+  --slate-50: #f1f5f9;  --slate-300: #cbd5e1; --slate-400: #94a3b8;
+  --slate-500: #64748b; --slate-600: #475569; --slate-700: #334155;
+  --slate-800: #1e293b;
+
+  --red-500-rgb: 255 42 42;     --red-400-rgb: 239 68 68;   --red-300-rgb: 248 113 113;
+  --rose-500-rgb: 255 55 95;
+  --green-500-rgb: 16 185 129;  --green-400-rgb: 34 197 94; --green-300-rgb: 74 222 128;
+  --green-200-rgb: 52 211 153;
+  --blue-500-rgb: 59 130 246;   --blue-400-rgb: 96 165 250; --blue-300-rgb: 147 197 253;
+  --amber-500-rgb: 245 158 11;  --amber-400-rgb: 251 191 36;
+  --orange-500-rgb: 249 115 22;
+  --violet-500-rgb: 139 92 246; --violet-400-rgb: 167 139 250;
+  --indigo-500-rgb: 99 102 241; --indigo-400-rgb: 129 140 248;
+  --cyan-500-rgb: 6 182 212;
+  --pink-500-rgb: 236 72 153;
+  --gold-500-rgb: 200 155 60;
+  --yellow-400-rgb: 250 204 21; --yellow-500-rgb: 234 179 8; --lime-500-rgb: 132 204 22;
+  --purple-500-rgb: 168 85 247; --sky-400-rgb: 56 189 248; --orange-400-rgb: 251 146 60;
+  --terracotta-500-rgb: 224 96 59;
+  --red-200-rgb: 252 165 165;   --amber-600-rgb: 217 119 6;   --amber-900-rgb: 146 64 14;
+  --stone-500-rgb: 120 113 108; --indigo-600-rgb: 79 70 229;  --blue-700-rgb: 29 78 216;
+  --blue-100-rgb: 219 234 254;  --navy-800-rgb: 30 58 95;
+
+  /* Brand colours — fixed, never themed */
+  --brand-strava: #fc4c02;
+  --brand-leetcode: #ffa116;
+  --brand-leetcode-teal: #00b8a3;
+  --brand-leetcode-yellow: #ffc01e;
+
+  /* ── Tier 2: semantic — dark (the current look) ─────────────────────── */
+  /* overlays: white ink on dark, near-black ink on light */
+  --ink-rgb: 255 255 255;
+  --shadow-rgb: 0 0 0;
+
+  /* surfaces */
+  --bg: var(--neutral-950);
+  --surface: var(--neutral-925);
+  --surface-1: var(--neutral-915);
+  --surface-2: var(--neutral-900);
+  --surface-3: var(--neutral-880);
+  --surface-4: var(--neutral-860);
+  --surface-5: var(--neutral-870);
+  --surface-blue: var(--slate-800);
+
+  /* lines */
+  --border: var(--neutral-820);
+  --border-strong: var(--neutral-780);
+
+  /* text */
+  --text-strong: var(--neutral-0);
+  --text: var(--slate-50);
+  --text-soft: var(--neutral-200);
+  --text-soft-2: var(--slate-300);
+  --text-muted: var(--slate-400);
+  --text-subtle: var(--slate-500);
+  --text-faint: var(--slate-600);
+  --text-ghost: var(--slate-700);
+  --text-neutral: var(--neutral-500);
+  --text-neutral-faint: var(--neutral-680);
+  --text-neutral-dim: var(--neutral-650);
+  --text-neutral-mid: var(--neutral-450);
+  --text-neutral-low: var(--neutral-600);
+  --text-neutral-ghost: var(--neutral-700);
+  --scrim: var(--neutral-1000);
+
+  /* status / accent (channels first so alpha works) */
+  --accent-rgb: var(--red-500-rgb);       --accent: rgb(var(--accent-rgb));
+  --danger-rgb: var(--red-400-rgb);       --danger: rgb(var(--danger-rgb));
+  --danger-soft-rgb: var(--red-300-rgb);  --danger-soft: rgb(var(--danger-soft-rgb));
+  --pink-rgb: var(--rose-500-rgb);        --pink: rgb(var(--pink-rgb));
+  --success-rgb: var(--green-500-rgb);    --success: rgb(var(--success-rgb));
+  --success-2-rgb: var(--green-400-rgb);  --success-2: rgb(var(--success-2-rgb));
+  --success-3-rgb: var(--green-300-rgb);  --success-3: rgb(var(--success-3-rgb));
+  --success-4-rgb: var(--green-200-rgb);  --success-4: rgb(var(--success-4-rgb));
+  --info-rgb: var(--blue-500-rgb);        --info: rgb(var(--info-rgb));
+  --info-2-rgb: var(--blue-400-rgb);      --info-2: rgb(var(--info-2-rgb));
+  --info-3-rgb: var(--blue-300-rgb);      --info-3: rgb(var(--info-3-rgb));
+  --warning-rgb: var(--amber-500-rgb);    --warning: rgb(var(--warning-rgb));
+  --warning-2-rgb: var(--amber-400-rgb);  --warning-2: rgb(var(--warning-2-rgb));
+  --orange-rgb: var(--orange-500-rgb);    --orange: rgb(var(--orange-rgb));
+  --violet-rgb: var(--violet-500-rgb);    --violet: rgb(var(--violet-rgb));
+  --violet-2-rgb: var(--violet-400-rgb);  --violet-2: rgb(var(--violet-2-rgb));
+  --indigo-rgb: var(--indigo-500-rgb);    --indigo: rgb(var(--indigo-rgb));
+  --indigo-2-rgb: var(--indigo-400-rgb);  --indigo-2: rgb(var(--indigo-2-rgb));
+  --cyan-rgb: var(--cyan-500-rgb);        --cyan: rgb(var(--cyan-rgb));
+  --magenta-rgb: var(--pink-500-rgb);     --magenta: rgb(var(--magenta-rgb));
+  --gold-rgb: var(--gold-500-rgb);        --gold: rgb(var(--gold-rgb));
+  --yellow-rgb: var(--yellow-400-rgb);    --yellow: rgb(var(--yellow-rgb));
+  --yellow-2-rgb: var(--yellow-500-rgb);  --yellow-2: rgb(var(--yellow-2-rgb));
+  --lime-rgb: var(--lime-500-rgb);        --lime: rgb(var(--lime-rgb));
+  --purple-rgb: var(--purple-500-rgb);    --purple: rgb(var(--purple-rgb));
+  --sky-rgb: var(--sky-400-rgb);          --sky: rgb(var(--sky-rgb));
+  --orange-2-rgb: var(--orange-400-rgb);  --orange-2: rgb(var(--orange-2-rgb));
+  --danger-pale-rgb: var(--red-200-rgb);  --danger-pale: rgb(var(--danger-pale-rgb));
+  --warning-dark-rgb: var(--amber-600-rgb); --warning-dark: rgb(var(--warning-dark-rgb));
+  --orange-dark-rgb: var(--amber-900-rgb);  --orange-dark: rgb(var(--orange-dark-rgb));
+  --stone-rgb: var(--stone-500-rgb);      --stone: rgb(var(--stone-rgb));
+  --indigo-dark-rgb: var(--indigo-600-rgb); --indigo-dark: rgb(var(--indigo-dark-rgb));
+  --info-dark-rgb: var(--blue-700-rgb);   --info-dark: rgb(var(--info-dark-rgb));
+  --info-pale-rgb: var(--blue-100-rgb);   --info-pale: rgb(var(--info-pale-rgb));
+  --navy-rgb: var(--navy-800-rgb);        --navy: rgb(var(--navy-rgb));
+
+  /* data / charts */
+  --chart-1: var(--accent);   --chart-2: var(--info);     --chart-3: var(--success);
+  --chart-4: var(--warning);  --chart-5: var(--violet);   --chart-6: var(--cyan);
+  --chart-7: var(--magenta);  --chart-8: var(--orange);
+
+  /* blog (midnight Substack) */
+  --blog-bg: #0b0b0d;
+  --blog-panel: #141416;
+  --blog-ink: #e9e6e1;
+  --blog-dim: #9a9691;
+  --blog-faint: #6b6763;
+  --blog-line: rgb(var(--ink-rgb) / 0.09);
+  --blog-accent-rgb: var(--terracotta-500-rgb);
+  --blog-accent: rgb(var(--blog-accent-rgb));
+  --blog-code-bg: #08080a;
+  --blog-serif: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+}
+
+/* ── Light theme (Phase 5 proof — edited here only) ───────────────────── */
+[data-theme="light"] {
+  color-scheme: light;
+  --ink-rgb: 15 15 20;
+  --shadow-rgb: 15 15 20;
+
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --surface-1: #fafbfc;
+  --surface-2: #ffffff;
+  --surface-3: #f1f3f6;
+  --surface-4: #e9ecf1;
+  --surface-5: #e2e6ec;
+  --surface-blue: #dbe6f7;
+
+  --border: #e1e5eb;
+  --border-strong: #cdd3dc;
+
+  --text-strong: #000000;
+  --text: #0f172a;
+  --text-soft: #1e293b;
+  --text-soft-2: #334155;
+  --text-muted: #475569;
+  --text-subtle: #64748b;
+  --text-faint: #6b7a90;
+  --text-ghost: #94a3b8;
+  --text-neutral: #5c5c5c;
+  --text-neutral-faint: #8a8a8a;
+  --text-neutral-dim: #7a7a7a;
+  --text-neutral-mid: #666666;
+  --text-neutral-low: #808080;
+  --text-neutral-ghost: #a0a0a0;
+  --scrim: #0f0f14;
+
+  --blog-bg: #faf8f5;
+  --blog-panel: #ffffff;
+  --blog-ink: #2a2724;
+  --blog-dim: #6b6560;
+  --blog-faint: #9a948d;
+  --blog-code-bg: #f1eee9;
+}

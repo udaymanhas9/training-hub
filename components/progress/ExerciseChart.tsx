@@ -17,8 +17,8 @@ interface ExerciseChartProps {
 function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: { value: number; dataKey: string; color: string }[]; label?: string }) {
   if (!active || !payload?.length) return null;
   return (
-    <div style={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '10px 14px' }}>
-      <div style={{ fontSize: 11, color: '#94a3b8', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>{label}</div>
+    <div style={{ background: 'var(--surface-4)', border: '1px solid rgb(var(--ink-rgb) / 0.1)', borderRadius: 6, padding: '10px 14px' }}>
+      <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 6 }}>{label}</div>
       {payload.map(p => (
         <div key={p.dataKey} style={{ fontSize: 14, fontWeight: 700, color: p.color, fontFamily: "'Barlow Condensed', sans-serif" }}>
           {p.dataKey === 'weight' ? `${p.value}kg` : `${p.value} reps`}
@@ -47,22 +47,22 @@ export default function ExerciseChart({ exerciseName, data }: ExerciseChartProps
     }));
 
   return (
-    <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '20px 16px' }}>
-      <div style={{ fontSize: 16, fontWeight: 900, color: '#f1f5f9', marginBottom: 20, letterSpacing: 1 }}>
+    <div style={{ background: 'var(--surface-2)', border: '1px solid rgb(var(--ink-rgb) / 0.07)', borderRadius: 10, padding: '20px 16px' }}>
+      <div style={{ fontSize: 16, fontWeight: 900, color: 'var(--text)', marginBottom: 20, letterSpacing: 1 }}>
         {exerciseName}
       </div>
       <ResponsiveContainer width="100%" height={220}>
         <LineChart data={chartData} margin={{ top: 4, right: 16, bottom: 4, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--ink-rgb) / 0.05)" />
           <XAxis
             dataKey="date"
-            tick={{ fill: '#475569', fontSize: 10, fontFamily: "'Barlow Condensed', sans-serif" }}
-            axisLine={{ stroke: 'rgba(255,255,255,0.07)' }}
+            tick={{ fill: 'var(--text-faint)', fontSize: 10, fontFamily: "'Barlow Condensed', sans-serif" }}
+            axisLine={{ stroke: 'rgb(var(--ink-rgb) / 0.07)' }}
             tickLine={false}
           />
           <YAxis
             yAxisId="weight"
-            tick={{ fill: '#475569', fontSize: 10, fontFamily: "'Barlow Condensed', sans-serif" }}
+            tick={{ fill: 'var(--text-faint)', fontSize: 10, fontFamily: "'Barlow Condensed', sans-serif" }}
             axisLine={false}
             tickLine={false}
             tickFormatter={v => `${v}kg`}
@@ -70,7 +70,7 @@ export default function ExerciseChart({ exerciseName, data }: ExerciseChartProps
           <YAxis
             yAxisId="reps"
             orientation="right"
-            tick={{ fill: '#475569', fontSize: 10, fontFamily: "'Barlow Condensed', sans-serif" }}
+            tick={{ fill: 'var(--text-faint)', fontSize: 10, fontFamily: "'Barlow Condensed', sans-serif" }}
             axisLine={false}
             tickLine={false}
             tickFormatter={v => `${v}r`}
@@ -80,23 +80,23 @@ export default function ExerciseChart({ exerciseName, data }: ExerciseChartProps
             yAxisId="weight"
             type="monotone"
             dataKey="weight"
-            stroke="#3b82f6"
+            stroke="var(--info)"
             strokeWidth={2}
-            dot={{ fill: '#3b82f6', strokeWidth: 0, r: 4 }}
-            activeDot={{ r: 6, fill: '#3b82f6' }}
+            dot={{ fill: 'var(--info)', strokeWidth: 0, r: 4 }}
+            activeDot={{ r: 6, fill: 'var(--info)' }}
           />
           <Line
             yAxisId="reps"
             type="monotone"
             dataKey="reps"
-            stroke="#10b981"
+            stroke="var(--success)"
             strokeWidth={2}
             strokeDasharray="5 3"
-            dot={{ fill: '#10b981', strokeWidth: 0, r: 3 }}
-            activeDot={{ r: 5, fill: '#10b981' }}
+            dot={{ fill: 'var(--success)', strokeWidth: 0, r: 3 }}
+            activeDot={{ r: 5, fill: 'var(--success)' }}
           />
           <Legend
-            wrapperStyle={{ fontSize: 10, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 2 }}
+            wrapperStyle={{ fontSize: 10, color: 'var(--text-subtle)', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 2 }}
             formatter={v => v.toUpperCase()}
           />
         </LineChart>

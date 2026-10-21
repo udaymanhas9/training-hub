@@ -103,18 +103,18 @@ export default function LabOverviewPage() {
   const totalRuns  = strava.filter(a => a.type === 'Run').length;
 
   const statPills = [
-    { label: 'LC.SOLVED',    value: lcSolved,        color: '#00b8a3' },
-    { label: 'QUANT.DONE',   value: quantDone,       color: '#8b5cf6' },
-    { label: 'GIT.COMMITS',  value: gitTotal,        color: '#f59e0b' },
-    { label: 'SESSIONS',     value: sessions.length, color: '#ef4444' },
-    { label: 'RUNS',         value: totalRuns,       color: '#fc4c02' },
+    { label: 'LC.SOLVED',    value: lcSolved,        color: 'var(--brand-leetcode-teal)' },
+    { label: 'QUANT.DONE',   value: quantDone,       color: 'var(--violet)' },
+    { label: 'GIT.COMMITS',  value: gitTotal,        color: 'var(--warning)' },
+    { label: 'SESSIONS',     value: sessions.length, color: 'var(--danger)' },
+    { label: 'RUNS',         value: totalRuns,       color: 'var(--brand-strava)' },
   ];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#000000', fontFamily: MONO }}>
+    <div style={{ minHeight: '100vh', background: 'var(--scrim)', fontFamily: MONO }}>
       {/* Header */}
       <div style={{
-        borderBottom: '1px solid rgba(255,42,42,0.15)',
+        borderBottom: '1px solid rgb(var(--accent-rgb) / 0.15)',
         padding: '28px 28px 20px',
       }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
@@ -123,47 +123,47 @@ export default function LabOverviewPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               <div style={{
                 padding: '4px 12px',
-                border: '1px solid rgba(255,42,42,0.4)',
-                color: '#FF2A2A',
+                border: '1px solid rgb(var(--accent-rgb) / 0.4)',
+                color: 'var(--accent)',
                 fontSize: 9, letterSpacing: 4, fontFamily: MONO,
               }}>
                 MODE: THE LAB
               </div>
               <div style={{
                 padding: '4px 12px',
-                border: '1px solid rgba(0,184,163,0.3)',
-                color: '#00b8a3',
+                border: '1px solid color-mix(in srgb, var(--brand-leetcode-teal) 30%, transparent)',
+                color: 'var(--brand-leetcode-teal)',
                 fontSize: 9, letterSpacing: 4, fontFamily: MONO,
               }}>
                 SYS.ACTIVE
               </div>
               {username && (
-                <div style={{ color: '#737373', fontSize: 9, letterSpacing: 2 }}>
+                <div style={{ color: 'var(--text-neutral)', fontSize: 9, letterSpacing: 2 }}>
                   {user?.email || username}
                 </div>
               )}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <div style={{ color: '#737373', fontSize: 9, letterSpacing: 1, fontVariantNumeric: 'tabular-nums' }}>
+              <div style={{ color: 'var(--text-neutral)', fontSize: 9, letterSpacing: 1, fontVariantNumeric: 'tabular-nums' }}>
                 {now}
               </div>
               <button
                 onClick={signOut}
                 style={{
-                  background: 'none', border: '1px solid rgba(255,42,42,0.3)',
-                  color: '#737373', cursor: 'pointer', padding: '4px 12px',
+                  background: 'none', border: '1px solid rgb(var(--accent-rgb) / 0.3)',
+                  color: 'var(--text-neutral)', cursor: 'pointer', padding: '4px 12px',
                   fontSize: 9, letterSpacing: 3, fontFamily: MONO,
                   transition: 'all 0.15s',
                 }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#FF2A2A'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,42,42,0.6)'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#737373'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,42,42,0.3)'; }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--accent)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgb(var(--accent-rgb) / 0.6)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text-neutral)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgb(var(--accent-rgb) / 0.3)'; }}
               >
                 SIGN OUT
               </button>
             </div>
           </div>
 
-          <h1 style={{ fontSize: 32, fontWeight: 700, color: '#E5E5E5', letterSpacing: 6, marginBottom: 0 }}>
+          <h1 style={{ fontSize: 32, fontWeight: 700, color: 'var(--text-soft)', letterSpacing: 6, marginBottom: 0 }}>
             OVERVIEW
           </h1>
         </div>
@@ -171,7 +171,7 @@ export default function LabOverviewPage() {
 
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 28px' }}>
         {loading ? (
-          <div style={{ color: '#737373', fontSize: 11, letterSpacing: 4, textAlign: 'center', paddingTop: 80 }}>
+          <div style={{ color: 'var(--text-neutral)', fontSize: 11, letterSpacing: 4, textAlign: 'center', paddingTop: 80 }}>
             LOADING...
           </div>
         ) : (
@@ -181,11 +181,11 @@ export default function LabOverviewPage() {
               {statPills.map(({ label, value, color }) => (
                 <div key={label} style={{
                   padding: '12px 20px',
-                  border: '1px solid rgba(255,42,42,0.2)',
+                  border: '1px solid rgb(var(--accent-rgb) / 0.2)',
                   display: 'flex', flexDirection: 'column', gap: 4,
                   minWidth: 130,
                 }}>
-                  <div style={{ fontSize: 8, color: '#737373', letterSpacing: 4 }}>{label}</div>
+                  <div style={{ fontSize: 8, color: 'var(--text-neutral)', letterSpacing: 4 }}>{label}</div>
                   <div style={{ fontSize: 24, fontWeight: 700, color, letterSpacing: 1 }}>{value}</div>
                 </div>
               ))}
@@ -194,8 +194,8 @@ export default function LabOverviewPage() {
             {/* Cumulative chart */}
             <div style={{ marginBottom: 40 }}>
               <div style={{
-                fontSize: 9, color: '#737373', letterSpacing: 5, marginBottom: 16,
-                borderBottom: '1px solid rgba(255,42,42,0.1)', paddingBottom: 10,
+                fontSize: 9, color: 'var(--text-neutral)', letterSpacing: 5, marginBottom: 16,
+                borderBottom: '1px solid rgb(var(--accent-rgb) / 0.1)', paddingBottom: 10,
               }}>
                 CUMULATIVE ACTIVITY
               </div>
@@ -211,8 +211,8 @@ export default function LabOverviewPage() {
             {/* Heatmap */}
             <div>
               <div style={{
-                fontSize: 9, color: '#737373', letterSpacing: 5, marginBottom: 16,
-                borderBottom: '1px solid rgba(255,42,42,0.1)', paddingBottom: 10,
+                fontSize: 9, color: 'var(--text-neutral)', letterSpacing: 5, marginBottom: 16,
+                borderBottom: '1px solid rgb(var(--accent-rgb) / 0.1)', paddingBottom: 10,
               }}>
                 ACTIVITY MATRIX
               </div>

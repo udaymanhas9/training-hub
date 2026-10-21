@@ -37,14 +37,14 @@ export function BlogSetupBanner() {
         The blog needs a <code style={{ color: 'var(--blog-accent)' }}>blog_posts</code> table. Open Supabase → <b>SQL Editor</b>, paste this, run it, then reload.
       </p>
       <div style={{ position: 'relative', marginTop: 16 }}>
-        <pre style={{ background: '#08080a', border: '1px solid var(--blog-line)', borderRadius: 10, padding: 16, overflowX: 'auto', fontSize: 12, color: '#cbd5e1', fontFamily: "'JetBrains Mono', monospace", lineHeight: 1.6 }}>{BLOG_SETUP_SQL}</pre>
+        <pre style={{ background: 'var(--blog-code-bg)', border: '1px solid var(--blog-line)', borderRadius: 10, padding: 16, overflowX: 'auto', fontSize: 12, color: 'var(--text-soft-2)', fontFamily: "'JetBrains Mono', monospace", lineHeight: 1.6 }}>{BLOG_SETUP_SQL}</pre>
         <button onClick={() => { navigator.clipboard.writeText(BLOG_SETUP_SQL); setCopied(true); setTimeout(() => setCopied(false), 1500); }} style={{
           position: 'absolute', top: 10, right: 10, padding: '5px 12px', borderRadius: 6, border: '1px solid var(--blog-line)',
-          background: '#1c1e22', color: copied ? '#4ade80' : '#cbd5e1', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: BC, letterSpacing: 1,
+          background: 'var(--surface-4)', color: copied ? 'var(--success-3)' : 'var(--text-soft-2)', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: BC, letterSpacing: 1,
         }}>{copied ? 'COPIED' : 'COPY'}</button>
       </div>
       <button onClick={() => location.reload()} style={{
-        marginTop: 20, padding: '10px 20px', borderRadius: 8, border: 'none', background: 'var(--blog-accent)', color: '#fff',
+        marginTop: 20, padding: '10px 20px', borderRadius: 8, border: 'none', background: 'var(--blog-accent)', color: 'var(--text-strong)',
         fontSize: 12, fontWeight: 700, letterSpacing: 2, cursor: 'pointer', fontFamily: BC,
       }}>I&apos;VE RUN IT — RELOAD</button>
     </div>
@@ -66,7 +66,7 @@ export function SubscribeBox() {
         }}
       />
       <button onClick={() => { if (email.trim()) { setSent(true); setEmail(''); } }} style={{
-        padding: '0 18px', borderRadius: 8, border: 'none', background: 'var(--blog-accent)', color: '#fff',
+        padding: '0 18px', borderRadius: 8, border: 'none', background: 'var(--blog-accent)', color: 'var(--text-strong)',
         fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'Georgia, serif', whiteSpace: 'nowrap',
       }}>{sent ? 'Subscribed ✓' : 'Subscribe'}</button>
     </div>

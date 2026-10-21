@@ -11,7 +11,7 @@ import { useAuth } from '@/lib/auth-context';
 import { pushSupported, isPushEnabled, enablePush, disablePush } from '@/lib/push-client';
 
 const BC = "'Barlow Condensed', sans-serif";
-const ACCENT = '#3b82f6';
+const ACCENT = 'var(--info)';
 
 const SETUP_SQL = `-- Run the full migration in the Supabase SQL editor:
 -- supabase/migrations/0003_wishlist.sql
@@ -38,16 +38,16 @@ create policy "Users manage their own finance items" on public.finance_items
 // ── Small styled primitives ────────────────────────────────────────────────────
 
 const inputStyle: React.CSSProperties = {
-  background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6,
-  color: '#f1f5f9', padding: '9px 11px', fontSize: 14, fontFamily: BC, outline: 'none',
+  background: 'var(--surface)', border: '1px solid rgb(var(--ink-rgb) / 0.1)', borderRadius: 6,
+  color: 'var(--text)', padding: '9px 11px', fontSize: 14, fontFamily: BC, outline: 'none',
 };
 
 function fmtDelta(current: number | null, low: number | null): { text: string; color: string } | null {
   if (current === null || low === null) return null;
   const diff = current - low;
-  if (diff <= 0.001) return { text: 'AT LOW', color: '#10b981' };
+  if (diff <= 0.001) return { text: 'AT LOW', color: 'var(--success)' };
   const pct = low > 0 ? (diff / low) * 100 : 0;
-  return { text: `+${formatMoney(diff)} (${pct.toFixed(0)}%)`, color: '#f87171' };
+  return { text: `+${formatMoney(diff)} (${pct.toFixed(0)}%)`, color: 'var(--danger-soft)' };
 }
 
 export default function WishlistPage() {
@@ -281,19 +281,19 @@ export default function WishlistPage() {
   // ── Render ────────────────────────────────────────────────────────────────
 
   if (loading) {
-    return <div style={{ padding: 40, color: '#475569', fontFamily: BC, letterSpacing: 1 }}>Loading…</div>;
+    return <div style={{ padding: 40, color: 'var(--text-faint)', fontFamily: BC, letterSpacing: 1 }}>Loading…</div>;
   }
 
   if (needsSetup) {
     return (
       <div style={{ maxWidth: 720, margin: '0 auto', padding: '40px 20px', fontFamily: BC }}>
         <h1 style={{ fontSize: 28, fontWeight: 900, letterSpacing: 2, marginBottom: 12 }}>WISHLIST</h1>
-        <p style={{ color: '#94a3b8', marginBottom: 16 }}>
+        <p style={{ color: 'var(--text-muted)', marginBottom: 16 }}>
           One-time setup — run this in the Supabase SQL editor, then reload.
         </p>
         <pre style={{
-          background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8,
-          padding: 16, fontSize: 12, overflowX: 'auto', color: '#cbd5e1',
+          background: 'var(--surface)', border: '1px solid rgb(var(--ink-rgb) / 0.1)', borderRadius: 8,
+          padding: 16, fontSize: 12, overflowX: 'auto', color: 'var(--text-soft-2)',
           fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'pre',
         }}>{SETUP_SQL}</pre>
       </div>
@@ -310,12 +310,12 @@ export default function WishlistPage() {
         <h1 style={{ fontSize: 30, fontWeight: 900, letterSpacing: 3, margin: 0 }}>WISHLIST</h1>
         <div style={{ display: 'flex', gap: 20 }}>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 11, color: '#64748b', letterSpacing: 2 }}>{isWish ? 'WISHLIST VALUE' : 'UPCOMING TOTAL'}</div>
-            <div style={{ fontSize: 22, fontWeight: 900, color: '#f1f5f9' }}>{formatMoney(total)}</div>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)', letterSpacing: 2 }}>{isWish ? 'WISHLIST VALUE' : 'UPCOMING TOTAL'}</div>
+            <div style={{ fontSize: 22, fontWeight: 900, color: 'var(--text)' }}>{formatMoney(total)}</div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 11, color: '#64748b', letterSpacing: 2 }}>ITEMS</div>
-            <div style={{ fontSize: 22, fontWeight: 900, color: '#f1f5f9' }}>{visible.length}</div>
+            <div style={{ fontSize: 11, color: 'var(--text-subtle)', letterSpacing: 2 }}>ITEMS</div>
+            <div style={{ fontSize: 22, fontWeight: 900, color: 'var(--text)' }}>{visible.length}</div>
           </div>
         </div>
       </div>
@@ -330,9 +330,9 @@ export default function WishlistPage() {
               onClick={() => setTab(k)}
               style={{
                 padding: '8px 18px', borderRadius: 6, cursor: 'pointer',
-                border: active ? `1px solid ${ACCENT}` : '1px solid rgba(255,255,255,0.1)',
-                background: active ? 'rgba(59,130,246,0.14)' : 'transparent',
-                color: active ? '#dbeafe' : '#64748b',
+                border: active ? `1px solid ${ACCENT}` : '1px solid rgb(var(--ink-rgb) / 0.1)',
+                background: active ? 'rgb(var(--info-rgb) / 0.14)' : 'transparent',
+                color: active ? 'var(--info-pale)' : 'var(--text-subtle)',
                 fontSize: 13, fontWeight: 700, letterSpacing: 2, fontFamily: BC,
               }}
             >
@@ -350,8 +350,8 @@ export default function WishlistPage() {
             disabled={checking}
             style={{
               padding: '7px 14px', borderRadius: 6, cursor: checking ? 'default' : 'pointer',
-              border: '1px solid rgba(59,130,246,0.4)', background: 'rgba(59,130,246,0.12)',
-              color: '#dbeafe', fontSize: 12, fontWeight: 700, letterSpacing: 1, fontFamily: BC, opacity: checking ? 0.6 : 1,
+              border: '1px solid rgb(var(--info-rgb) / 0.4)', background: 'rgb(var(--info-rgb) / 0.12)',
+              color: 'var(--info-pale)', fontSize: 12, fontWeight: 700, letterSpacing: 1, fontFamily: BC, opacity: checking ? 0.6 : 1,
             }}
           >
             {checking ? 'CHECKING…' : 'CHECK PRICES NOW'}
@@ -362,9 +362,9 @@ export default function WishlistPage() {
               disabled={pushBusy}
               style={{
                 padding: '7px 14px', borderRadius: 6, cursor: pushBusy ? 'default' : 'pointer',
-                border: '1px solid ' + (pushOn ? 'rgba(16,185,129,0.4)' : 'rgba(255,255,255,0.12)'),
-                background: pushOn ? 'rgba(16,185,129,0.12)' : 'transparent',
-                color: pushOn ? '#34d399' : '#94a3b8', fontSize: 12, fontWeight: 700, letterSpacing: 1, fontFamily: BC, opacity: pushBusy ? 0.6 : 1,
+                border: '1px solid ' + (pushOn ? 'rgb(var(--success-rgb) / 0.4)' : 'rgb(var(--ink-rgb) / 0.12)'),
+                background: pushOn ? 'rgb(var(--success-rgb) / 0.12)' : 'transparent',
+                color: pushOn ? 'var(--success-4)' : 'var(--text-muted)', fontSize: 12, fontWeight: 700, letterSpacing: 1, fontFamily: BC, opacity: pushBusy ? 0.6 : 1,
               }}
             >
               {pushOn ? '🔔 ALERTS ON' : '🔕 ENABLE LOW-PRICE ALERTS'}
@@ -376,7 +376,7 @@ export default function WishlistPage() {
       {/* Add form */}
       <div style={{
         display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center',
-        background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10,
+        background: 'var(--surface-2)', border: '1px solid rgb(var(--ink-rgb) / 0.07)', borderRadius: 10,
         padding: 12, marginBottom: 24,
       }}>
         <input style={{ ...inputStyle, flex: '2 1 180px' }} placeholder="Item name"
@@ -389,7 +389,7 @@ export default function WishlistPage() {
           value={link} onChange={e => setLink(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleAdd()} />
         {isWish && (
-          <label style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#94a3b8', fontSize: 12, letterSpacing: 1, cursor: 'pointer' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text-muted)', fontSize: 12, letterSpacing: 1, cursor: 'pointer' }}>
             <input type="checkbox" checked={track} onChange={e => setTrack(e.target.checked)} />
             TRACK
           </label>
@@ -399,7 +399,7 @@ export default function WishlistPage() {
           disabled={saving || !name.trim()}
           style={{
             padding: '9px 20px', borderRadius: 6, border: 'none', cursor: saving || !name.trim() ? 'default' : 'pointer',
-            background: !name.trim() ? 'rgba(59,130,246,0.3)' : ACCENT, color: '#fff',
+            background: !name.trim() ? 'rgb(var(--info-rgb) / 0.3)' : ACCENT, color: 'var(--text-strong)',
             fontSize: 13, fontWeight: 800, letterSpacing: 2, fontFamily: BC, opacity: saving ? 0.6 : 1,
           }}
         >
@@ -409,18 +409,18 @@ export default function WishlistPage() {
 
       {/* Table */}
       {visible.length === 0 ? (
-        <div style={{ padding: '40px 0', textAlign: 'center', color: '#475569', letterSpacing: 1 }}>
+        <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--text-faint)', letterSpacing: 1 }}>
           No {isWish ? 'wishlist items' : 'upcoming costs'} yet.
         </div>
       ) : (
-        <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, overflow: 'hidden', marginBottom: 28 }}>
+        <div style={{ background: 'var(--surface-2)', border: '1px solid rgb(var(--ink-rgb) / 0.07)', borderRadius: 10, overflow: 'hidden', marginBottom: 28 }}>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: isWish ? 720 : 520 }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  <th style={{ padding: '11px 6px 11px 14px', fontSize: 11, letterSpacing: 2, color: '#64748b', fontWeight: 700, width: 28 }} title="Bought">✓</th>
+                <tr style={{ borderBottom: '1px solid rgb(var(--ink-rgb) / 0.08)' }}>
+                  <th style={{ padding: '11px 6px 11px 14px', fontSize: 11, letterSpacing: 2, color: 'var(--text-subtle)', fontWeight: 700, width: 28 }} title="Bought">✓</th>
                   {['ITEM', 'CURRENT', ...(isWish ? ['LOW', 'VS LOW', 'TRACK'] : []), 'LINK', ''].map((h, i) => (
-                    <th key={i} style={{ textAlign: 'left', padding: '11px 14px', fontSize: 11, letterSpacing: 2, color: '#64748b', fontWeight: 700 }}>{h}</th>
+                    <th key={i} style={{ textAlign: 'left', padding: '11px 14px', fontSize: 11, letterSpacing: 2, color: 'var(--text-subtle)', fontWeight: 700 }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -430,36 +430,36 @@ export default function WishlistPage() {
                   const delta = isWish ? fmtDelta(item.currentCost, item.lowestPrice) : null;
                   const bought = item.purchased;
                   return (
-                    <tr key={item.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', opacity: bought ? 0.5 : 1 }}>
+                    <tr key={item.id} style={{ borderBottom: '1px solid rgb(var(--ink-rgb) / 0.05)', opacity: bought ? 0.5 : 1 }}>
                       {/* Bought checkbox */}
                       <td style={{ padding: '10px 6px 10px 14px', textAlign: 'center' }}>
                         <input type="checkbox" checked={bought} onChange={() => togglePurchased(item)} title="Mark as bought"
-                          style={{ cursor: 'pointer', width: 16, height: 16, accentColor: '#10b981' }} />
+                          style={{ cursor: 'pointer', width: 16, height: 16, accentColor: 'var(--success)' }} />
                       </td>
                       {/* Name */}
                       <td style={{ padding: '10px 14px' }}>
                         {editing
                           ? <input style={{ ...inputStyle, width: '100%', minWidth: 120 }} value={draft.name} onChange={e => setDraft(d => ({ ...d, name: e.target.value }))} />
-                          : <span style={{ fontSize: 15, fontWeight: 600, color: '#f1f5f9', textDecoration: bought ? 'line-through' : 'none' }}>{item.name}</span>}
+                          : <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)', textDecoration: bought ? 'line-through' : 'none' }}>{item.name}</span>}
                       </td>
                       {/* Current cost */}
                       <td style={{ padding: '10px 14px' }}>
                         {editing
                           ? <input style={{ ...inputStyle, width: 90 }} inputMode="decimal" value={draft.cost} onChange={e => setDraft(d => ({ ...d, cost: e.target.value }))} />
-                          : <span style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9' }}>{formatMoney(item.currentCost)}</span>}
+                          : <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)' }}>{formatMoney(item.currentCost)}</span>}
                       </td>
                       {/* Wishlist-only cells */}
                       {isWish && (
                         <>
-                          <td style={{ padding: '10px 14px', fontSize: 14, color: '#10b981', fontWeight: 700 }}>{formatMoney(item.lowestPrice)}</td>
-                          <td style={{ padding: '10px 14px', fontSize: 13, fontWeight: 700, color: delta?.color ?? '#475569' }}>{delta?.text ?? '—'}</td>
+                          <td style={{ padding: '10px 14px', fontSize: 14, color: 'var(--success)', fontWeight: 700 }}>{formatMoney(item.lowestPrice)}</td>
+                          <td style={{ padding: '10px 14px', fontSize: 13, fontWeight: 700, color: delta?.color ?? 'var(--text-faint)' }}>{delta?.text ?? '—'}</td>
                           <td style={{ padding: '10px 14px' }}>
                             <button onClick={() => toggleTrack(item)} title="Toggle price tracking"
                               style={{
                                 fontSize: 11, fontWeight: 800, letterSpacing: 1, padding: '3px 9px', borderRadius: 5, cursor: 'pointer',
-                                border: '1px solid ' + (item.trackEnabled ? 'rgba(16,185,129,0.4)' : 'rgba(255,255,255,0.12)'),
-                                background: item.trackEnabled ? 'rgba(16,185,129,0.12)' : 'transparent',
-                                color: item.trackEnabled ? '#34d399' : '#64748b', fontFamily: BC,
+                                border: '1px solid ' + (item.trackEnabled ? 'rgb(var(--success-rgb) / 0.4)' : 'rgb(var(--ink-rgb) / 0.12)'),
+                                background: item.trackEnabled ? 'rgb(var(--success-rgb) / 0.12)' : 'transparent',
+                                color: item.trackEnabled ? 'var(--success-4)' : 'var(--text-subtle)', fontFamily: BC,
                               }}>
                               {item.trackEnabled ? 'ON' : 'OFF'}
                             </button>
@@ -474,27 +474,27 @@ export default function WishlistPage() {
                             ? <a href={item.link} target="_blank" rel="noreferrer" style={{ color: ACCENT, fontSize: 13, textDecoration: 'none', display: 'inline-block', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', verticalAlign: 'bottom' }}>
                                 {(() => { try { return new URL(item.link).hostname.replace('www.', ''); } catch { return 'link'; } })()} ↗
                               </a>
-                            : <span style={{ color: '#475569' }}>—</span>}
+                            : <span style={{ color: 'var(--text-faint)' }}>—</span>}
                       </td>
                       {/* Actions */}
                       <td style={{ padding: '10px 14px', textAlign: 'right', whiteSpace: 'nowrap' }}>
                         {editing ? (
                           <>
-                            <button onClick={() => saveEdit(item)} style={actionBtn('#34d399')}>Save</button>
-                            <button onClick={() => setEditId(null)} style={actionBtn('#64748b')}>Cancel</button>
+                            <button onClick={() => saveEdit(item)} style={actionBtn('var(--success-4)')}>Save</button>
+                            <button onClick={() => setEditId(null)} style={actionBtn('var(--text-subtle)')}>Cancel</button>
                           </>
                         ) : (
                           <>
                             {item.link && (
                               <button onClick={() => fetchRowPrice(item)} disabled={fetchingRow === item.id}
                                 title="Pull live price from link and overwrite current cost"
-                                style={actionBtn(fetchingRow === item.id ? '#64748b' : ACCENT)}>
+                                style={actionBtn(fetchingRow === item.id ? 'var(--text-subtle)' : ACCENT)}>
                                 {fetchingRow === item.id ? '…' : '↻ Price'}
                               </button>
                             )}
-                            {isWish && <button onClick={() => setChartId(item.id)} style={actionBtn(chartId === item.id ? ACCENT : '#64748b')}>Chart</button>}
-                            <button onClick={() => startEdit(item)} style={actionBtn('#94a3b8')}>Edit</button>
-                            <button onClick={() => handleDelete(item)} style={actionBtn('#f87171')}>Del</button>
+                            {isWish && <button onClick={() => setChartId(item.id)} style={actionBtn(chartId === item.id ? ACCENT : 'var(--text-subtle)')}>Chart</button>}
+                            <button onClick={() => startEdit(item)} style={actionBtn('var(--text-muted)')}>Edit</button>
+                            <button onClick={() => handleDelete(item)} style={actionBtn('var(--danger-soft)')}>Del</button>
                           </>
                         )}
                       </td>

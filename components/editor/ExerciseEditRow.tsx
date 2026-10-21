@@ -9,6 +9,7 @@ import {
 } from '@/lib/muscleMap';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { tint } from '@/lib/theme';
 
 interface ExerciseEditRowProps {
   exercise: Exercise;
@@ -99,10 +100,10 @@ export default function ExerciseEditRow({ exercise, onChange, onDelete, accentCo
   const selectedMuscles = (exercise.muscleGroups ?? []) as MuscleValue[];
 
   const inputStyle: React.CSSProperties = {
-    background: '#0d0d0d',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--surface)',
+    border: '1px solid rgb(var(--ink-rgb) / 0.08)',
     borderRadius: 4,
-    color: '#f1f5f9',
+    color: 'var(--text)',
     padding: '6px 8px',
     fontSize: 13,
     fontFamily: "'Barlow Condensed', sans-serif",
@@ -112,14 +113,14 @@ export default function ExerciseEditRow({ exercise, onChange, onDelete, accentCo
   const labelStyle: React.CSSProperties = {
     fontSize: 8,
     letterSpacing: 2,
-    color: '#475569',
+    color: 'var(--text-faint)',
     fontFamily: "'Barlow Condensed', sans-serif",
     marginBottom: 4,
     display: 'block',
   };
 
   return (
-    <div ref={setNodeRef} style={{ ...style, background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, padding: '12px 14px', marginBottom: 8 }}>
+    <div ref={setNodeRef} style={{ ...style, background: 'var(--surface-2)', border: '1px solid rgb(var(--ink-rgb) / 0.07)', borderRadius: 8, padding: '12px 14px', marginBottom: 8 }}>
 
       {/* Name + tag row */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
@@ -127,7 +128,7 @@ export default function ExerciseEditRow({ exercise, onChange, onDelete, accentCo
         <div
           {...attributes}
           {...listeners}
-          style={{ cursor: 'grab', color: '#334155', flexShrink: 0, padding: '4px 2px', touchAction: 'none' }}
+          style={{ cursor: 'grab', color: 'var(--text-ghost)', flexShrink: 0, padding: '4px 2px', touchAction: 'none' }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" />
@@ -162,12 +163,12 @@ export default function ExerciseEditRow({ exercise, onChange, onDelete, accentCo
                 left: 0,
                 right: 0,
                 zIndex: 50,
-                background: '#1a1a1a',
-                border: '1px solid rgba(255,255,255,0.12)',
+                background: 'var(--surface-4)',
+                border: '1px solid rgb(var(--ink-rgb) / 0.12)',
                 borderRadius: 6,
                 marginTop: 3,
                 overflow: 'hidden',
-                boxShadow: '0 8px 24px rgba(0,0,0,0.6)',
+                boxShadow: '0 8px 24px rgb(var(--shadow-rgb) / 0.6)',
               }}
             >
               {suggestions.map((s, i) => (
@@ -180,9 +181,9 @@ export default function ExerciseEditRow({ exercise, onChange, onDelete, accentCo
                     justifyContent: 'space-between',
                     width: '100%',
                     padding: '9px 12px',
-                    background: i === activeIdx ? 'rgba(255,255,255,0.07)' : 'transparent',
+                    background: i === activeIdx ? 'rgb(var(--ink-rgb) / 0.07)' : 'transparent',
                     border: 'none',
-                    borderBottom: i < suggestions.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                    borderBottom: i < suggestions.length - 1 ? '1px solid rgb(var(--ink-rgb) / 0.05)' : 'none',
                     cursor: 'pointer',
                     textAlign: 'left',
                     gap: 10,
@@ -192,14 +193,14 @@ export default function ExerciseEditRow({ exercise, onChange, onDelete, accentCo
                     fontSize: 13,
                     fontFamily: "'Barlow Condensed', sans-serif",
                     fontWeight: 600,
-                    color: '#f1f5f9',
+                    color: 'var(--text)',
                     letterSpacing: 0.3,
                   }}>
                     {s.name}
                   </span>
                   <span style={{
                     fontSize: 9,
-                    color: '#475569',
+                    color: 'var(--text-faint)',
                     fontFamily: "'Barlow Condensed', sans-serif",
                     letterSpacing: 1,
                     whiteSpace: 'nowrap',
@@ -217,14 +218,14 @@ export default function ExerciseEditRow({ exercise, onChange, onDelete, accentCo
         <select
           value={exercise.tag}
           onChange={e => update('tag', e.target.value)}
-          style={{ ...inputStyle, width: 'auto', flexShrink: 0, color: TAG_COLORS[exercise.tag] || '#94a3b8' }}
+          style={{ ...inputStyle, width: 'auto', flexShrink: 0, color: TAG_COLORS[exercise.tag] || 'var(--text-muted)' }}
         >
           {TAG_OPTIONS.map(t => <option key={t} value={t}>{t}</option>)}
           <option value="Custom">Custom</option>
         </select>
         <button
           onClick={onDelete}
-          style={{ background: 'transparent', border: 'none', color: '#334155', cursor: 'pointer', fontSize: 18, padding: '0 4px', flexShrink: 0 }}
+          style={{ background: 'transparent', border: 'none', color: 'var(--text-ghost)', cursor: 'pointer', fontSize: 18, padding: '0 4px', flexShrink: 0 }}
         >
           ×
         </button>
@@ -235,7 +236,7 @@ export default function ExerciseEditRow({ exercise, onChange, onDelete, accentCo
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
           <span style={{ ...labelStyle, marginBottom: 0 }}>MUSCLES</span>
           {selectedMuscles.length > 0 && (
-            <span style={{ fontSize: 8, letterSpacing: 1, color: '#22c55e', fontFamily: "'Barlow Condensed', sans-serif" }}>
+            <span style={{ fontSize: 8, letterSpacing: 1, color: 'var(--success-2)', fontFamily: "'Barlow Condensed', sans-serif" }}>
               AUTO
             </span>
           )}
@@ -243,7 +244,7 @@ export default function ExerciseEditRow({ exercise, onChange, onDelete, accentCo
             onClick={() => setShowPicker(p => !p)}
             style={{
               background: 'transparent', border: 'none',
-              color: showPicker ? accentColor : '#475569',
+              color: showPicker ? accentColor : 'var(--text-faint)',
               cursor: 'pointer', fontSize: 9, letterSpacing: 2,
               fontFamily: "'Barlow Condensed', sans-serif", padding: 0,
             }}
@@ -259,8 +260,8 @@ export default function ExerciseEditRow({ exercise, onChange, onDelete, accentCo
                   <span key={m} style={{
                     fontSize: 9, letterSpacing: 1,
                     color: accentColor,
-                    background: `${accentColor}18`,
-                    border: `1px solid ${accentColor}40`,
+                    background: `${tint(accentColor, 0.09)}`,
+                    border: `1px solid ${tint(accentColor, 0.25)}`,
                     borderRadius: 3, padding: '2px 7px',
                     fontFamily: "'Barlow Condensed', sans-serif",
                   }}>
@@ -271,8 +272,8 @@ export default function ExerciseEditRow({ exercise, onChange, onDelete, accentCo
                 <button
                   onClick={() => setShowPicker(true)}
                   style={{
-                    background: 'transparent', border: '1px dashed #334155',
-                    borderRadius: 3, color: '#475569', cursor: 'pointer',
+                    background: 'transparent', border: '1px dashed var(--text-ghost)',
+                    borderRadius: 3, color: 'var(--text-faint)', cursor: 'pointer',
                     fontSize: 9, letterSpacing: 1, padding: '2px 8px',
                     fontFamily: "'Barlow Condensed', sans-serif",
                   }}
@@ -293,9 +294,9 @@ export default function ExerciseEditRow({ exercise, onChange, onDelete, accentCo
                   key={m}
                   onClick={() => toggleMuscle(m)}
                   style={{
-                    border: `1px solid ${active ? accentColor : 'rgba(255,255,255,0.1)'}`,
-                    background: active ? `${accentColor}25` : 'transparent',
-                    color: active ? accentColor : '#64748b',
+                    border: `1px solid ${active ? accentColor : 'rgb(var(--ink-rgb) / 0.1)'}`,
+                    background: active ? `${tint(accentColor, 0.15)}` : 'transparent',
+                    color: active ? accentColor : 'var(--text-subtle)',
                     borderRadius: 3, cursor: 'pointer',
                     fontSize: 9, letterSpacing: 1, padding: '3px 8px',
                     fontFamily: "'Barlow Condensed', sans-serif",

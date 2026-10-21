@@ -2,6 +2,7 @@
 
 import { Phase, ExerciseLog, SetLog } from '@/lib/types';
 import ExerciseRow from './ExerciseRow';
+import { tint } from '@/lib/theme';
 
 interface PhaseAccordionProps {
   phase: Phase;
@@ -36,7 +37,7 @@ export default function PhaseAccordion({
     <div style={{
       borderRadius: 10,
       overflow: 'hidden',
-      border: `1px solid ${isOpen ? phase.color + '44' : 'rgba(255,255,255,0.07)'}`,
+      border: `1px solid ${isOpen ? tint(phase.color, 0.27) : 'rgb(var(--ink-rgb) / 0.07)'}`,
       transition: 'border-color 0.3s',
     }}>
       {/* Phase header */}
@@ -44,7 +45,7 @@ export default function PhaseAccordion({
         className="phase-header"
         onClick={onToggle}
         style={{
-          background: isOpen ? `linear-gradient(90deg, ${phase.color}22, #0f0f0f)` : '#111',
+          background: isOpen ? `linear-gradient(90deg, ${tint(phase.color, 0.13)}, var(--surface-1))` : 'var(--surface-2)',
           padding: '14px 18px',
           cursor: 'pointer',
           display: 'flex',
@@ -56,7 +57,7 @@ export default function PhaseAccordion({
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <div>
-            <div style={{ fontSize: 16, fontWeight: 900, letterSpacing: 2, color: isOpen ? '#fff' : '#94a3b8' }}>
+            <div style={{ fontSize: 16, fontWeight: 900, letterSpacing: 2, color: isOpen ? 'var(--text-strong)' : 'var(--text-muted)' }}>
               {phase.label}
             </div>
             <div style={{ fontSize: 12, color: phase.color, fontFamily: "'Barlow Condensed', sans-serif", marginTop: 1 }}>
@@ -65,11 +66,11 @@ export default function PhaseAccordion({
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ fontSize: 12, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif" }}>
+          <div style={{ fontSize: 12, color: 'var(--text-subtle)', fontFamily: "'Barlow Condensed', sans-serif" }}>
             {phaseDone}/{phase.exercises.length}
           </div>
           {phaseDone > 0 && phaseDone === phase.exercises.length && (
-            <span style={{ fontSize: 12, color: '#10b981' }}>✓</span>
+            <span style={{ fontSize: 12, color: 'var(--success)' }}>✓</span>
           )}
           <div style={{
             fontSize: 14, color: phase.color,
@@ -83,11 +84,11 @@ export default function PhaseAccordion({
 
       {/* Exercises */}
       {isOpen && (
-        <div style={{ background: '#0d0d0d' }}>
+        <div style={{ background: 'var(--surface)' }}>
           {/* Column headers */}
-          <div style={{ display: 'grid', gridTemplateColumns: '28px 1fr 56px 80px 56px', gap: 0, padding: '8px 18px', borderBottom: '1px solid #1e293b' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '28px 1fr 56px 80px 56px', gap: 0, padding: '8px 18px', borderBottom: '1px solid var(--surface-blue)' }}>
             {['', 'EXERCISE', 'SETS', 'REPS', 'REST'].map(h => (
-              <div key={h} style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>{h}</div>
+              <div key={h} style={{ fontSize: 9, letterSpacing: 3, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif" }}>{h}</div>
             ))}
           </div>
 

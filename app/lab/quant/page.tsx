@@ -7,13 +7,14 @@ import {
 } from '@/lib/storage';
 import { QuantEntry, Difficulty } from '@/lib/types';
 import { generateId, todayISO } from '@/lib/utils';
+import { tint } from '@/lib/theme';
 
 const MONO = "'JetBrains Mono', monospace";
 
 const DIFF_COLORS: Record<Difficulty, string> = {
-  Easy:   '#00b8a3',
-  Medium: '#ffc01e',
-  Hard:   '#ff375f',
+  Easy:   'var(--brand-leetcode-teal)',
+  Medium: 'var(--brand-leetcode-yellow)',
+  Hard:   'var(--pink)',
 };
 
 const PRESET_TOPICS = [
@@ -132,8 +133,8 @@ export default function QuantPage() {
 
   const inputStyle: React.CSSProperties = {
     background: 'transparent',
-    border: '1px solid rgba(255,42,42,0.25)',
-    color: '#E5E5E5',
+    border: '1px solid rgb(var(--accent-rgb) / 0.25)',
+    color: 'var(--text-soft)',
     padding: '8px 10px',
     fontFamily: MONO,
     fontSize: 11,
@@ -142,7 +143,7 @@ export default function QuantPage() {
   };
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 8, color: '#737373', letterSpacing: 4,
+    fontSize: 8, color: 'var(--text-neutral)', letterSpacing: 4,
     display: 'block', marginBottom: 6, fontFamily: MONO,
   };
 
@@ -154,21 +155,21 @@ export default function QuantPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#000000', fontFamily: MONO }}>
+    <div style={{ minHeight: '100vh', background: 'var(--scrim)', fontFamily: MONO }}>
       {/* Header */}
-      <div style={{ borderBottom: '1px solid rgba(255,42,42,0.15)', padding: '28px 28px 20px' }}>
+      <div style={{ borderBottom: '1px solid rgb(var(--accent-rgb) / 0.15)', padding: '28px 28px 20px' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ fontSize: 9, color: '#737373', letterSpacing: 5, marginBottom: 8 }}>THE LAB / QUANT</div>
+          <div style={{ fontSize: 9, color: 'var(--text-neutral)', letterSpacing: 5, marginBottom: 8 }}>THE LAB / QUANT</div>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-            <h1 style={{ fontSize: 28, fontWeight: 700, color: '#E5E5E5', letterSpacing: 4 }}>
+            <h1 style={{ fontSize: 28, fontWeight: 700, color: 'var(--text-soft)', letterSpacing: 4 }}>
               QUANT TRACKER
             </h1>
             <button
               onClick={() => { setFormOpen(f => !f); if (!formOpen) resetForm(); }}
               style={{
-                background: formOpen ? 'rgba(255,42,42,0.1)' : 'transparent',
-                border: '1px solid rgba(255,42,42,0.4)',
-                color: '#FF2A2A', cursor: 'pointer',
+                background: formOpen ? 'rgb(var(--accent-rgb) / 0.1)' : 'transparent',
+                border: '1px solid rgb(var(--accent-rgb) / 0.4)',
+                color: 'var(--accent)', cursor: 'pointer',
                 padding: '8px 16px', fontSize: 9, letterSpacing: 3, fontFamily: MONO,
               }}
             >
@@ -183,31 +184,31 @@ export default function QuantPage() {
         <div style={{ display: 'flex', gap: 12, marginBottom: 32, flexWrap: 'wrap' }}>
           {DIFFICULTIES.map(d => (
             <div key={d} style={{
-              padding: '10px 16px', border: '1px solid rgba(255,42,42,0.15)',
+              padding: '10px 16px', border: '1px solid rgb(var(--accent-rgb) / 0.15)',
               minWidth: 100,
             }}>
-              <div style={{ fontSize: 8, color: '#737373', letterSpacing: 4 }}>{d.toUpperCase()}</div>
+              <div style={{ fontSize: 8, color: 'var(--text-neutral)', letterSpacing: 4 }}>{d.toUpperCase()}</div>
               <div style={{ fontSize: 20, fontWeight: 700, color: DIFF_COLORS[d], marginTop: 2 }}>{byDiff[d]}</div>
             </div>
           ))}
           <div style={{
-            padding: '10px 16px', border: '1px solid rgba(255,42,42,0.15)',
+            padding: '10px 16px', border: '1px solid rgb(var(--accent-rgb) / 0.15)',
             minWidth: 100,
           }}>
-            <div style={{ fontSize: 8, color: '#737373', letterSpacing: 4 }}>TOTAL</div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: '#E5E5E5', marginTop: 2 }}>{entries.length}</div>
+            <div style={{ fontSize: 8, color: 'var(--text-neutral)', letterSpacing: 4 }}>TOTAL</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-soft)', marginTop: 2 }}>{entries.length}</div>
           </div>
         </div>
 
         {/* Log form */}
         {formOpen && (
           <form onSubmit={handleSubmit} style={{
-            border: '1px solid rgba(255,42,42,0.25)',
+            border: '1px solid rgb(var(--accent-rgb) / 0.25)',
             padding: 24,
             marginBottom: 32,
-            background: 'rgba(255,42,42,0.02)',
+            background: 'rgb(var(--accent-rgb) / 0.02)',
           }}>
-            <div style={{ fontSize: 9, color: '#FF2A2A', letterSpacing: 4, marginBottom: 20 }}>
+            <div style={{ fontSize: 9, color: 'var(--accent)', letterSpacing: 4, marginBottom: 20 }}>
               LOG PROBLEM
             </div>
 
@@ -243,8 +244,8 @@ export default function QuantPage() {
                       style={{ ...inputStyle, flex: 1 }}
                     />
                     <button type="button" onClick={handleAddCustomTopic} style={{
-                      background: 'rgba(255,42,42,0.1)', border: '1px solid rgba(255,42,42,0.4)',
-                      color: '#FF2A2A', cursor: 'pointer', padding: '0 12px',
+                      background: 'rgb(var(--accent-rgb) / 0.1)', border: '1px solid rgb(var(--accent-rgb) / 0.4)',
+                      color: 'var(--accent)', cursor: 'pointer', padding: '0 12px',
                       fontSize: 9, letterSpacing: 2, fontFamily: MONO,
                     }}>ADD</button>
                   </div>
@@ -280,9 +281,9 @@ export default function QuantPage() {
                     onClick={() => setDifficulty(d)}
                     style={{
                       padding: '6px 16px',
-                      border: `1px solid ${difficulty === d ? DIFF_COLORS[d] : 'rgba(255,42,42,0.2)'}`,
-                      background: difficulty === d ? `${DIFF_COLORS[d]}18` : 'transparent',
-                      color: difficulty === d ? DIFF_COLORS[d] : '#737373',
+                      border: `1px solid ${difficulty === d ? DIFF_COLORS[d] : 'rgb(var(--accent-rgb) / 0.2)'}`,
+                      background: difficulty === d ? `${tint(DIFF_COLORS[d], 0.09)}` : 'transparent',
+                      color: difficulty === d ? DIFF_COLORS[d] : 'var(--text-neutral)',
                       fontSize: 8, letterSpacing: 3, cursor: 'pointer', fontFamily: MONO,
                     }}
                   >
@@ -305,9 +306,9 @@ export default function QuantPage() {
               type="submit"
               disabled={submitting || !name || !source}
               style={{
-                background: submitting ? 'rgba(255,42,42,0.05)' : 'rgba(255,42,42,0.1)',
-                border: '1px solid rgba(255,42,42,0.5)',
-                color: '#FF2A2A', cursor: 'pointer',
+                background: submitting ? 'rgb(var(--accent-rgb) / 0.05)' : 'rgb(var(--accent-rgb) / 0.1)',
+                border: '1px solid rgb(var(--accent-rgb) / 0.5)',
+                color: 'var(--accent)', cursor: 'pointer',
                 padding: '10px 24px', fontSize: 10, letterSpacing: 4, fontFamily: MONO,
                 opacity: (!name || !source) ? 0.4 : 1,
               }}
@@ -319,12 +320,12 @@ export default function QuantPage() {
 
         {/* Filters */}
         <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap', alignItems: 'center' }}>
-          <span style={{ fontSize: 8, color: '#737373', letterSpacing: 3 }}>FILTER:</span>
+          <span style={{ fontSize: 8, color: 'var(--text-neutral)', letterSpacing: 3 }}>FILTER:</span>
           <select
             value={filterDiff} onChange={e => setFilterDiff(e.target.value)}
             style={{
-              background: 'transparent', border: '1px solid rgba(255,42,42,0.25)',
-              color: '#E5E5E5', padding: '6px 10px', fontFamily: MONO, fontSize: 9,
+              background: 'transparent', border: '1px solid rgb(var(--accent-rgb) / 0.25)',
+              color: 'var(--text-soft)', padding: '6px 10px', fontFamily: MONO, fontSize: 9,
               outline: 'none', cursor: 'pointer', appearance: 'none' as const,
             }}
           >
@@ -334,8 +335,8 @@ export default function QuantPage() {
           <select
             value={filterTopic} onChange={e => setFilterTopic(e.target.value)}
             style={{
-              background: 'transparent', border: '1px solid rgba(255,42,42,0.25)',
-              color: '#E5E5E5', padding: '6px 10px', fontFamily: MONO, fontSize: 9,
+              background: 'transparent', border: '1px solid rgb(var(--accent-rgb) / 0.25)',
+              color: 'var(--text-soft)', padding: '6px 10px', fontFamily: MONO, fontSize: 9,
               outline: 'none', cursor: 'pointer', appearance: 'none' as const,
             }}
           >
@@ -346,8 +347,8 @@ export default function QuantPage() {
             <button
               onClick={() => { setFilterDiff(''); setFilterTopic(''); }}
               style={{
-                background: 'none', border: '1px solid rgba(255,42,42,0.2)',
-                color: '#737373', cursor: 'pointer', padding: '5px 10px',
+                background: 'none', border: '1px solid rgb(var(--accent-rgb) / 0.2)',
+                color: 'var(--text-neutral)', cursor: 'pointer', padding: '5px 10px',
                 fontSize: 8, letterSpacing: 2, fontFamily: MONO,
               }}
             >
@@ -358,22 +359,22 @@ export default function QuantPage() {
 
         {/* Table */}
         {loading ? (
-          <div style={{ color: '#737373', fontSize: 10, letterSpacing: 4, paddingTop: 40, textAlign: 'center' }}>
+          <div style={{ color: 'var(--text-neutral)', fontSize: 10, letterSpacing: 4, paddingTop: 40, textAlign: 'center' }}>
             LOADING...
           </div>
         ) : filtered.length === 0 ? (
-          <div style={{ color: '#737373', fontSize: 10, letterSpacing: 4, paddingTop: 40, textAlign: 'center' }}>
+          <div style={{ color: 'var(--text-neutral)', fontSize: 10, letterSpacing: 4, paddingTop: 40, textAlign: 'center' }}>
             NO ENTRIES
           </div>
         ) : (
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid rgba(255,42,42,0.15)' }}>
+                <tr style={{ borderBottom: '1px solid rgb(var(--accent-rgb) / 0.15)' }}>
                   {['NAME', 'SRC', 'TOPIC', 'DIFF', 'DATE', 'NOTES', ''].map(h => (
                     <th key={h} style={{
                       padding: '8px 10px', textAlign: 'left',
-                      fontSize: 8, color: '#737373', letterSpacing: 3,
+                      fontSize: 8, color: 'var(--text-neutral)', letterSpacing: 3,
                       fontFamily: MONO, fontWeight: 700,
                     }}>
                       {h}
@@ -385,20 +386,20 @@ export default function QuantPage() {
                 {filtered.map(entry => (
                   <tr
                     key={entry.id}
-                    style={{ borderBottom: '1px solid rgba(255,42,42,0.06)' }}
-                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(255,42,42,0.04)'}
+                    style={{ borderBottom: '1px solid rgb(var(--accent-rgb) / 0.06)' }}
+                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgb(var(--accent-rgb) / 0.04)'}
                     onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
                   >
-                    <td style={{ padding: '10px 10px', color: '#E5E5E5', fontSize: 10, maxWidth: 200 }}>
+                    <td style={{ padding: '10px 10px', color: 'var(--text-soft)', fontSize: 10, maxWidth: 200 }}>
                       {entry.name}
                     </td>
-                    <td style={{ padding: '10px 10px', color: '#737373', fontSize: 9, maxWidth: 160 }}>
+                    <td style={{ padding: '10px 10px', color: 'var(--text-neutral)', fontSize: 9, maxWidth: 160 }}>
                       {entry.source}
                     </td>
                     <td style={{ padding: '10px 10px' }}>
                       <span style={{
-                        padding: '2px 8px', border: '1px solid rgba(255,42,42,0.2)',
-                        color: '#737373', fontSize: 8, letterSpacing: 2,
+                        padding: '2px 8px', border: '1px solid rgb(var(--accent-rgb) / 0.2)',
+                        color: 'var(--text-neutral)', fontSize: 8, letterSpacing: 2,
                       }}>
                         {entry.topic}
                       </span>
@@ -406,10 +407,10 @@ export default function QuantPage() {
                     <td style={{ padding: '10px 10px' }}>
                       <DiffBadge diff={entry.difficulty} />
                     </td>
-                    <td style={{ padding: '10px 10px', color: '#737373', fontSize: 9, whiteSpace: 'nowrap' }}>
+                    <td style={{ padding: '10px 10px', color: 'var(--text-neutral)', fontSize: 9, whiteSpace: 'nowrap' }}>
                       {entry.date}
                     </td>
-                    <td style={{ padding: '10px 10px', color: '#737373', fontSize: 9, maxWidth: 240 }}>
+                    <td style={{ padding: '10px 10px', color: 'var(--text-neutral)', fontSize: 9, maxWidth: 240 }}>
                       {entry.notes ? (
                         <span title={entry.notes}>
                           {entry.notes.length > 60 ? entry.notes.slice(0, 60) + '…' : entry.notes}
@@ -420,12 +421,12 @@ export default function QuantPage() {
                       <button
                         onClick={() => handleDelete(entry.id)}
                         style={{
-                          background: 'none', border: 'none', color: '#4a4a4a',
+                          background: 'none', border: 'none', color: 'var(--text-neutral-faint)',
                           cursor: 'pointer', fontSize: 14, padding: '0 4px',
                           transition: 'color 0.15s',
                         }}
-                        onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#ff375f'}
-                        onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#4a4a4a'}
+                        onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'var(--pink)'}
+                        onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'var(--text-neutral-faint)'}
                         title="Delete entry"
                       >
                         ×

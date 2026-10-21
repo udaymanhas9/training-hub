@@ -21,10 +21,10 @@ export default function WeekHeatmap({ sessions, onDayClick }: WeekHeatmapProps) 
   });
 
   function getColor(count: number): string {
-    if (count === 0) return '#1a1a1a';
-    if (count === 1) return '#1e3a5f';
-    if (count === 2) return '#1d4ed8';
-    return '#3b82f6';
+    if (count === 0) return 'var(--surface-4)';
+    if (count === 1) return 'var(--navy)';
+    if (count === 2) return 'var(--info-dark)';
+    return 'var(--info)';
   }
 
   // Build weeks array
@@ -62,9 +62,9 @@ export default function WeekHeatmap({ sessions, onDayClick }: WeekHeatmapProps) 
   });
 
   return (
-    <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '20px 24px' }}>
+    <div style={{ background: 'var(--surface-2)', border: '1px solid rgb(var(--ink-rgb) / 0.07)', borderRadius: 10, padding: '20px 24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <div style={{ fontSize: 14, fontWeight: 900, color: '#f1f5f9', letterSpacing: 2 }}>52-WEEK ACTIVITY</div>
+        <div style={{ fontSize: 14, fontWeight: 900, color: 'var(--text)', letterSpacing: 2 }}>52-WEEK ACTIVITY</div>
         <div style={{ display: 'flex', gap: 16 }}>
           {[
             { label: 'ACTIVE DAYS', val: totalActive },
@@ -72,8 +72,8 @@ export default function WeekHeatmap({ sessions, onDayClick }: WeekHeatmapProps) 
             { label: 'BEST STREAK', val: maxStreak },
           ].map(({ label, val }) => (
             <div key={label} style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 18, fontWeight: 900, color: '#3b82f6' }}>{val}</div>
-              <div style={{ fontSize: 8, letterSpacing: 2, color: '#334155', fontFamily: "'Barlow Condensed', sans-serif" }}>{label}</div>
+              <div style={{ fontSize: 18, fontWeight: 900, color: 'var(--info)' }}>{val}</div>
+              <div style={{ fontSize: 8, letterSpacing: 2, color: 'var(--text-ghost)', fontFamily: "'Barlow Condensed', sans-serif" }}>{label}</div>
             </div>
           ))}
         </div>
@@ -85,7 +85,7 @@ export default function WeekHeatmap({ sessions, onDayClick }: WeekHeatmapProps) 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 3, marginRight: 4 }}>
             <div style={{ height: 14 }} /> {/* month label spacer */}
             {DAY_LABELS.map((label, i) => (
-              <div key={i} style={{ width: 12, height: 12, fontSize: 8, color: '#334155', fontFamily: "'Barlow Condensed', sans-serif", display: 'flex', alignItems: 'center' }}>
+              <div key={i} style={{ width: 12, height: 12, fontSize: 8, color: 'var(--text-ghost)', fontFamily: "'Barlow Condensed', sans-serif", display: 'flex', alignItems: 'center' }}>
                 {label}
               </div>
             ))}
@@ -96,7 +96,7 @@ export default function WeekHeatmap({ sessions, onDayClick }: WeekHeatmapProps) 
             const monthLabel = monthLabels.find(m => m.col === wi);
             return (
               <div key={wi} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <div style={{ height: 14, fontSize: 8, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", whiteSpace: 'nowrap' }}>
+                <div style={{ height: 14, fontSize: 8, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif", whiteSpace: 'nowrap' }}>
                   {monthLabel?.label || ''}
                 </div>
                 {week.map(day => {
@@ -110,11 +110,11 @@ export default function WeekHeatmap({ sessions, onDayClick }: WeekHeatmapProps) 
                       title={`${key}: ${count} session${count !== 1 ? 's' : ''}`}
                       style={{
                         width: 12, height: 12,
-                        background: isInFuture ? '#111' : getColor(count),
+                        background: isInFuture ? 'var(--surface-2)' : getColor(count),
                         borderRadius: 2,
                         cursor: count > 0 && !isInFuture ? 'pointer' : 'default',
                         transition: 'opacity 0.15s',
-                        border: format(day, 'yyyy-MM-dd') === format(today, 'yyyy-MM-dd') ? '1px solid #3b82f6' : 'none',
+                        border: format(day, 'yyyy-MM-dd') === format(today, 'yyyy-MM-dd') ? '1px solid var(--info)' : 'none',
                       }}
                       onMouseEnter={e => { if (count > 0) (e.currentTarget as HTMLElement).style.opacity = '0.7'; }}
                       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}
@@ -129,11 +129,11 @@ export default function WeekHeatmap({ sessions, onDayClick }: WeekHeatmapProps) 
 
       {/* Legend */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 12 }}>
-        <span style={{ fontSize: 9, color: '#334155', fontFamily: "'Barlow Condensed', sans-serif" }}>LESS</span>
+        <span style={{ fontSize: 9, color: 'var(--text-ghost)', fontFamily: "'Barlow Condensed', sans-serif" }}>LESS</span>
         {[0, 1, 2, 3].map(v => (
           <div key={v} style={{ width: 10, height: 10, borderRadius: 2, background: getColor(v) }} />
         ))}
-        <span style={{ fontSize: 9, color: '#334155', fontFamily: "'Barlow Condensed', sans-serif" }}>MORE</span>
+        <span style={{ fontSize: 9, color: 'var(--text-ghost)', fontFamily: "'Barlow Condensed', sans-serif" }}>MORE</span>
       </div>
     </div>
   );

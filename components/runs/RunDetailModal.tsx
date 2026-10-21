@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 import { StravaActivity } from '@/lib/types';
 
 const RunMap = dynamic(() => import('./RunMap'), { ssr: false, loading: () => (
-  <div style={{ width: '100%', height: 280, background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#475569', fontSize: 12 }}>
+  <div style={{ width: '100%', height: 280, background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-faint)', fontSize: 12 }}>
     Loading map...
   </div>
 ) });
@@ -50,7 +50,7 @@ export default function RunDetailModal({ activity, onClose }: RunDetailModalProp
     <div
       style={{
         position: 'fixed', inset: 0, zIndex: 500,
-        background: 'rgba(0,0,0,0.85)',
+        background: 'rgb(var(--shadow-rgb) / 0.85)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         padding: 16,
       }}
@@ -58,8 +58,8 @@ export default function RunDetailModal({ activity, onClose }: RunDetailModalProp
     >
       <div
         style={{
-          background: '#0d0d0d',
-          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'var(--surface)',
+          border: '1px solid rgb(var(--ink-rgb) / 0.08)',
           borderRadius: 12,
           width: '100%', maxWidth: 680,
           maxHeight: '90dvh', overflowY: 'auto',
@@ -71,23 +71,23 @@ export default function RunDetailModal({ activity, onClose }: RunDetailModalProp
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
           <div>
-            <div style={{ fontSize: 10, letterSpacing: 4, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 4 }}>
+            <div style={{ fontSize: 10, letterSpacing: 4, color: 'var(--text-subtle)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 4 }}>
               {activity.type.toUpperCase()} · {new Date(activity.startDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
             </div>
-            <h2 style={{ fontSize: 22, fontWeight: 900, color: '#f1f5f9', letterSpacing: -0.5 }}>{activity.name}</h2>
+            <h2 style={{ fontSize: 22, fontWeight: 900, color: 'var(--text)', letterSpacing: -0.5 }}>{activity.name}</h2>
           </div>
           <button
             onClick={onClose}
-            style={{ background: 'none', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 24, lineHeight: 1, padding: 4 }}
+            style={{ background: 'none', border: 'none', color: 'var(--text-faint)', cursor: 'pointer', fontSize: 24, lineHeight: 1, padding: 4 }}
           >×</button>
         </div>
 
         {/* Stats grid — 2 cols on mobile, 4 on wider screens */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 20 }}>
           {stats.map(({ label, value }) => (
-            <div key={label} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: '10px 14px' }}>
-              <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 4 }}>{label}</div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: '#f1f5f9' }}>{value}</div>
+            <div key={label} style={{ background: 'rgb(var(--ink-rgb) / 0.04)', borderRadius: 8, padding: '10px 14px' }}>
+              <div style={{ fontSize: 9, letterSpacing: 3, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 4 }}>{label}</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>{value}</div>
             </div>
           ))}
         </div>
@@ -95,7 +95,7 @@ export default function RunDetailModal({ activity, onClose }: RunDetailModalProp
         {/* Map */}
         {activity.mapPolyline && (
           <div style={{ marginBottom: 24 }}>
-            <div style={{ fontSize: 10, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 10 }}>ROUTE</div>
+            <div style={{ fontSize: 10, letterSpacing: 4, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 10 }}>ROUTE</div>
             <RunMap polyline={activity.mapPolyline} />
           </div>
         )}
@@ -103,29 +103,29 @@ export default function RunDetailModal({ activity, onClose }: RunDetailModalProp
         {/* Splits table */}
         {activity.splits && activity.splits.length > 0 && (
           <div>
-            <div style={{ fontSize: 10, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 10 }}>
+            <div style={{ fontSize: 10, letterSpacing: 4, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 10 }}>
               SPLITS (PER KM)
             </div>
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+                  <tr style={{ borderBottom: '1px solid rgb(var(--ink-rgb) / 0.07)' }}>
                     {['KM', 'DIST', 'TIME', 'PACE', 'ELEV', 'HR'].map(h => (
-                      <th key={h} style={{ padding: '6px 10px', textAlign: 'left', fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>{h}</th>
+                      <th key={h} style={{ padding: '6px 10px', textAlign: 'left', fontSize: 9, letterSpacing: 3, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {activity.splits.map(split => (
-                    <tr key={split.splitIndex} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                      <td style={{ padding: '8px 10px', color: '#64748b', fontWeight: 700 }}>{split.splitIndex}</td>
-                      <td style={{ padding: '8px 10px', color: '#f1f5f9' }}>{fmtDist(split.distance)}</td>
-                      <td style={{ padding: '8px 10px', color: '#f1f5f9' }}>{fmtTime(split.movingTime)}</td>
-                      <td style={{ padding: '8px 10px', color: '#3b82f6', fontWeight: 700 }}>{fmtPace(split.averageSpeed)}</td>
-                      <td style={{ padding: '8px 10px', color: split.elevationDifference > 0 ? '#f59e0b' : '#10b981' }}>
+                    <tr key={split.splitIndex} style={{ borderBottom: '1px solid rgb(var(--ink-rgb) / 0.04)' }}>
+                      <td style={{ padding: '8px 10px', color: 'var(--text-subtle)', fontWeight: 700 }}>{split.splitIndex}</td>
+                      <td style={{ padding: '8px 10px', color: 'var(--text)' }}>{fmtDist(split.distance)}</td>
+                      <td style={{ padding: '8px 10px', color: 'var(--text)' }}>{fmtTime(split.movingTime)}</td>
+                      <td style={{ padding: '8px 10px', color: 'var(--info)', fontWeight: 700 }}>{fmtPace(split.averageSpeed)}</td>
+                      <td style={{ padding: '8px 10px', color: split.elevationDifference > 0 ? 'var(--warning)' : 'var(--success)' }}>
                         {split.elevationDifference > 0 ? '+' : ''}{Math.round(split.elevationDifference)}m
                       </td>
-                      <td style={{ padding: '8px 10px', color: '#ef4444' }}>
+                      <td style={{ padding: '8px 10px', color: 'var(--danger)' }}>
                         {split.averageHeartrate ? `${Math.round(split.averageHeartrate)}` : '—'}
                       </td>
                     </tr>

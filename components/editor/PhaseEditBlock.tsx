@@ -21,6 +21,7 @@ import {
 } from '@dnd-kit/sortable';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { tint, PHASE_COLOR_CHOICES } from '@/lib/theme';
 
 const BLANK_EXERCISE: Omit<Exercise, 'id'> = {
   name: '',
@@ -30,10 +31,7 @@ const BLANK_EXERCISE: Omit<Exercise, 'id'> = {
   tag: 'Hypertrophy',
 };
 
-const PHASE_COLOR_OPTIONS = [
-  '#f59e0b', '#ef4444', '#f97316', '#3b82f6', '#10b981',
-  '#8b5cf6', '#ec4899', '#64748b', '#84cc16', '#06b6d4',
-];
+const PHASE_COLOR_OPTIONS = PHASE_COLOR_CHOICES;
 
 interface PhaseEditBlockProps {
   phase: Phase;
@@ -85,10 +83,10 @@ export default function PhaseEditBlock({ phase, onChange, onDelete, accentColor 
   }
 
   return (
-    <div ref={setNodeRef} style={{ ...style, background: '#0d0d0d', border: `1px solid ${isOpen ? phase.color + '44' : 'rgba(255,255,255,0.07)'}`, borderRadius: 10, overflow: 'hidden', marginBottom: 12 }}>
+    <div ref={setNodeRef} style={{ ...style, background: 'var(--surface)', border: `1px solid ${isOpen ? tint(phase.color, 0.27) : 'rgb(var(--ink-rgb) / 0.07)'}`, borderRadius: 10, overflow: 'hidden', marginBottom: 12 }}>
       {/* Phase header */}
       <div style={{
-        background: isOpen ? `linear-gradient(90deg, ${phase.color}18, #111)` : '#111',
+        background: isOpen ? `linear-gradient(90deg, ${tint(phase.color, 0.09)}, var(--surface-2))` : 'var(--surface-2)',
         padding: '12px 16px',
         display: 'flex', alignItems: 'center', gap: 10,
         borderLeft: `3px solid ${phase.color}`,
@@ -97,7 +95,7 @@ export default function PhaseEditBlock({ phase, onChange, onDelete, accentColor 
         <div
           {...attributes}
           {...listeners}
-          style={{ cursor: 'grab', color: '#334155', flexShrink: 0, touchAction: 'none' }}
+          style={{ cursor: 'grab', color: 'var(--text-ghost)', flexShrink: 0, touchAction: 'none' }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" />
@@ -109,7 +107,7 @@ export default function PhaseEditBlock({ phase, onChange, onDelete, accentColor 
           value={phase.label}
           onChange={e => updatePhaseField('label', e.target.value.toUpperCase())}
           style={{
-            flex: 1, background: 'transparent', border: 'none', color: '#f1f5f9',
+            flex: 1, background: 'transparent', border: 'none', color: 'var(--text)',
             fontSize: 14, fontWeight: 900, letterSpacing: 2, fontFamily: "'Barlow Condensed', sans-serif",
             outline: 'none',
           }}
@@ -119,7 +117,7 @@ export default function PhaseEditBlock({ phase, onChange, onDelete, accentColor 
           value={phase.time}
           onChange={e => updatePhaseField('time', e.target.value)}
           placeholder="10 min"
-          style={{ width: 60, background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 4, color: '#94a3b8', padding: '4px 6px', fontSize: 11, fontFamily: "'Barlow Condensed', sans-serif", textAlign: 'center' }}
+          style={{ width: 60, background: 'var(--surface)', border: '1px solid rgb(var(--ink-rgb) / 0.08)', borderRadius: 4, color: 'var(--text-muted)', padding: '4px 6px', fontSize: 11, fontFamily: "'Barlow Condensed', sans-serif", textAlign: 'center' }}
         />
 
         {/* Color picker */}
@@ -138,14 +136,14 @@ export default function PhaseEditBlock({ phase, onChange, onDelete, accentColor 
 
         <button
           onClick={() => setIsOpen(o => !o)}
-          style={{ background: 'transparent', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: 14, transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}
+          style={{ background: 'transparent', border: 'none', color: 'var(--text-subtle)', cursor: 'pointer', fontSize: 14, transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}
         >
           ▼
         </button>
 
         <button
           onClick={onDelete}
-          style={{ background: 'transparent', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 4, color: '#ef4444', cursor: 'pointer', fontSize: 11, padding: '2px 8px', fontFamily: "'Barlow Condensed', sans-serif" }}
+          style={{ background: 'transparent', border: '1px solid rgb(var(--danger-rgb) / 0.3)', borderRadius: 4, color: 'var(--danger)', cursor: 'pointer', fontSize: 11, padding: '2px 8px', fontFamily: "'Barlow Condensed', sans-serif" }}
         >
           DEL
         </button>
@@ -171,7 +169,7 @@ export default function PhaseEditBlock({ phase, onChange, onDelete, accentColor 
           <button
             onClick={addExercise}
             style={{
-              width: '100%', background: 'transparent', border: `1px dashed ${phase.color}50`,
+              width: '100%', background: 'transparent', border: `1px dashed ${tint(phase.color, 0.31)}`,
               borderRadius: 6, color: phase.color, fontSize: 11, letterSpacing: 2, padding: '8px',
               cursor: 'pointer', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700,
               marginTop: 4, transition: 'border-color 0.15s',

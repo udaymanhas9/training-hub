@@ -4,19 +4,20 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { getLeetCodeEntries, saveLeetCodeEntry, deleteLeetCodeEntry, getProfile, saveProfile } from '@/lib/storage';
 import { LeetCodeEntry, Difficulty, ProblemStatus, UserProfile } from '@/lib/types';
 import { generateId, todayISO } from '@/lib/utils';
+import { tint } from '@/lib/theme';
 
 const MONO = "'JetBrains Mono', monospace";
 
 const DIFF_COLORS: Record<Difficulty, string> = {
-  Easy:   '#00b8a3',
-  Medium: '#ffc01e',
-  Hard:   '#ff375f',
+  Easy:   'var(--brand-leetcode-teal)',
+  Medium: 'var(--brand-leetcode-yellow)',
+  Hard:   'var(--pink)',
 };
 
 const STATUS_COLORS: Record<ProblemStatus, string> = {
-  Solved:    '#00b8a3',
-  Attempted: '#ffc01e',
-  Revisit:   '#FF2A2A',
+  Solved:    'var(--brand-leetcode-teal)',
+  Attempted: 'var(--brand-leetcode-yellow)',
+  Revisit:   'var(--accent)',
 };
 
 const LANGUAGES = ['Python', 'C++', 'Java', 'JavaScript', 'TypeScript', 'Go', 'Rust', 'Other'];
@@ -109,8 +110,8 @@ function SubmissionHeatmap({ calendarJson }: { calendarJson: string }) {
         {cells.map(({ date, count }) => {
           const intensity = count === 0 ? 0 : Math.max(0.15, Math.sqrt(count) / Math.sqrt(maxCount));
           const color = count === 0
-            ? 'rgba(255,255,255,0.05)'
-            : `rgba(0,184,163,${intensity})`;
+            ? 'rgb(var(--ink-rgb) / 0.05)'
+            : `color-mix(in srgb, var(--brand-leetcode-teal) ${Math.round(intensity * 100)}%, transparent)`;
           return (
             <div
               key={date}
@@ -131,9 +132,9 @@ function DiffBar({ label, solved, total, color }: { label: string; solved: numbe
     <div style={{ marginBottom: 10 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
         <span style={{ fontSize: 8, color, letterSpacing: 3 }}>{label}</span>
-        <span style={{ fontSize: 8, color: '#737373', letterSpacing: 1 }}>{solved}/{total}</span>
+        <span style={{ fontSize: 8, color: 'var(--text-neutral)', letterSpacing: 1 }}>{solved}/{total}</span>
       </div>
-      <div style={{ height: 3, background: 'rgba(255,255,255,0.06)', width: '100%' }}>
+      <div style={{ height: 3, background: 'rgb(var(--ink-rgb) / 0.06)', width: '100%' }}>
         <div style={{ height: 3, width: `${pct}%`, background: color, transition: 'width 0.6s ease' }} />
       </div>
     </div>
@@ -419,11 +420,11 @@ export default function LeetCodePage() {
 
   // ── Styles ───────────────────────────────────────────────────────────────
   const inputStyle: React.CSSProperties = {
-    background: 'transparent', border: '1px solid rgba(255,42,42,0.25)',
-    color: '#E5E5E5', padding: '8px 10px', fontFamily: MONO, fontSize: 11, outline: 'none', width: '100%',
+    background: 'transparent', border: '1px solid rgb(var(--accent-rgb) / 0.25)',
+    color: 'var(--text-soft)', padding: '8px 10px', fontFamily: MONO, fontSize: 11, outline: 'none', width: '100%',
   };
   const labelStyle: React.CSSProperties = {
-    fontSize: 8, color: '#737373', letterSpacing: 4, display: 'block', marginBottom: 6, fontFamily: MONO,
+    fontSize: 8, color: 'var(--text-neutral)', letterSpacing: 4, display: 'block', marginBottom: 6, fontFamily: MONO,
   };
   const selectStyle: React.CSSProperties = {
     ...inputStyle, cursor: 'pointer', appearance: 'none' as const, WebkitAppearance: 'none' as const,
@@ -433,37 +434,37 @@ export default function LeetCodePage() {
   const hasSession  = !!profile?.leetcodeSession;
 
   return (
-    <div style={{ minHeight: '100vh', background: '#000000', fontFamily: MONO }}>
+    <div style={{ minHeight: '100vh', background: 'var(--scrim)', fontFamily: MONO }}>
       {/* Header */}
-      <div style={{ borderBottom: '1px solid rgba(255,42,42,0.15)', padding: '28px 28px 20px' }}>
+      <div style={{ borderBottom: '1px solid rgb(var(--accent-rgb) / 0.15)', padding: '28px 28px 20px' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ fontSize: 9, color: '#737373', letterSpacing: 5, marginBottom: 8 }}>THE LAB / LEETCODE</div>
+          <div style={{ fontSize: 9, color: 'var(--text-neutral)', letterSpacing: 5, marginBottom: 8 }}>THE LAB / LEETCODE</div>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-            <h1 style={{ fontSize: 28, fontWeight: 700, color: '#E5E5E5', letterSpacing: 4 }}>
+            <h1 style={{ fontSize: 28, fontWeight: 700, color: 'var(--text-soft)', letterSpacing: 4 }}>
               LEETCODE TRACKER
             </h1>
             <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
               {/* Sync status indicator */}
               {syncStatus === 'syncing' && (
-                <span style={{ fontSize: 8, color: '#ffc01e', letterSpacing: 2 }}>
+                <span style={{ fontSize: 8, color: 'var(--brand-leetcode-yellow)', letterSpacing: 2 }}>
                   ● {syncMsg || 'SYNCING...'}
                 </span>
               )}
               {syncStatus === 'done' && (
-                <span style={{ fontSize: 8, color: '#00b8a3', letterSpacing: 2 }}>
+                <span style={{ fontSize: 8, color: 'var(--brand-leetcode-teal)', letterSpacing: 2 }}>
                   ● SYNC COMPLETE{lastSync ? ` — ${Math.round((Date.now() - lastSync.getTime()) / 60000)}m ago` : ''}
                 </span>
               )}
               {syncStatus === 'error' && (
-                <span style={{ fontSize: 8, color: '#ff375f', letterSpacing: 2 }}>
+                <span style={{ fontSize: 8, color: 'var(--pink)', letterSpacing: 2 }}>
                   ● SYNC ERROR
                 </span>
               )}
               <button
                 onClick={() => setShowCookiePanel(p => !p)}
                 style={{
-                  background: showCookiePanel ? 'rgba(255,42,42,0.1)' : 'transparent',
-                  border: '1px solid rgba(255,42,42,0.3)', color: '#737373',
+                  background: showCookiePanel ? 'rgb(var(--accent-rgb) / 0.1)' : 'transparent',
+                  border: '1px solid rgb(var(--accent-rgb) / 0.3)', color: 'var(--text-neutral)',
                   cursor: 'pointer', padding: '6px 12px', fontSize: 8, letterSpacing: 3, fontFamily: MONO,
                 }}
               >
@@ -472,8 +473,8 @@ export default function LeetCodePage() {
               <button
                 onClick={() => { setFormOpen(f => !f); if (!formOpen) resetForm(); }}
                 style={{
-                  background: formOpen ? 'rgba(255,42,42,0.1)' : 'transparent',
-                  border: '1px solid rgba(255,42,42,0.4)', color: '#FF2A2A',
+                  background: formOpen ? 'rgb(var(--accent-rgb) / 0.1)' : 'transparent',
+                  border: '1px solid rgb(var(--accent-rgb) / 0.4)', color: 'var(--accent)',
                   cursor: 'pointer', padding: '8px 16px', fontSize: 9, letterSpacing: 3, fontFamily: MONO,
                 }}
               >
@@ -489,17 +490,17 @@ export default function LeetCodePage() {
         {/* Cookie setup panel */}
         {showCookiePanel && (
           <div style={{
-            border: '1px solid rgba(255,42,42,0.25)', padding: 24, marginBottom: 28,
-            background: 'rgba(255,42,42,0.02)',
+            border: '1px solid rgb(var(--accent-rgb) / 0.25)', padding: 24, marginBottom: 28,
+            background: 'rgb(var(--accent-rgb) / 0.02)',
           }}>
-            <div style={{ fontSize: 9, color: '#FF2A2A', letterSpacing: 4, marginBottom: 16 }}>
+            <div style={{ fontSize: 9, color: 'var(--accent)', letterSpacing: 4, marginBottom: 16 }}>
               LEETCODE SESSION COOKIE
             </div>
-            <div style={{ fontSize: 9, color: '#737373', lineHeight: 1.8, marginBottom: 16, letterSpacing: 1 }}>
+            <div style={{ fontSize: 9, color: 'var(--text-neutral)', lineHeight: 1.8, marginBottom: 16, letterSpacing: 1 }}>
               To sync your full submission history, paste your LEETCODE_SESSION cookie:<br />
               1. Log in to leetcode.com<br />
               2. Open DevTools → Application → Cookies → https://leetcode.com<br />
-              3. Copy the value of <span style={{ color: '#ffc01e' }}>LEETCODE_SESSION</span>
+              3. Copy the value of <span style={{ color: 'var(--brand-leetcode-yellow)' }}>LEETCODE_SESSION</span>
             </div>
             <form onSubmit={handleSaveCookie} style={{ display: 'flex', gap: 10 }}>
               <input
@@ -513,8 +514,8 @@ export default function LeetCodePage() {
                 type="submit"
                 disabled={cookieSaving || !cookieInput.trim()}
                 style={{
-                  background: 'rgba(255,42,42,0.1)', border: '1px solid rgba(255,42,42,0.4)',
-                  color: '#FF2A2A', cursor: 'pointer', padding: '8px 20px',
+                  background: 'rgb(var(--accent-rgb) / 0.1)', border: '1px solid rgb(var(--accent-rgb) / 0.4)',
+                  color: 'var(--accent)', cursor: 'pointer', padding: '8px 20px',
                   fontSize: 9, letterSpacing: 3, fontFamily: MONO,
                   opacity: !cookieInput.trim() ? 0.4 : 1,
                 }}
@@ -529,19 +530,19 @@ export default function LeetCodePage() {
         {hasUsername && (
           <div style={{ marginBottom: 36 }}>
             {statsLoading ? (
-              <div style={{ fontSize: 8, color: '#737373', letterSpacing: 4 }}>LOADING STATS...</div>
+              <div style={{ fontSize: 8, color: 'var(--text-neutral)', letterSpacing: 4 }}>LOADING STATS...</div>
             ) : statsError ? (
-              <div style={{ fontSize: 8, color: '#ff375f', letterSpacing: 2 }}>{statsError}</div>
+              <div style={{ fontSize: 8, color: 'var(--pink)', letterSpacing: 2 }}>{statsError}</div>
             ) : stats ? (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 20 }}>
 
                 {/* Total solved + diff bars */}
-                <div style={{ border: '1px solid rgba(255,42,42,0.12)', padding: 20 }}>
-                  <div style={{ fontSize: 8, color: '#737373', letterSpacing: 4, marginBottom: 16 }}>PROBLEMS SOLVED</div>
-                  <div style={{ fontSize: 40, fontWeight: 700, color: '#E5E5E5', letterSpacing: -2, marginBottom: 4 }}>
+                <div style={{ border: '1px solid rgb(var(--accent-rgb) / 0.12)', padding: 20 }}>
+                  <div style={{ fontSize: 8, color: 'var(--text-neutral)', letterSpacing: 4, marginBottom: 16 }}>PROBLEMS SOLVED</div>
+                  <div style={{ fontSize: 40, fontWeight: 700, color: 'var(--text-soft)', letterSpacing: -2, marginBottom: 4 }}>
                     {stats.solved.All}
                   </div>
-                  <div style={{ fontSize: 8, color: '#737373', letterSpacing: 1, marginBottom: 20 }}>
+                  <div style={{ fontSize: 8, color: 'var(--text-neutral)', letterSpacing: 1, marginBottom: 20 }}>
                     of {stats.total.All} total
                   </div>
                   <DiffBar label="EASY"   solved={stats.solved.Easy}   total={stats.total.Easy}   color={DIFF_COLORS.Easy} />
@@ -550,21 +551,21 @@ export default function LeetCodePage() {
                 </div>
 
                 {/* Activity stats */}
-                <div style={{ border: '1px solid rgba(255,42,42,0.12)', padding: 20 }}>
-                  <div style={{ fontSize: 8, color: '#737373', letterSpacing: 4, marginBottom: 16 }}>ACTIVITY</div>
+                <div style={{ border: '1px solid rgb(var(--accent-rgb) / 0.12)', padding: 20 }}>
+                  <div style={{ fontSize: 8, color: 'var(--text-neutral)', letterSpacing: 4, marginBottom: 16 }}>ACTIVITY</div>
                   <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 20 }}>
                     {[
-                      { label: 'STREAK',      value: `${stats.streak}d`,           color: '#ffc01e' },
-                      { label: 'ACTIVE DAYS', value: stats.totalActiveDays,        color: '#00b8a3' },
-                      { label: 'RANKING',     value: `#${stats.ranking.toLocaleString()}`, color: '#737373' },
+                      { label: 'STREAK',      value: `${stats.streak}d`,           color: 'var(--brand-leetcode-yellow)' },
+                      { label: 'ACTIVE DAYS', value: stats.totalActiveDays,        color: 'var(--brand-leetcode-teal)' },
+                      { label: 'RANKING',     value: `#${stats.ranking.toLocaleString()}`, color: 'var(--text-neutral)' },
                     ].map(({ label, value, color }) => (
                       <div key={label}>
-                        <div style={{ fontSize: 8, color: '#737373', letterSpacing: 3 }}>{label}</div>
+                        <div style={{ fontSize: 8, color: 'var(--text-neutral)', letterSpacing: 3 }}>{label}</div>
                         <div style={{ fontSize: 22, fontWeight: 700, color, marginTop: 2 }}>{value}</div>
                       </div>
                     ))}
                   </div>
-                  <div style={{ fontSize: 8, color: '#737373', letterSpacing: 3, marginBottom: 8 }}>
+                  <div style={{ fontSize: 8, color: 'var(--text-neutral)', letterSpacing: 3, marginBottom: 8 }}>
                     26W SUBMISSIONS
                   </div>
                   <SubmissionHeatmap calendarJson={stats.submissionCalendar} />
@@ -578,11 +579,11 @@ export default function LeetCodePage() {
         {/* No username warning */}
         {!hasUsername && !loading && (
           <div style={{
-            border: '1px solid rgba(255,42,42,0.15)', padding: '16px 20px', marginBottom: 28,
-            fontSize: 9, color: '#737373', letterSpacing: 2,
+            border: '1px solid rgb(var(--accent-rgb) / 0.15)', padding: '16px 20px', marginBottom: 28,
+            fontSize: 9, color: 'var(--text-neutral)', letterSpacing: 2,
           }}>
             No LeetCode username set. Add it in{' '}
-            <a href="/stats" style={{ color: '#FF2A2A', textDecoration: 'none' }}>Health Stats → Profile</a>{' '}
+            <a href="/stats" style={{ color: 'var(--accent)', textDecoration: 'none' }}>Health Stats → Profile</a>{' '}
             to enable stats and auto-sync.
           </div>
         )}
@@ -590,16 +591,16 @@ export default function LeetCodePage() {
         {/* Local summary stats */}
         <div style={{ display: 'flex', gap: 12, marginBottom: 32, flexWrap: 'wrap' }}>
           {[
-            { label: 'LOGGED',    value: entries.length, color: '#E5E5E5' },
-            { label: 'SOLVED',    value: localSolved,    color: '#00b8a3' },
-            { label: 'ATTEMPTED', value: localAttempted, color: '#ffc01e' },
-            { label: 'REVISIT',   value: localRevisit,   color: '#ff375f' },
-            { label: 'AVG.TIME',  value: avgTime !== null ? `${avgTime}m` : '—', color: '#737373' },
+            { label: 'LOGGED',    value: entries.length, color: 'var(--text-soft)' },
+            { label: 'SOLVED',    value: localSolved,    color: 'var(--brand-leetcode-teal)' },
+            { label: 'ATTEMPTED', value: localAttempted, color: 'var(--brand-leetcode-yellow)' },
+            { label: 'REVISIT',   value: localRevisit,   color: 'var(--pink)' },
+            { label: 'AVG.TIME',  value: avgTime !== null ? `${avgTime}m` : '—', color: 'var(--text-neutral)' },
           ].map(({ label, value, color }) => (
             <div key={label} style={{
-              padding: '10px 16px', border: '1px solid rgba(255,42,42,0.12)', minWidth: 80,
+              padding: '10px 16px', border: '1px solid rgb(var(--accent-rgb) / 0.12)', minWidth: 80,
             }}>
-              <div style={{ fontSize: 8, color: '#737373', letterSpacing: 4 }}>{label}</div>
+              <div style={{ fontSize: 8, color: 'var(--text-neutral)', letterSpacing: 4 }}>{label}</div>
               <div style={{ fontSize: 20, fontWeight: 700, color, marginTop: 2 }}>{value}</div>
             </div>
           ))}
@@ -608,10 +609,10 @@ export default function LeetCodePage() {
         {/* Log form */}
         {formOpen && (
           <form onSubmit={handleSubmit} style={{
-            border: '1px solid rgba(255,42,42,0.25)', padding: 24, marginBottom: 32,
-            background: 'rgba(255,42,42,0.02)',
+            border: '1px solid rgb(var(--accent-rgb) / 0.25)', padding: 24, marginBottom: 32,
+            background: 'rgb(var(--accent-rgb) / 0.02)',
           }}>
-            <div style={{ fontSize: 9, color: '#FF2A2A', letterSpacing: 4, marginBottom: 20 }}>LOG PROBLEM</div>
+            <div style={{ fontSize: 9, color: 'var(--accent)', letterSpacing: 4, marginBottom: 20 }}>LOG PROBLEM</div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr', gap: 16, marginBottom: 16 }}>
               <div>
@@ -627,10 +628,10 @@ export default function LeetCodePage() {
                   style={{ ...inputStyle, width: '100%' }}
                 />
                 {lookupLoading && (
-                  <div style={{ fontSize: 8, color: '#737373', marginTop: 4, letterSpacing: 2 }}>FETCHING...</div>
+                  <div style={{ fontSize: 8, color: 'var(--text-neutral)', marginTop: 4, letterSpacing: 2 }}>FETCHING...</div>
                 )}
                 {lookupError && (
-                  <div style={{ fontSize: 8, color: '#ff375f', marginTop: 4, letterSpacing: 1 }}>{lookupError}</div>
+                  <div style={{ fontSize: 8, color: 'var(--pink)', marginTop: 4, letterSpacing: 1 }}>{lookupError}</div>
                 )}
               </div>
               <div>
@@ -642,7 +643,7 @@ export default function LeetCodePage() {
                   readOnly={!manualMode && !!probName && !lookupError}
                   placeholder="Two Sum"
                   required
-                  style={{ ...inputStyle, color: (!manualMode && probName) ? '#737373' : '#E5E5E5' }}
+                  style={{ ...inputStyle, color: (!manualMode && probName) ? 'var(--text-neutral)' : 'var(--text-soft)' }}
                 />
               </div>
             </div>
@@ -676,8 +677,8 @@ export default function LeetCodePage() {
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   {topics.map(t => (
                     <span key={t} style={{
-                      padding: '2px 8px', border: '1px solid rgba(255,42,42,0.2)',
-                      color: '#737373', fontSize: 8, letterSpacing: 2,
+                      padding: '2px 8px', border: '1px solid rgb(var(--accent-rgb) / 0.2)',
+                      color: 'var(--text-neutral)', fontSize: 8, letterSpacing: 2,
                     }}>{t}</span>
                   ))}
                 </div>
@@ -692,9 +693,9 @@ export default function LeetCodePage() {
                     key={s} type="button" onClick={() => setStatus(s)}
                     style={{
                       padding: '6px 16px',
-                      border: `1px solid ${status === s ? STATUS_COLORS[s] : 'rgba(255,42,42,0.2)'}`,
-                      background: status === s ? `${STATUS_COLORS[s]}18` : 'transparent',
-                      color: status === s ? STATUS_COLORS[s] : '#737373',
+                      border: `1px solid ${status === s ? STATUS_COLORS[s] : 'rgb(var(--accent-rgb) / 0.2)'}`,
+                      background: status === s ? `${tint(STATUS_COLORS[s], 0.09)}` : 'transparent',
+                      color: status === s ? STATUS_COLORS[s] : 'var(--text-neutral)',
                       fontSize: 8, letterSpacing: 3, cursor: 'pointer', fontFamily: MONO,
                     }}
                   >{s.toUpperCase()}</button>
@@ -720,8 +721,8 @@ export default function LeetCodePage() {
             <button
               type="submit" disabled={submitting || !probNum || !probName}
               style={{
-                background: 'rgba(255,42,42,0.1)', border: '1px solid rgba(255,42,42,0.5)',
-                color: '#FF2A2A', cursor: 'pointer', padding: '10px 24px',
+                background: 'rgb(var(--accent-rgb) / 0.1)', border: '1px solid rgb(var(--accent-rgb) / 0.5)',
+                color: 'var(--accent)', cursor: 'pointer', padding: '10px 24px',
                 fontSize: 10, letterSpacing: 4, fontFamily: MONO,
                 opacity: (!probNum || !probName) ? 0.4 : 1,
               }}
@@ -733,7 +734,7 @@ export default function LeetCodePage() {
 
         {/* Filters */}
         <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap', alignItems: 'center' }}>
-          <span style={{ fontSize: 8, color: '#737373', letterSpacing: 3 }}>FILTER:</span>
+          <span style={{ fontSize: 8, color: 'var(--text-neutral)', letterSpacing: 3 }}>FILTER:</span>
           {[
             { label: 'DIFF',   value: filterDiff,   setter: setFilterDiff,   options: DIFFICULTIES },
             { label: 'STATUS', value: filterStatus, setter: setFilterStatus, options: STATUSES },
@@ -759,8 +760,8 @@ export default function LeetCodePage() {
             <button
               onClick={() => { setFilterDiff(''); setFilterStatus(''); setFilterTopic(''); }}
               style={{
-                background: 'none', border: '1px solid rgba(255,42,42,0.2)',
-                color: '#737373', cursor: 'pointer', padding: '5px 10px',
+                background: 'none', border: '1px solid rgb(var(--accent-rgb) / 0.2)',
+                color: 'var(--text-neutral)', cursor: 'pointer', padding: '5px 10px',
                 fontSize: 8, letterSpacing: 2, fontFamily: MONO,
               }}
             >CLEAR</button>
@@ -769,11 +770,11 @@ export default function LeetCodePage() {
 
         {/* Table */}
         {loading ? (
-          <div style={{ color: '#737373', fontSize: 10, letterSpacing: 4, paddingTop: 40, textAlign: 'center' }}>
+          <div style={{ color: 'var(--text-neutral)', fontSize: 10, letterSpacing: 4, paddingTop: 40, textAlign: 'center' }}>
             LOADING...
           </div>
         ) : filtered.length === 0 ? (
-          <div style={{ color: '#737373', fontSize: 10, letterSpacing: 4, paddingTop: 40, textAlign: 'center' }}>
+          <div style={{ color: 'var(--text-neutral)', fontSize: 10, letterSpacing: 4, paddingTop: 40, textAlign: 'center' }}>
             {entries.length === 0 && !hasUsername
               ? 'NO ENTRIES — LOG A PROBLEM OR CONNECT LEETCODE'
               : 'NO ENTRIES'}
@@ -782,11 +783,11 @@ export default function LeetCodePage() {
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid rgba(255,42,42,0.15)' }}>
+                <tr style={{ borderBottom: '1px solid rgb(var(--accent-rgb) / 0.15)' }}>
                   {['#', 'PROBLEM', 'DIFF', 'TOPICS', 'STATUS', 'LANG', 'TIME', 'DATE', ''].map(h => (
                     <th key={h} style={{
                       padding: '8px 10px', textAlign: 'left',
-                      fontSize: 8, color: '#737373', letterSpacing: 3,
+                      fontSize: 8, color: 'var(--text-neutral)', letterSpacing: 3,
                       fontFamily: MONO, fontWeight: 700,
                     }}>{h}</th>
                   ))}
@@ -796,18 +797,18 @@ export default function LeetCodePage() {
                 {filtered.map(entry => (
                   <tr
                     key={entry.id}
-                    style={{ borderBottom: '1px solid rgba(255,42,42,0.06)' }}
-                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(255,42,42,0.04)'}
+                    style={{ borderBottom: '1px solid rgb(var(--accent-rgb) / 0.06)' }}
+                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgb(var(--accent-rgb) / 0.04)'}
                     onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
                   >
-                    <td style={{ padding: '10px 10px', color: '#737373', fontSize: 10 }}>{entry.problemNumber}</td>
-                    <td style={{ padding: '10px 10px', color: '#E5E5E5', fontSize: 10, maxWidth: 240 }}>
+                    <td style={{ padding: '10px 10px', color: 'var(--text-neutral)', fontSize: 10 }}>{entry.problemNumber}</td>
+                    <td style={{ padding: '10px 10px', color: 'var(--text-soft)', fontSize: 10, maxWidth: 240 }}>
                       <a
                         href={`https://leetcode.com/problems/${entry.problemName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}/`}
                         target="_blank" rel="noopener noreferrer"
-                        style={{ color: '#E5E5E5', textDecoration: 'none' }}
-                        onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#FF2A2A'}
-                        onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#E5E5E5'}
+                        style={{ color: 'var(--text-soft)', textDecoration: 'none' }}
+                        onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'var(--accent)'}
+                        onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'var(--text-soft)'}
                       >
                         {entry.problemName}
                       </a>
@@ -817,29 +818,29 @@ export default function LeetCodePage() {
                       <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                         {entry.topics.slice(0, 3).map(t => (
                           <span key={t} style={{
-                            padding: '1px 6px', border: '1px solid rgba(255,255,255,0.08)',
-                            color: '#737373', fontSize: 7, letterSpacing: 1,
+                            padding: '1px 6px', border: '1px solid rgb(var(--ink-rgb) / 0.08)',
+                            color: 'var(--text-neutral)', fontSize: 7, letterSpacing: 1,
                           }}>{t}</span>
                         ))}
                       </div>
                     </td>
                     <td style={{ padding: '10px 10px' }}><StatusText status={entry.status} /></td>
-                    <td style={{ padding: '10px 10px', color: '#737373', fontSize: 9 }}>{entry.language}</td>
-                    <td style={{ padding: '10px 10px', color: '#737373', fontSize: 9 }}>
+                    <td style={{ padding: '10px 10px', color: 'var(--text-neutral)', fontSize: 9 }}>{entry.language}</td>
+                    <td style={{ padding: '10px 10px', color: 'var(--text-neutral)', fontSize: 9 }}>
                       {entry.timeTaken ? `${entry.timeTaken}m` : '—'}
                     </td>
-                    <td style={{ padding: '10px 10px', color: '#737373', fontSize: 9, whiteSpace: 'nowrap' }}>
+                    <td style={{ padding: '10px 10px', color: 'var(--text-neutral)', fontSize: 9, whiteSpace: 'nowrap' }}>
                       {entry.date}
                     </td>
                     <td style={{ padding: '10px 10px' }}>
                       <button
                         onClick={() => handleDelete(entry.id)}
                         style={{
-                          background: 'none', border: 'none', color: '#4a4a4a',
+                          background: 'none', border: 'none', color: 'var(--text-neutral-faint)',
                           cursor: 'pointer', fontSize: 14, padding: '0 4px',
                         }}
-                        onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#ff375f'}
-                        onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#4a4a4a'}
+                        onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'var(--pink)'}
+                        onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'var(--text-neutral-faint)'}
                         title="Delete entry"
                       >×</button>
                     </td>

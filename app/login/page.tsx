@@ -8,13 +8,13 @@ import { useAuth } from '@/lib/auth-context';
 type Mode = 'signin' | 'signup' | 'forgot' | 'reset';
 
 const inputStyle = {
-  width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)',
-  borderRadius: 8, padding: '12px 14px', color: '#f1f5f9', fontSize: 15,
+  width: '100%', background: 'var(--surface)', border: '1px solid rgb(var(--ink-rgb) / 0.1)',
+  borderRadius: 8, padding: '12px 14px', color: 'var(--text)', fontSize: 15,
   fontFamily: "'Barlow Condensed', sans-serif", outline: 'none',
 };
 
 const labelStyle = {
-  fontSize: 10, letterSpacing: 3, color: '#64748b',
+  fontSize: 10, letterSpacing: 3, color: 'var(--text-subtle)',
   fontFamily: "'Barlow Condensed', sans-serif", display: 'block', marginBottom: 8,
 };
 
@@ -138,39 +138,39 @@ export default function LoginPage() {
 
   return (
     <div style={{
-      minHeight: '100vh', background: '#0a0a0a', display: 'flex',
+      minHeight: '100vh', background: 'var(--bg)', display: 'flex',
       alignItems: 'center', justifyContent: 'center', padding: '0 24px',
     }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,900;1,700&family=Barlow:wght@400;500&display=swap');
-        input:-webkit-autofill { -webkit-box-shadow: 0 0 0 30px #0d0d0d inset !important; -webkit-text-fill-color: #f1f5f9 !important; }
+        input:-webkit-autofill { -webkit-box-shadow: 0 0 0 30px var(--surface) inset !important; -webkit-text-fill-color: var(--text) !important; }
       `}</style>
 
       <div style={{ width: '100%', maxWidth: 400 }}>
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <div style={{ fontSize: 11, letterSpacing: 6, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 8 }}>
+          <div style={{ fontSize: 11, letterSpacing: 6, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 8 }}>
             WELCOME TO
           </div>
-          <h1 style={{ fontSize: 56, fontWeight: 900, fontStyle: 'italic', color: '#fff', letterSpacing: -1, lineHeight: 0.9 }}>
+          <h1 style={{ fontSize: 56, fontWeight: 900, fontStyle: 'italic', color: 'var(--text-strong)', letterSpacing: -1, lineHeight: 0.9 }}>
             TRAINING<br />HUB
           </h1>
-          <p style={{ fontSize: 13, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 12, letterSpacing: 2 }}>
+          <p style={{ fontSize: 13, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 12, letterSpacing: 2 }}>
             TRACK · TRAIN · PROGRESS
           </p>
         </div>
 
         {/* Tab switcher */}
         {(mode === 'signin' || mode === 'signup') && (
-          <div style={{ display: 'flex', marginBottom: 0, background: '#111', borderRadius: '10px 10px 0 0', border: '1px solid rgba(255,255,255,0.08)', borderBottom: 'none' }}>
+          <div style={{ display: 'flex', marginBottom: 0, background: 'var(--surface-2)', borderRadius: '10px 10px 0 0', border: '1px solid rgb(var(--ink-rgb) / 0.08)', borderBottom: 'none' }}>
             {(['signin', 'signup'] as const).map(m => (
               <button
                 key={m}
                 onClick={() => switchMode(m)}
                 style={{
                   flex: 1, padding: '14px', background: 'none', border: 'none',
-                  borderBottom: mode === m ? '2px solid #3b82f6' : '2px solid transparent',
-                  color: mode === m ? '#f1f5f9' : '#475569',
+                  borderBottom: mode === m ? '2px solid var(--info)' : '2px solid transparent',
+                  color: mode === m ? 'var(--text)' : 'var(--text-faint)',
                   fontSize: 12, fontWeight: 900, letterSpacing: 2, cursor: 'pointer',
                   fontFamily: "'Barlow Condensed', sans-serif", transition: 'color 0.15s',
                 }}
@@ -182,22 +182,22 @@ export default function LoginPage() {
         )}
 
         <div style={{
-          background: '#111',
-          border: '1px solid rgba(255,255,255,0.08)',
-          borderTop: mode === 'signin' || mode === 'signup' ? 'none' : '1px solid rgba(255,255,255,0.08)',
+          background: 'var(--surface-2)',
+          border: '1px solid rgb(var(--ink-rgb) / 0.08)',
+          borderTop: mode === 'signin' || mode === 'signup' ? 'none' : '1px solid rgb(var(--ink-rgb) / 0.08)',
           borderRadius: mode === 'signin' || mode === 'signup' ? '0 0 12px 12px' : '12px',
           padding: '28px 28px 24px',
         }}>
           {signedUp ? (
             <div style={{ textAlign: 'center', padding: '8px 0' }}>
               <div style={{ fontSize: 36, marginBottom: 14 }}>✅</div>
-              <div style={{ fontSize: 18, fontWeight: 900, color: '#10b981', letterSpacing: 2, marginBottom: 10 }}>ACCOUNT CREATED</div>
-              <div style={{ fontSize: 13, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", lineHeight: 1.6 }}>
+              <div style={{ fontSize: 18, fontWeight: 900, color: 'var(--success)', letterSpacing: 2, marginBottom: 10 }}>ACCOUNT CREATED</div>
+              <div style={{ fontSize: 13, color: 'var(--text-subtle)', fontFamily: "'Barlow Condensed', sans-serif", lineHeight: 1.6 }}>
                 {message}
               </div>
               <button
                 onClick={() => switchMode('signin')}
-                style={{ marginTop: 20, background: 'none', border: 'none', color: '#3b82f6', fontSize: 12, cursor: 'pointer', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 2, fontWeight: 700 }}
+                style={{ marginTop: 20, background: 'none', border: 'none', color: 'var(--info)', fontSize: 12, cursor: 'pointer', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 2, fontWeight: 700 }}
               >
                 BACK TO SIGN IN
               </button>
@@ -206,10 +206,10 @@ export default function LoginPage() {
             <form onSubmit={handleSubmit}>
               {(mode === 'forgot' || mode === 'reset') && (
                 <div style={{ marginBottom: 20 }}>
-                  <div style={{ fontSize: 11, letterSpacing: 4, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 8 }}>
+                  <div style={{ fontSize: 11, letterSpacing: 4, color: 'var(--text-subtle)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 8 }}>
                     {mode === 'forgot' ? 'PASSWORD RESET' : 'SET NEW PASSWORD'}
                   </div>
-                  <div style={{ fontSize: 13, color: '#94a3b8', fontFamily: "'Barlow Condensed', sans-serif", lineHeight: 1.6 }}>
+                  <div style={{ fontSize: 13, color: 'var(--text-muted)', fontFamily: "'Barlow Condensed', sans-serif", lineHeight: 1.6 }}>
                     {mode === 'forgot'
                       ? 'Enter the email address for your account and we will send you a reset link.'
                       : 'Your reset link has been accepted. Enter a new password below.'}
@@ -225,8 +225,8 @@ export default function LoginPage() {
                     type="email" value={email} onChange={e => setEmail(e.target.value)}
                     placeholder="you@example.com" required autoComplete="email"
                     style={inputStyle}
-                    onFocus={e => (e.target.style.borderColor = 'rgba(59,130,246,0.5)')}
-                    onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
+                    onFocus={e => (e.target.style.borderColor = 'rgb(var(--info-rgb) / 0.5)')}
+                    onBlur={e => (e.target.style.borderColor = 'rgb(var(--ink-rgb) / 0.1)')}
                   />
                 </div>
               )}
@@ -240,8 +240,8 @@ export default function LoginPage() {
                     placeholder="••••••••" required minLength={6}
                     autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
                     style={inputStyle}
-                    onFocus={e => (e.target.style.borderColor = 'rgba(59,130,246,0.5)')}
-                    onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
+                    onFocus={e => (e.target.style.borderColor = 'rgb(var(--info-rgb) / 0.5)')}
+                    onBlur={e => (e.target.style.borderColor = 'rgb(var(--ink-rgb) / 0.1)')}
                   />
                 </div>
               )}
@@ -254,8 +254,8 @@ export default function LoginPage() {
                     type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)}
                     placeholder="••••••••" required autoComplete="new-password"
                     style={inputStyle}
-                    onFocus={e => (e.target.style.borderColor = 'rgba(59,130,246,0.5)')}
-                    onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
+                    onFocus={e => (e.target.style.borderColor = 'rgb(var(--info-rgb) / 0.5)')}
+                    onBlur={e => (e.target.style.borderColor = 'rgb(var(--ink-rgb) / 0.1)')}
                   />
                 </div>
               )}
@@ -268,17 +268,17 @@ export default function LoginPage() {
                       onClick={() => setRememberMe(r => !r)}
                       style={{
                         width: 18, height: 18, borderRadius: 4, cursor: 'pointer', flexShrink: 0,
-                        background: rememberMe ? '#3b82f6' : 'transparent',
-                        border: `2px solid ${rememberMe ? '#3b82f6' : '#334155'}`,
+                        background: rememberMe ? 'var(--info)' : 'transparent',
+                        border: `2px solid ${rememberMe ? 'var(--info)' : 'var(--text-ghost)'}`,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         transition: 'all 0.15s',
                       }}
                     >
-                      {rememberMe && <span style={{ color: '#fff', fontSize: 11, fontWeight: 900, lineHeight: 1 }}>✓</span>}
+                      {rememberMe && <span style={{ color: 'var(--text-strong)', fontSize: 11, fontWeight: 900, lineHeight: 1 }}>✓</span>}
                     </div>
                     <span
                       onClick={() => setRememberMe(r => !r)}
-                      style={{ fontSize: 12, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", cursor: 'pointer', userSelect: 'none' }}
+                      style={{ fontSize: 12, color: 'var(--text-subtle)', fontFamily: "'Barlow Condensed', sans-serif", cursor: 'pointer', userSelect: 'none' }}
                     >
                       Remember me
                     </span>
@@ -288,7 +288,7 @@ export default function LoginPage() {
                     onClick={() => switchMode('forgot')}
                     style={{
                       marginBottom: 20, padding: 0, background: 'none', border: 'none',
-                      color: '#3b82f6', fontSize: 12, cursor: 'pointer',
+                      color: 'var(--info)', fontSize: 12, cursor: 'pointer',
                       fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 1,
                     }}
                   >
@@ -298,13 +298,13 @@ export default function LoginPage() {
               )}
 
               {message && !signedUp && (
-                <div style={{ fontSize: 12, color: '#93c5fd', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 14, lineHeight: 1.4 }}>
+                <div style={{ fontSize: 12, color: 'var(--info-3)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 14, lineHeight: 1.4 }}>
                   {message}
                 </div>
               )}
 
               {error && (
-                <div style={{ fontSize: 12, color: '#f87171', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 14, lineHeight: 1.4 }}>
+                <div style={{ fontSize: 12, color: 'var(--danger-soft)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 14, lineHeight: 1.4 }}>
                   {error}
                 </div>
               )}
@@ -314,9 +314,9 @@ export default function LoginPage() {
                 disabled={loading}
                 style={{
                   width: '100%', padding: '14px',
-                  background: loading ? '#1e293b' : '#3b82f6',
+                  background: loading ? 'var(--surface-blue)' : 'var(--info)',
                   border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 900,
-                  color: loading ? '#475569' : '#fff', letterSpacing: 2,
+                  color: loading ? 'var(--text-faint)' : 'var(--text-strong)', letterSpacing: 2,
                   cursor: loading ? 'default' : 'pointer',
                   fontFamily: "'Barlow Condensed', sans-serif", transition: 'background 0.2s',
                 }}
@@ -338,9 +338,9 @@ export default function LoginPage() {
                   onClick={() => switchMode('signin')}
                   style={{
                     marginTop: 16, width: '100%', padding: '12px',
-                    background: 'none', border: '1px solid rgba(255,255,255,0.08)',
+                    background: 'none', border: '1px solid rgb(var(--ink-rgb) / 0.08)',
                     borderRadius: 8, fontSize: 12, fontWeight: 700, letterSpacing: 2,
-                    color: '#94a3b8', cursor: 'pointer', fontFamily: "'Barlow Condensed', sans-serif",
+                    color: 'var(--text-muted)', cursor: 'pointer', fontFamily: "'Barlow Condensed', sans-serif",
                   }}
                 >
                   BACK TO SIGN IN
@@ -350,7 +350,7 @@ export default function LoginPage() {
           )}
         </div>
 
-        <div style={{ textAlign: 'center', marginTop: 20, fontSize: 11, color: '#1e293b', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 1 }}>
+        <div style={{ textAlign: 'center', marginTop: 20, fontSize: 11, color: 'var(--surface-blue)', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 1 }}>
           YOUR DATA SYNCS ACROSS ALL YOUR DEVICES
         </div>
       </div>

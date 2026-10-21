@@ -5,6 +5,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { HealthEntry } from '@/lib/types';
 import { format, parseISO } from 'date-fns';
 import { kgToLbs } from '@/lib/utils';
+import { tint } from '@/lib/theme';
 
 interface HealthChartProps {
   entries: HealthEntry[];
@@ -16,8 +17,8 @@ type ChartMetric = 'weight' | 'bodyFatPct' | 'bmi';
 function CustomTooltip({ active, payload, label, unit }: { active?: boolean; payload?: { value: number; color: string }[]; label?: string; unit: string }) {
   if (!active || !payload?.length) return null;
   return (
-    <div style={{ background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '10px 14px' }}>
-      <div style={{ fontSize: 11, color: '#94a3b8', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 4 }}>{label}</div>
+    <div style={{ background: 'var(--surface-4)', border: '1px solid rgb(var(--ink-rgb) / 0.1)', borderRadius: 6, padding: '10px 14px' }}>
+      <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 4 }}>{label}</div>
       <div style={{ fontSize: 16, fontWeight: 900, color: payload[0].color }}>
         {payload[0].value}{unit}
       </div>
@@ -26,9 +27,9 @@ function CustomTooltip({ active, payload, label, unit }: { active?: boolean; pay
 }
 
 const METRICS: { key: ChartMetric; label: string; color: string; unit: string }[] = [
-  { key: 'weight', label: 'WEIGHT', color: '#3b82f6', unit: 'kg' },
-  { key: 'bodyFatPct', label: 'BODY FAT', color: '#8b5cf6', unit: '%' },
-  { key: 'bmi', label: 'BMI', color: '#10b981', unit: '' },
+  { key: 'weight', label: 'WEIGHT', color: 'var(--info)', unit: 'kg' },
+  { key: 'bodyFatPct', label: 'BODY FAT', color: 'var(--violet)', unit: '%' },
+  { key: 'bmi', label: 'BMI', color: 'var(--success)', unit: '' },
 ];
 
 export default function HealthChart({ entries, weightUnit }: HealthChartProps) {
@@ -50,7 +51,7 @@ export default function HealthChart({ entries, weightUnit }: HealthChartProps) {
   const displayUnit = metric === 'weight' ? weightUnit : metricDef.unit;
 
   return (
-    <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '20px 16px' }}>
+    <div style={{ background: 'var(--surface-2)', border: '1px solid rgb(var(--ink-rgb) / 0.07)', borderRadius: 10, padding: '20px 16px' }}>
       <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
         {METRICS.map(m => (
           <button
@@ -58,9 +59,9 @@ export default function HealthChart({ entries, weightUnit }: HealthChartProps) {
             onClick={() => setMetric(m.key)}
             style={{
               padding: '5px 14px', borderRadius: 4, border: '1px solid',
-              borderColor: metric === m.key ? m.color : 'rgba(255,255,255,0.1)',
-              background: metric === m.key ? `${m.color}18` : 'transparent',
-              color: metric === m.key ? m.color : '#64748b',
+              borderColor: metric === m.key ? m.color : 'rgb(var(--ink-rgb) / 0.1)',
+              background: metric === m.key ? `${tint(m.color, 0.09)}` : 'transparent',
+              color: metric === m.key ? m.color : 'var(--text-subtle)',
               fontSize: 10, fontWeight: 700, letterSpacing: 2, cursor: 'pointer',
               fontFamily: "'Barlow Condensed', sans-serif",
             }}
@@ -73,15 +74,15 @@ export default function HealthChart({ entries, weightUnit }: HealthChartProps) {
       {chartData.length > 1 ? (
         <ResponsiveContainer width="100%" height={200}>
           <LineChart data={chartData} margin={{ top: 4, right: 16, bottom: 4, left: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--ink-rgb) / 0.05)" />
             <XAxis
               dataKey="date"
-              tick={{ fill: '#475569', fontSize: 10, fontFamily: "'Barlow Condensed', sans-serif" }}
-              axisLine={{ stroke: 'rgba(255,255,255,0.07)' }}
+              tick={{ fill: 'var(--text-faint)', fontSize: 10, fontFamily: "'Barlow Condensed', sans-serif" }}
+              axisLine={{ stroke: 'rgb(var(--ink-rgb) / 0.07)' }}
               tickLine={false}
             />
             <YAxis
-              tick={{ fill: '#475569', fontSize: 10, fontFamily: "'Barlow Condensed', sans-serif" }}
+              tick={{ fill: 'var(--text-faint)', fontSize: 10, fontFamily: "'Barlow Condensed', sans-serif" }}
               axisLine={false}
               tickLine={false}
               tickFormatter={v => `${v}${displayUnit}`}
@@ -100,7 +101,7 @@ export default function HealthChart({ entries, weightUnit }: HealthChartProps) {
         </ResponsiveContainer>
       ) : (
         <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ fontSize: 13, color: '#334155', fontFamily: "'Barlow Condensed', sans-serif" }}>Add more entries to see trends</span>
+          <span style={{ fontSize: 13, color: 'var(--text-ghost)', fontFamily: "'Barlow Condensed', sans-serif" }}>Add more entries to see trends</span>
         </div>
       )}
     </div>

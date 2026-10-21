@@ -68,18 +68,18 @@ export default function CalendarPage() {
     : [];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 120, overflowX: 'hidden' }}>
-      <div style={{ borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '32px 24px 24px', background: '#111' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingBottom: 120, overflowX: 'hidden' }}>
+      <div style={{ borderBottom: '1px solid rgb(var(--ink-rgb) / 0.07)', padding: '32px 24px 24px', background: 'var(--surface-2)' }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
-          <div style={{ fontSize: 11, letterSpacing: 6, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 8 }}>TRAINING CALENDAR</div>
-          <h1 style={{ fontSize: 36, fontWeight: 900, color: '#f1f5f9', fontStyle: 'italic', letterSpacing: -1 }}>HISTORY</h1>
+          <div style={{ fontSize: 11, letterSpacing: 6, color: 'var(--text-subtle)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 8 }}>TRAINING CALENDAR</div>
+          <h1 style={{ fontSize: 36, fontWeight: 900, color: 'var(--text)', fontStyle: 'italic', letterSpacing: -1 }}>HISTORY</h1>
           <div style={{ display: 'flex', gap: 8, marginTop: 20 }}>
             {(['month', 'heatmap'] as const).map(v => (
               <button key={v} onClick={() => setView(v)} style={{
                 padding: '6px 16px', borderRadius: 4, border: '1px solid',
-                borderColor: view === v ? '#3b82f6' : 'rgba(255,255,255,0.1)',
-                background: view === v ? 'rgba(59,130,246,0.15)' : 'transparent',
-                color: view === v ? '#3b82f6' : '#64748b',
+                borderColor: view === v ? 'var(--info)' : 'rgb(var(--ink-rgb) / 0.1)',
+                background: view === v ? 'rgb(var(--info-rgb) / 0.15)' : 'transparent',
+                color: view === v ? 'var(--info)' : 'var(--text-subtle)',
                 fontSize: 11, fontWeight: 700, letterSpacing: 2, cursor: 'pointer',
                 fontFamily: "'Barlow Condensed', sans-serif",
               }}>

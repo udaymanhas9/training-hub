@@ -60,18 +60,18 @@ export default function RunMap({ polyline }: RunMapProps) {
         maxZoom: 19,
       }).addTo(map);
 
-      const line = L.polyline(coords, { color: '#ef4444', weight: 3, opacity: 0.9 }).addTo(map);
+      const line = L.polyline(coords, { color: 'var(--danger)', weight: 3, opacity: 0.9 }).addTo(map);
 
       // Start/end markers
       if (coords.length > 0) {
         const dotIcon = (color: string) => L.divIcon({
           className: '',
-          html: `<div style="width:10px;height:10px;border-radius:50%;background:${color};border:2px solid #fff;"></div>`,
+          html: `<div style="width:10px;height:10px;border-radius:50%;background:${color};border:2px solid var(--text-strong);"></div>`,
           iconSize: [10, 10],
           iconAnchor: [5, 5],
         });
-        L.marker(coords[0], { icon: dotIcon('#10b981') }).addTo(map);
-        L.marker(coords[coords.length - 1], { icon: dotIcon('#ef4444') }).addTo(map);
+        L.marker(coords[0], { icon: dotIcon('var(--success)') }).addTo(map);
+        L.marker(coords[coords.length - 1], { icon: dotIcon('var(--danger)') }).addTo(map);
       }
 
       map.fitBounds(line.getBounds(), { padding: [16, 16] });
@@ -95,7 +95,7 @@ export default function RunMap({ polyline }: RunMapProps) {
       />
       <div
         ref={mapRef}
-        style={{ width: '100%', height: 280, borderRadius: 4, overflow: 'hidden', background: '#111' }}
+        style={{ width: '100%', height: 280, borderRadius: 4, overflow: 'hidden', background: 'var(--surface-2)' }}
       />
     </>
   );

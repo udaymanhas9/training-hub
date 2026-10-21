@@ -1,0 +1,17 @@
+name: Check colors
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  colors:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: No hardcoded colors; theme.css and theme.ts in sync
+        run: node scripts/check-colors.mjs

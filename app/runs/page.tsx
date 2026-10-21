@@ -231,23 +231,23 @@ export default function RunsPage() {
   const hasActivities = activities.length > 0;
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 120, overflowX: 'hidden' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingBottom: 120, overflowX: 'hidden' }}>
       {/* Header */}
-      <div style={{ borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '32px 24px 24px', background: '#111' }}>
+      <div style={{ borderBottom: '1px solid rgb(var(--ink-rgb) / 0.07)', padding: '32px 24px 24px', background: 'var(--surface-2)' }}>
         <div style={{ maxWidth: 960, margin: '0 auto' }}>
-          <div style={{ fontSize: 11, letterSpacing: 6, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 8 }}>
+          <div style={{ fontSize: 11, letterSpacing: 6, color: 'var(--text-subtle)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 8 }}>
             TRAINING HUB
           </div>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-            <h1 style={{ fontSize: 36, fontWeight: 900, color: '#f1f5f9', fontStyle: 'italic', letterSpacing: -1 }}>RUNS</h1>
+            <h1 style={{ fontSize: 36, fontWeight: 900, color: 'var(--text)', fontStyle: 'italic', letterSpacing: -1 }}>RUNS</h1>
             <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
               {syncing && (
-                <span style={{ fontSize: 11, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif" }}>
+                <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontFamily: "'Barlow Condensed', sans-serif" }}>
                   ● {syncMsg}
                 </span>
               )}
               {!syncing && syncMsg && (
-                <span style={{ fontSize: 11, color: isStravaConnected ? '#10b981' : '#64748b', fontFamily: "'Barlow Condensed', sans-serif" }}>
+                <span style={{ fontSize: 11, color: isStravaConnected ? 'var(--success)' : 'var(--text-subtle)', fontFamily: "'Barlow Condensed', sans-serif" }}>
                   ● {syncMsg}
                 </span>
               )}
@@ -256,17 +256,17 @@ export default function RunsPage() {
 
           {/* Status messages */}
           {stravaStatus === 'connected' && (
-            <div style={{ marginTop: 12, fontSize: 12, color: '#10b981', fontFamily: "'Barlow Condensed', sans-serif" }}>
+            <div style={{ marginTop: 12, fontSize: 12, color: 'var(--success)', fontFamily: "'Barlow Condensed', sans-serif" }}>
               Strava connected successfully.
             </div>
           )}
           {stravaStatus === 'denied' && (
-            <div style={{ marginTop: 12, fontSize: 12, color: '#f59e0b', fontFamily: "'Barlow Condensed', sans-serif" }}>
+            <div style={{ marginTop: 12, fontSize: 12, color: 'var(--warning)', fontFamily: "'Barlow Condensed', sans-serif" }}>
               Strava connection was declined.
             </div>
           )}
           {stravaStatus === 'noauth' && (
-            <div style={{ marginTop: 12, fontSize: 12, color: '#f59e0b', fontFamily: "'Barlow Condensed', sans-serif" }}>
+            <div style={{ marginTop: 12, fontSize: 12, color: 'var(--warning)', fontFamily: "'Barlow Condensed', sans-serif" }}>
               Please log in before connecting Strava.
             </div>
           )}
@@ -275,23 +275,23 @@ export default function RunsPage() {
 
       <div style={{ maxWidth: 960, margin: '0 auto', padding: '28px 24px 0' }}>
         {loading ? (
-          <div style={{ color: '#475569', fontSize: 13, textAlign: 'center', paddingTop: 60 }}>Loading...</div>
+          <div style={{ color: 'var(--text-faint)', fontSize: 13, textAlign: 'center', paddingTop: 60 }}>Loading...</div>
         ) : (
           <>
             {/* Stats strip */}
             <div style={{ display: 'flex', gap: 12, marginBottom: 28, flexWrap: 'wrap' }}>
               {[
-                { label: 'TOTAL RUNS',     value: totalRuns,                          color: '#3b82f6' },
-                { label: 'TOTAL DISTANCE', value: `${(totalDistance / 1000).toFixed(0)} km`, color: '#f1f5f9' },
-                { label: 'ELEVATION',      value: `${Math.round(totalElevation)} m`,  color: '#f59e0b' },
-                { label: 'AVG PACE',       value: fmtPace(avgPace),                   color: '#10b981' },
-                { label: 'AVG HR',         value: avgHR ? `${Math.round(avgHR)} bpm` : '—', color: '#ef4444' },
+                { label: 'TOTAL RUNS',     value: totalRuns,                          color: 'var(--info)' },
+                { label: 'TOTAL DISTANCE', value: `${(totalDistance / 1000).toFixed(0)} km`, color: 'var(--text)' },
+                { label: 'ELEVATION',      value: `${Math.round(totalElevation)} m`,  color: 'var(--warning)' },
+                { label: 'AVG PACE',       value: fmtPace(avgPace),                   color: 'var(--success)' },
+                { label: 'AVG HR',         value: avgHR ? `${Math.round(avgHR)} bpm` : '—', color: 'var(--danger)' },
               ].map(({ label, value, color }) => (
                 <div key={label} style={{
-                  background: '#111', border: '1px solid rgba(255,255,255,0.07)',
+                  background: 'var(--surface-2)', border: '1px solid rgb(var(--ink-rgb) / 0.07)',
                   borderRadius: 8, padding: '10px 18px', minWidth: 110,
                 }}>
-                  <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>{label}</div>
+                  <div style={{ fontSize: 9, letterSpacing: 3, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif" }}>{label}</div>
                   <div style={{ fontSize: 22, fontWeight: 900, color, marginTop: 2 }}>{value}</div>
                 </div>
               ))}
@@ -300,7 +300,7 @@ export default function RunsPage() {
             {/* PBs */}
             {(pb5k || pb10k || pbHalf) && (
               <div style={{ marginBottom: 28 }}>
-                <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 12 }}>ESTIMATED PBs</div>
+                <div style={{ fontSize: 11, letterSpacing: 5, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 12 }}>ESTIMATED PBs</div>
                 <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                   {[
                     { label: '5K',   value: pb5k },
@@ -308,11 +308,11 @@ export default function RunsPage() {
                     { label: 'HALF', value: pbHalf },
                   ].filter(p => p.value).map(({ label, value }) => (
                     <div key={label} style={{
-                      background: '#111', border: '1px solid rgba(59,130,246,0.2)',
+                      background: 'var(--surface-2)', border: '1px solid rgb(var(--info-rgb) / 0.2)',
                       borderRadius: 8, padding: '10px 20px', textAlign: 'center',
                     }}>
-                      <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>{label}</div>
-                      <div style={{ fontSize: 22, fontWeight: 900, color: '#3b82f6', marginTop: 2 }}>{value}</div>
+                      <div style={{ fontSize: 9, letterSpacing: 3, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif" }}>{label}</div>
+                      <div style={{ fontSize: 22, fontWeight: 900, color: 'var(--info)', marginTop: 2 }}>{value}</div>
                     </div>
                   ))}
                 </div>
@@ -322,29 +322,29 @@ export default function RunsPage() {
             {/* Weekly mileage chart */}
             {weeklyData.length > 0 && (
               <div style={{ marginBottom: 32 }}>
-                <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 16 }}>
+                <div style={{ fontSize: 11, letterSpacing: 5, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 16 }}>
                   WEEKLY MILEAGE (KM)
                 </div>
                 <ResponsiveContainer width="100%" height={180}>
                   <BarChart data={weeklyData} margin={{ top: 4, right: 0, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--ink-rgb) / 0.04)" />
                     <XAxis
                       dataKey="label"
-                      tick={{ fill: '#475569', fontFamily: "'Barlow Condensed', sans-serif", fontSize: 10 }}
+                      tick={{ fill: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif", fontSize: 10 }}
                       tickLine={false}
                       interval="preserveStartEnd"
                     />
                     <YAxis
-                      tick={{ fill: '#475569', fontFamily: "'Barlow Condensed', sans-serif", fontSize: 10 }}
+                      tick={{ fill: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif", fontSize: 10 }}
                       tickLine={false} axisLine={false}
                     />
                     <Tooltip
-                      contentStyle={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, fontSize: 12 }}
-                      labelStyle={{ color: '#94a3b8' }}
-                      itemStyle={{ color: '#3b82f6' }}
+                      contentStyle={{ background: 'var(--surface-2)', border: '1px solid rgb(var(--ink-rgb) / 0.1)', borderRadius: 6, fontSize: 12 }}
+                      labelStyle={{ color: 'var(--text-muted)' }}
+                      itemStyle={{ color: 'var(--info)' }}
                       formatter={(v: number) => [`${v} km`, 'Distance']}
                     />
-                    <Bar dataKey="km" fill="#3b82f6" radius={[3, 3, 0, 0]} opacity={0.8} />
+                    <Bar dataKey="km" fill="var(--info)" radius={[3, 3, 0, 0]} opacity={0.8} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -353,7 +353,7 @@ export default function RunsPage() {
             {/* Upcoming schedule */}
             {upcoming.length > 0 && (
               <div style={{ marginBottom: 32 }}>
-                <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 16 }}>
+                <div style={{ fontSize: 11, letterSpacing: 5, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 16 }}>
                   UPCOMING
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -362,35 +362,35 @@ export default function RunsPage() {
                     const isToday  = w.date === new Date().toISOString().slice(0, 10);
                     return (
                       <div key={w.id} style={{
-                        background: '#111',
-                        border: `1px solid ${isToday ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.07)'}`,
-                        borderLeft: `3px solid ${isToday ? '#10b981' : '#3b82f6'}`,
+                        background: 'var(--surface-2)',
+                        border: `1px solid ${isToday ? 'rgb(var(--success-rgb) / 0.3)' : 'rgb(var(--ink-rgb) / 0.07)'}`,
+                        borderLeft: `3px solid ${isToday ? 'var(--success)' : 'var(--info)'}`,
                         borderRadius: 8, padding: '12px 16px',
                         display: 'flex', alignItems: 'center', gap: 16,
                       }}>
                         <div style={{ minWidth: 70 }}>
-                          <div style={{ fontSize: 10, letterSpacing: 2, color: isToday ? '#10b981' : '#3b82f6', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>
+                          <div style={{ fontSize: 10, letterSpacing: 2, color: isToday ? 'var(--success)' : 'var(--info)', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>
                             {isToday ? 'TODAY' : dayLabel.split(' ')[0].toUpperCase()}
                           </div>
-                          <div style={{ fontSize: 12, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>
+                          <div style={{ fontSize: 12, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif" }}>
                             {isToday ? dayLabel : dayLabel.slice(dayLabel.indexOf(' ') + 1)}
                           </div>
                         </div>
                         <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9' }}>{w.title}</div>
+                          <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)' }}>{w.title}</div>
                           <div style={{ display: 'flex', gap: 14, marginTop: 4, flexWrap: 'wrap' }}>
                             {w.sportTypeKey && (
-                              <span style={{ fontSize: 10, letterSpacing: 2, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>
+                              <span style={{ fontSize: 10, letterSpacing: 2, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif" }}>
                                 {w.sportTypeKey.replace(/_/g, ' ').toUpperCase()}
                               </span>
                             )}
                             {w.duration && (
-                              <span style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>
+                              <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600 }}>
                                 {Math.round(w.duration / 60)} min
                               </span>
                             )}
                             {w.distance && w.distance > 0 && (
-                              <span style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>
+                              <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600 }}>
                                 {(w.distance / 1000).toFixed(1)} km
                               </span>
                             )}
@@ -406,7 +406,7 @@ export default function RunsPage() {
             {/* Activity list */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>
+                <div style={{ fontSize: 11, letterSpacing: 5, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif" }}>
                   ACTIVITIES
                 </div>
                 {activityTypes.length > 1 && (
@@ -414,8 +414,8 @@ export default function RunsPage() {
                     value={filterType}
                     onChange={e => setFilterType(e.target.value)}
                     style={{
-                      background: '#111', border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: 6, color: '#f1f5f9', padding: '6px 12px',
+                      background: 'var(--surface-2)', border: '1px solid rgb(var(--ink-rgb) / 0.1)',
+                      borderRadius: 6, color: 'var(--text)', padding: '6px 12px',
                       fontSize: 11, fontFamily: "'Barlow Condensed', sans-serif", cursor: 'pointer',
                     }}
                   >
@@ -426,9 +426,9 @@ export default function RunsPage() {
               </div>
 
               {runs.length === 0 ? (
-                <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, padding: '40px 24px', textAlign: 'center' }}>
-                  <div style={{ fontSize: 18, fontWeight: 900, color: '#475569', letterSpacing: 2 }}>NO ACTIVITIES YET</div>
-                  <div style={{ fontSize: 13, color: '#334155', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 8 }}>
+                <div style={{ background: 'var(--surface-2)', border: '1px solid rgb(var(--ink-rgb) / 0.07)', borderRadius: 8, padding: '40px 24px', textAlign: 'center' }}>
+                  <div style={{ fontSize: 18, fontWeight: 900, color: 'var(--text-faint)', letterSpacing: 2 }}>NO ACTIVITIES YET</div>
+                  <div style={{ fontSize: 13, color: 'var(--text-ghost)', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 8 }}>
                     {syncing ? 'Syncing...' : 'Go for a run — it will appear here automatically.'}
                   </div>
                 </div>
@@ -439,7 +439,7 @@ export default function RunsPage() {
                       key={activity.id}
                       onClick={() => setSelected(activity)}
                       style={{
-                        background: '#111', border: '1px solid rgba(255,255,255,0.07)',
+                        background: 'var(--surface-2)', border: '1px solid rgb(var(--ink-rgb) / 0.07)',
                         borderRadius: 8, padding: '14px 18px', cursor: 'pointer',
                         transition: 'border-color 0.15s, background 0.15s',
                         display: 'grid',
@@ -447,37 +447,37 @@ export default function RunsPage() {
                         gap: 12, alignItems: 'center',
                       }}
                       onMouseEnter={e => {
-                        (e.currentTarget as HTMLElement).style.borderColor = 'rgba(59,130,246,0.4)';
-                        (e.currentTarget as HTMLElement).style.background = '#141414';
+                        (e.currentTarget as HTMLElement).style.borderColor = 'rgb(var(--info-rgb) / 0.4)';
+                        (e.currentTarget as HTMLElement).style.background = 'var(--surface-1)';
                       }}
                       onMouseLeave={e => {
-                        (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.07)';
-                        (e.currentTarget as HTMLElement).style.background = '#111';
+                        (e.currentTarget as HTMLElement).style.borderColor = 'rgb(var(--ink-rgb) / 0.07)';
+                        (e.currentTarget as HTMLElement).style.background = 'var(--surface-2)';
                       }}
                     >
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-                          <span style={{ fontSize: 9, letterSpacing: 3, color: '#3b82f6', fontFamily: "'Barlow Condensed', sans-serif" }}>
+                          <span style={{ fontSize: 9, letterSpacing: 3, color: 'var(--info)', fontFamily: "'Barlow Condensed', sans-serif" }}>
                             {activity.type.toUpperCase()}
                           </span>
-                          <span style={{ fontSize: 12, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>
+                          <span style={{ fontSize: 12, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif" }}>
                             {new Date(activity.startDate).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}
                           </span>
                         </div>
-                        <div style={{ fontSize: 16, fontWeight: 700, color: '#f1f5f9', marginBottom: 8 }}>{activity.name}</div>
+                        <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', marginBottom: 8 }}>{activity.name}</div>
                         <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap' }}>
                           {[
-                            { label: fmtDist(activity.distance),          color: '#f1f5f9' },
-                            { label: fmtTime(activity.movingTime),         color: '#94a3b8' },
-                            { label: fmtPace(activity.averageSpeed),       color: '#10b981' },
-                            { label: `↑${Math.round(activity.totalElevationGain)}m`, color: '#f59e0b' },
-                            ...(activity.averageHeartrate ? [{ label: `♥ ${Math.round(activity.averageHeartrate)}`, color: '#ef4444' }] : []),
+                            { label: fmtDist(activity.distance),          color: 'var(--text)' },
+                            { label: fmtTime(activity.movingTime),         color: 'var(--text-muted)' },
+                            { label: fmtPace(activity.averageSpeed),       color: 'var(--success)' },
+                            { label: `↑${Math.round(activity.totalElevationGain)}m`, color: 'var(--warning)' },
+                            ...(activity.averageHeartrate ? [{ label: `♥ ${Math.round(activity.averageHeartrate)}`, color: 'var(--danger)' }] : []),
                           ].map(({ label, color }, i) => (
                             <span key={i} style={{ fontSize: 13, fontWeight: 600, color }}>{label}</span>
                           ))}
                         </div>
                       </div>
-                      <div style={{ color: '#334155', fontSize: 20 }}>›</div>
+                      <div style={{ color: 'var(--text-ghost)', fontSize: 20 }}>›</div>
                     </div>
                   ))}
                 </div>

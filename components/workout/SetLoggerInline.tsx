@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { SetLog } from '@/lib/types';
+import { tint } from '@/lib/theme';
 
 interface SetLoggerInlineProps {
   exerciseId: string;
@@ -36,7 +37,7 @@ export default function SetLoggerInline({
   }
 
   return (
-    <div style={{ marginTop: 10, padding: '10px 12px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 6 }}>
+    <div style={{ marginTop: 10, padding: '10px 12px', background: 'rgb(var(--ink-rgb) / 0.03)', border: '1px solid rgb(var(--ink-rgb) / 0.07)', borderRadius: 6 }}>
       {/* Logged sets */}
       {loggedSets.length > 0 && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
@@ -45,7 +46,7 @@ export default function SetLoggerInline({
               key={i}
               style={{
                 display: 'flex', alignItems: 'center', gap: 4,
-                background: `${accentColor}20`, border: `1px solid ${accentColor}40`,
+                background: `${tint(accentColor, 0.13)}`, border: `1px solid ${tint(accentColor, 0.25)}`,
                 borderRadius: 4, padding: '3px 8px',
               }}
             >
@@ -54,7 +55,7 @@ export default function SetLoggerInline({
               </span>
               <button
                 onClick={() => onRemove(i)}
-                style={{ background: 'none', border: 'none', color: '#475569', cursor: 'pointer', fontSize: 14, padding: '0 2px', lineHeight: 1 }}
+                style={{ background: 'none', border: 'none', color: 'var(--text-faint)', cursor: 'pointer', fontSize: 14, padding: '0 2px', lineHeight: 1 }}
               >
                 ×
               </button>
@@ -75,15 +76,15 @@ export default function SetLoggerInline({
               placeholder={lastSet ? String(lastSet.weight) : '0'}
               onKeyDown={e => e.key === 'Enter' && handleAdd()}
               style={{
-                width: 80, background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.12)',
-                borderRadius: 6, color: '#f1f5f9', padding: '10px 8px', fontSize: 16,
+                width: 80, background: 'var(--surface)', border: '1px solid rgb(var(--ink-rgb) / 0.12)',
+                borderRadius: 6, color: 'var(--text)', padding: '10px 8px', fontSize: 16,
                 fontFamily: "'Barlow Condensed', sans-serif", textAlign: 'center',
                 minHeight: 44,
               }}
             />
-            <span style={{ position: 'absolute', right: 5, top: '50%', transform: 'translateY(-50%)', fontSize: 9, color: '#475569', pointerEvents: 'none' }}>{weightUnit}</span>
+            <span style={{ position: 'absolute', right: 5, top: '50%', transform: 'translateY(-50%)', fontSize: 9, color: 'var(--text-faint)', pointerEvents: 'none' }}>{weightUnit}</span>
           </div>
-          <span style={{ color: '#334155', fontSize: 18, fontWeight: 700 }}>×</span>
+          <span style={{ color: 'var(--text-ghost)', fontSize: 18, fontWeight: 700 }}>×</span>
           <input
             type="number"
             inputMode="numeric"
@@ -92,8 +93,8 @@ export default function SetLoggerInline({
             placeholder={lastSet ? String(lastSet.reps) : 'reps'}
             onKeyDown={e => e.key === 'Enter' && handleAdd()}
             style={{
-              width: 70, background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: 6, color: '#f1f5f9', padding: '10px 8px', fontSize: 16,
+              width: 70, background: 'var(--surface)', border: '1px solid rgb(var(--ink-rgb) / 0.12)',
+              borderRadius: 6, color: 'var(--text)', padding: '10px 8px', fontSize: 16,
               fontFamily: "'Barlow Condensed', sans-serif", textAlign: 'center',
               minHeight: 44,
             }}
@@ -103,13 +104,13 @@ export default function SetLoggerInline({
           onClick={handleAdd}
           style={{
             background: accentColor, border: 'none', borderRadius: 6,
-            color: '#000', fontSize: 13, fontWeight: 900, letterSpacing: 1,
+            color: 'var(--scrim)', fontSize: 13, fontWeight: 900, letterSpacing: 1,
             padding: '10px 16px', cursor: 'pointer', minHeight: 44,
             fontFamily: "'Barlow Condensed', sans-serif",
           }}
         >+ LOG</button>
         {lastSet && (
-          <span style={{ fontSize: 10, color: '#334155', fontFamily: "'Barlow Condensed', sans-serif" }}>
+          <span style={{ fontSize: 10, color: 'var(--text-ghost)', fontFamily: "'Barlow Condensed', sans-serif" }}>
             Last: {lastSet.weight > 0 ? `${lastSet.weight}${weightUnit}` : 'BW'} × {lastSet.reps}
           </span>
         )}

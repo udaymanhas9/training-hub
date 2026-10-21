@@ -9,6 +9,7 @@ import { formatLastTrained, getSessionsThisWeek, getCurrentStreak, formatDate, W
 import { format } from 'date-fns';
 import { supabase } from '@/lib/supabase';
 import type { UpcomingWorkout } from '@/app/api/garmin/upcoming/route';
+import { tint } from '@/lib/theme';
 
 export default function DashboardPage() {
   const [workouts, setWorkouts] = useState<WorkoutDefinition[]>([]);
@@ -93,28 +94,28 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 120, overflowX: 'hidden' }}>
+      <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingBottom: 120, overflowX: 'hidden' }}>
         <div style={{
-          background: 'linear-gradient(135deg, #0f0f0f 0%, #111 50%, #0a0a0a 100%)',
-          borderBottom: '1px solid rgba(255,255,255,0.07)',
+          background: 'linear-gradient(135deg, var(--surface-1) 0%, var(--surface-2) 50%, var(--bg) 100%)',
+          borderBottom: '1px solid rgb(var(--ink-rgb) / 0.07)',
           padding: '40px 24px 32px',
         }}>
           <div style={{ maxWidth: 900, margin: '0 auto' }}>
-            <div style={{ height: 12, width: 180, background: 'rgba(255,255,255,0.06)', borderRadius: 4, marginBottom: 12 }} />
-            <div style={{ height: 64, width: '60%', background: 'rgba(255,255,255,0.06)', borderRadius: 6, marginBottom: 16 }} />
-            <div style={{ height: 12, width: 120, background: 'rgba(255,255,255,0.04)', borderRadius: 4, marginBottom: 28 }} />
+            <div style={{ height: 12, width: 180, background: 'rgb(var(--ink-rgb) / 0.06)', borderRadius: 4, marginBottom: 12 }} />
+            <div style={{ height: 64, width: '60%', background: 'rgb(var(--ink-rgb) / 0.06)', borderRadius: 6, marginBottom: 16 }} />
+            <div style={{ height: 12, width: 120, background: 'rgb(var(--ink-rgb) / 0.04)', borderRadius: 4, marginBottom: 28 }} />
             <div style={{ display: 'flex', gap: 16 }}>
               {[1, 2, 3].map(i => (
-                <div key={i} style={{ height: 70, width: 100, background: 'rgba(255,255,255,0.05)', borderRadius: 8 }} />
+                <div key={i} style={{ height: 70, width: 100, background: 'rgb(var(--ink-rgb) / 0.05)', borderRadius: 8 }} />
               ))}
             </div>
           </div>
         </div>
         <div style={{ maxWidth: 900, margin: '0 auto', padding: '32px 24px 0' }}>
-          <div style={{ height: 10, width: 120, background: 'rgba(255,255,255,0.05)', borderRadius: 4, marginBottom: 16 }} />
+          <div style={{ height: 10, width: 120, background: 'rgb(var(--ink-rgb) / 0.05)', borderRadius: 4, marginBottom: 16 }} />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1, 2, 3].map(i => (
-              <div key={i} style={{ height: 160, background: 'rgba(255,255,255,0.04)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)' }} />
+              <div key={i} style={{ height: 160, background: 'rgb(var(--ink-rgb) / 0.04)', borderRadius: 10, border: '1px solid rgb(var(--ink-rgb) / 0.06)' }} />
             ))}
           </div>
         </div>
@@ -123,43 +124,43 @@ export default function DashboardPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 120, overflowX: 'hidden' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingBottom: 120, overflowX: 'hidden' }}>
       {/* Hero Header */}
       <div style={{
-        background: 'linear-gradient(135deg, #0f0f0f 0%, #111 50%, #0a0a0a 100%)',
-        borderBottom: '1px solid rgba(255,255,255,0.07)',
+        background: 'linear-gradient(135deg, var(--surface-1) 0%, var(--surface-2) 50%, var(--bg) 100%)',
+        borderBottom: '1px solid rgb(var(--ink-rgb) / 0.07)',
         padding: '40px 24px 32px',
         position: 'relative',
         overflow: 'hidden',
       }}>
         <div style={{
           position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.02) 39px, rgba(255,255,255,0.02) 40px), repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.02) 39px, rgba(255,255,255,0.02) 40px)',
+          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 39px, rgb(var(--ink-rgb) / 0.02) 39px, rgb(var(--ink-rgb) / 0.02) 40px), repeating-linear-gradient(90deg, transparent, transparent 39px, rgb(var(--ink-rgb) / 0.02) 39px, rgb(var(--ink-rgb) / 0.02) 40px)',
           pointerEvents: 'none',
         }} />
         <div style={{ maxWidth: 900, margin: '0 auto', position: 'relative' }}>
-          <div style={{ fontSize: 11, letterSpacing: 6, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 500, marginBottom: 8 }}>
+          <div style={{ fontSize: 11, letterSpacing: 6, color: 'var(--text-subtle)', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 500, marginBottom: 8 }}>
             {today.toUpperCase()}
           </div>
-          <h1 style={{ fontSize: 'clamp(42px,8vw,72px)', fontWeight: 900, lineHeight: 0.9, letterSpacing: -1, color: '#fff', fontStyle: 'italic' }}>
+          <h1 style={{ fontSize: 'clamp(42px,8vw,72px)', fontWeight: 900, lineHeight: 0.9, letterSpacing: -1, color: 'var(--text-strong)', fontStyle: 'italic' }}>
             {profileName ? `WELCOME BACK, ${profileName.toUpperCase()}` : 'TRAINING HUB'}
           </h1>
-          <p style={{ fontSize: 16, color: '#64748b', letterSpacing: 2, marginTop: 10, fontFamily: "'Barlow Condensed', sans-serif" }}>
+          <p style={{ fontSize: 16, color: 'var(--text-subtle)', letterSpacing: 2, marginTop: 10, fontFamily: "'Barlow Condensed', sans-serif" }}>
             Track · Train · Progress
           </p>
 
           {/* Quick stats */}
           <div style={{ display: 'flex', gap: 16, marginTop: 28, flexWrap: 'wrap' }}>
             {[
-              { label: 'TOTAL SESSIONS', val: totalSessions, color: '#f1f5f9' },
-              { label: 'THIS WEEK', val: thisWeek, color: '#10b981' },
-              { label: 'DAY STREAK', val: streak, color: '#f97316' },
-              ...(currentWeight ? [{ label: 'WEIGHT', val: displayWeight(currentWeight), color: '#3b82f6' }] : []),
-              ...(currentBF ? [{ label: 'BODY FAT', val: `${currentBF}%`, color: '#8b5cf6' }] : []),
+              { label: 'TOTAL SESSIONS', val: totalSessions, color: 'var(--text)' },
+              { label: 'THIS WEEK', val: thisWeek, color: 'var(--success)' },
+              { label: 'DAY STREAK', val: streak, color: 'var(--orange)' },
+              ...(currentWeight ? [{ label: 'WEIGHT', val: displayWeight(currentWeight), color: 'var(--info)' }] : []),
+              ...(currentBF ? [{ label: 'BODY FAT', val: `${currentBF}%`, color: 'var(--violet)' }] : []),
             ].map(({ label, val, color }) => (
-              <div key={label} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '12px 20px', textAlign: 'center', minWidth: 90 }}>
+              <div key={label} style={{ background: 'rgb(var(--ink-rgb) / 0.05)', border: '1px solid rgb(var(--ink-rgb) / 0.08)', borderRadius: 8, padding: '12px 20px', textAlign: 'center', minWidth: 90 }}>
                 <div style={{ fontSize: 26, fontWeight: 900, color }}>{val}</div>
-                <div style={{ fontSize: 9, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 2 }}>{label}</div>
+                <div style={{ fontSize: 9, letterSpacing: 3, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 2 }}>{label}</div>
               </div>
             ))}
           </div>
@@ -170,7 +171,7 @@ export default function DashboardPage() {
 
         {/* Workout Cards */}
         <div style={{ marginTop: 32 }}>
-          <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 16 }}>YOUR WORKOUTS</div>
+          <div style={{ fontSize: 11, letterSpacing: 5, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 16 }}>YOUR WORKOUTS</div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {coreWorkouts.map(workout => {
               const accent = workout.accentColor;
@@ -180,8 +181,8 @@ export default function DashboardPage() {
                 <div key={workout.id} style={{ position: 'relative' }}>
                   <Link href={`/workout/${workout.id}`} style={{ textDecoration: 'none', display: 'block', height: '100%' }}>
                     <div style={{
-                      background: '#111',
-                      border: `1px solid rgba(255,255,255,0.07)`,
+                      background: 'var(--surface-2)',
+                      border: `1px solid rgb(var(--ink-rgb) / 0.07)`,
                       borderRadius: 10,
                       padding: '20px 18px 20px 18px',
                       cursor: 'pointer',
@@ -194,29 +195,29 @@ export default function DashboardPage() {
                       flexDirection: 'column',
                     }}
                       onMouseEnter={e => (e.currentTarget.style.borderColor = accent)}
-                      onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)')}
+                      onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgb(var(--ink-rgb) / 0.07)')}
                     >
                       <div style={{
                         position: 'absolute', top: 0, right: 0, width: 80, height: 80,
-                        background: `radial-gradient(circle at top right, ${accent}15, transparent 70%)`,
+                        background: `radial-gradient(circle at top right, ${tint(accent, 0.08)}, transparent 70%)`,
                         pointerEvents: 'none',
                       }} />
                       <div style={{ fontSize: 10, letterSpacing: 4, color: accent, fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 500, marginBottom: 6 }}>
                         {getWorkoutTypeLabel(workout.type)}
                       </div>
-                      <div style={{ fontSize: 26, fontWeight: 900, color: '#f1f5f9', letterSpacing: -0.5, lineHeight: 1, paddingRight: 28 }}>{workout.name}</div>
-                      <div style={{ fontSize: 12, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 6, lineHeight: 1.4, flex: 1 }}>{workout.tagline}</div>
+                      <div style={{ fontSize: 26, fontWeight: 900, color: 'var(--text)', letterSpacing: -0.5, lineHeight: 1, paddingRight: 28 }}>{workout.name}</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-subtle)', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 6, lineHeight: 1.4, flex: 1 }}>{workout.tagline}</div>
 
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16 }}>
-                        <div style={{ background: `${accent}18`, border: `1px solid ${accent}30`, borderRadius: 4, padding: '3px 8px' }}>
+                        <div style={{ background: `${tint(accent, 0.09)}`, border: `1px solid ${tint(accent, 0.19)}`, borderRadius: 4, padding: '3px 8px' }}>
                           <span style={{ fontSize: 11, color: accent, fontWeight: 700, letterSpacing: 1 }}>{workout.duration}</span>
                         </div>
-                        <div style={{ fontSize: 10, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>
+                        <div style={{ fontSize: 10, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif" }}>
                           {sessionCount > 0 ? `${sessionCount}× logged` : 'Not started'}
                         </div>
                       </div>
 
-                      <div style={{ marginTop: 10, fontSize: 10, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 1 }}>
+                      <div style={{ marginTop: 10, fontSize: 10, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 1 }}>
                         {formatLastTrained(lastDate).toUpperCase()}
                       </div>
                     </div>
@@ -227,14 +228,14 @@ export default function DashboardPage() {
                     onClick={e => e.stopPropagation()}
                     style={{
                       position: 'absolute', top: 12, right: 12,
-                      background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)',
+                      background: 'rgb(var(--shadow-rgb) / 0.5)', border: '1px solid rgb(var(--ink-rgb) / 0.1)',
                       borderRadius: 5, padding: '4px 7px', textDecoration: 'none',
-                      color: '#64748b', fontSize: 11, lineHeight: 1,
+                      color: 'var(--text-subtle)', fontSize: 11, lineHeight: 1,
                       transition: 'color 0.15s, border-color 0.15s',
                       zIndex: 2,
                     }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#f1f5f9'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.3)'; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#64748b'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.1)'; }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgb(var(--ink-rgb) / 0.3)'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text-subtle)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgb(var(--ink-rgb) / 0.1)'; }}
                   >
                     ✎
                   </Link>
@@ -248,9 +249,9 @@ export default function DashboardPage() {
         {customWorkouts.length > 0 && (
           <div style={{ marginTop: 32 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>CUSTOM WORKOUTS</div>
+              <div style={{ fontSize: 11, letterSpacing: 5, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif" }}>CUSTOM WORKOUTS</div>
               <Link href="/edit/new" style={{ textDecoration: 'none' }}>
-                <span style={{ fontSize: 11, color: '#8b5cf6', letterSpacing: 2, fontWeight: 600, cursor: 'pointer' }}>+ NEW</span>
+                <span style={{ fontSize: 11, color: 'var(--violet)', letterSpacing: 2, fontWeight: 600, cursor: 'pointer' }}>+ NEW</span>
               </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -260,23 +261,23 @@ export default function DashboardPage() {
                   <div key={workout.id} style={{ position: 'relative' }}>
                     <Link href={`/workout/${workout.id}`} style={{ textDecoration: 'none', display: 'block' }}>
                       <div style={{
-                        background: '#111', border: '1px solid rgba(255,255,255,0.07)', borderLeft: '3px solid #8b5cf6',
+                        background: 'var(--surface-2)', border: '1px solid rgb(var(--ink-rgb) / 0.07)', borderLeft: '3px solid var(--violet)',
                         borderRadius: 8, padding: '16px 18px', cursor: 'pointer',
                       }}>
-                        <div style={{ fontSize: 18, fontWeight: 900, color: '#f1f5f9', paddingRight: 28 }}>{workout.name}</div>
-                        <div style={{ fontSize: 11, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 4 }}>{formatLastTrained(lastDate)}</div>
+                        <div style={{ fontSize: 18, fontWeight: 900, color: 'var(--text)', paddingRight: 28 }}>{workout.name}</div>
+                        <div style={{ fontSize: 11, color: 'var(--text-subtle)', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 4 }}>{formatLastTrained(lastDate)}</div>
                       </div>
                     </Link>
                     <Link
                       href={`/edit/${workout.id}`}
                       style={{
                         position: 'absolute', top: 10, right: 10,
-                        background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)',
+                        background: 'rgb(var(--shadow-rgb) / 0.5)', border: '1px solid rgb(var(--ink-rgb) / 0.1)',
                         borderRadius: 5, padding: '4px 7px', textDecoration: 'none',
-                        color: '#64748b', fontSize: 11, lineHeight: 1, zIndex: 2,
+                        color: 'var(--text-subtle)', fontSize: 11, lineHeight: 1, zIndex: 2,
                       }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#f1f5f9'; }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#64748b'; }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text)'; }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text-subtle)'; }}
                     >
                       ✎
                     </Link>
@@ -291,17 +292,17 @@ export default function DashboardPage() {
         <div style={{ marginTop: customWorkouts.length > 0 ? 16 : 32 }}>
           <Link href="/edit/new" style={{ textDecoration: 'none' }}>
             <div style={{
-              border: '1px dashed rgba(255,255,255,0.12)', borderRadius: 10, padding: '16px 24px',
+              border: '1px dashed rgb(var(--ink-rgb) / 0.12)', borderRadius: 10, padding: '16px 24px',
               display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer',
               transition: 'border-color 0.2s',
             }}
-              onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(139,92,246,0.5)')}
-              onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)')}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgb(var(--violet-rgb) / 0.5)')}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgb(var(--ink-rgb) / 0.12)')}
             >
-              <span style={{ fontSize: 24, color: '#8b5cf6' }}>+</span>
+              <span style={{ fontSize: 24, color: 'var(--violet)' }}>+</span>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 700, color: '#94a3b8', letterSpacing: 1 }}>CREATE CUSTOM WORKOUT</div>
-                <div style={{ fontSize: 11, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 2 }}>Build your own program with phases and exercises</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-muted)', letterSpacing: 1 }}>CREATE CUSTOM WORKOUT</div>
+                <div style={{ fontSize: 11, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 2 }}>Build your own program with phases and exercises</div>
               </div>
             </div>
           </Link>
@@ -311,9 +312,9 @@ export default function DashboardPage() {
         {(todayTodos.length > 0 || todayRun) && (
           <div style={{ marginTop: 40 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>TODAY&apos;S TASKS</div>
+              <div style={{ fontSize: 11, letterSpacing: 5, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif" }}>TODAY&apos;S TASKS</div>
               <Link href="/todo" style={{ textDecoration: 'none' }}>
-                <span style={{ fontSize: 11, color: '#64748b', letterSpacing: 2 }}>VIEW ALL</span>
+                <span style={{ fontSize: 11, color: 'var(--text-subtle)', letterSpacing: 2 }}>VIEW ALL</span>
               </Link>
             </div>
 
@@ -344,44 +345,44 @@ export default function DashboardPage() {
                 <>
                   {todayTodos.length > 0 && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6, marginBottom: 2 }}>
-                      <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.06)' }} />
-                      <span style={{ fontSize: 9, letterSpacing: 3, color: '#334155', fontFamily: "'Barlow Condensed', sans-serif" }}>TODAY&apos;S RUN</span>
-                      <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.06)' }} />
+                      <div style={{ flex: 1, height: 1, background: 'rgb(var(--ink-rgb) / 0.06)' }} />
+                      <span style={{ fontSize: 9, letterSpacing: 3, color: 'var(--text-ghost)', fontFamily: "'Barlow Condensed', sans-serif" }}>TODAY&apos;S RUN</span>
+                      <div style={{ flex: 1, height: 1, background: 'rgb(var(--ink-rgb) / 0.06)' }} />
                     </div>
                   )}
                   <Link href="/runs" style={{ textDecoration: 'none', display: 'block' }}>
                     <div style={{
                       display: 'flex', alignItems: 'center', gap: 12,
                       padding: '10px 14px', borderRadius: 8,
-                      background: '#111', border: '1px solid rgba(16,185,129,0.2)',
-                      borderLeft: '3px solid #10b981',
+                      background: 'var(--surface-2)', border: '1px solid rgb(var(--success-rgb) / 0.2)',
+                      borderLeft: '3px solid var(--success)',
                       transition: 'border-color 0.15s',
                     }}
-                      onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(16,185,129,0.5)')}
-                      onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(16,185,129,0.2)')}
+                      onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgb(var(--success-rgb) / 0.5)')}
+                      onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgb(var(--success-rgb) / 0.2)')}
                     >
                       <span style={{ fontSize: 18, flexShrink: 0 }}>🏃</span>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 14, fontWeight: 700, color: '#f1f5f9' }}>{todayRun.title}</div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>{todayRun.title}</div>
                         <div style={{ display: 'flex', gap: 10, marginTop: 2, flexWrap: 'wrap' }}>
                           {todayRun.sportTypeKey && (
-                            <span style={{ fontSize: 9, letterSpacing: 2, color: '#10b981', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>
+                            <span style={{ fontSize: 9, letterSpacing: 2, color: 'var(--success)', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}>
                               {todayRun.sportTypeKey.replace(/_/g, ' ').toUpperCase()}
                             </span>
                           )}
                           {todayRun.duration && (
-                            <span style={{ fontSize: 11, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif" }}>
+                            <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontFamily: "'Barlow Condensed', sans-serif" }}>
                               ~{Math.round(todayRun.duration / 60)} min
                             </span>
                           )}
                           {todayRun.distance && todayRun.distance > 0 && (
-                            <span style={{ fontSize: 11, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif" }}>
+                            <span style={{ fontSize: 11, color: 'var(--text-subtle)', fontFamily: "'Barlow Condensed', sans-serif" }}>
                               {(todayRun.distance / 1000).toFixed(1)} km
                             </span>
                           )}
                         </div>
                       </div>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="9 18 15 12 9 6" />
                       </svg>
                     </div>
@@ -396,24 +397,24 @@ export default function DashboardPage() {
         {recentSessions.length > 0 && (
           <div style={{ marginTop: 40 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>RECENT SESSIONS</div>
+              <div style={{ fontSize: 11, letterSpacing: 5, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif" }}>RECENT SESSIONS</div>
               <Link href="/calendar" style={{ textDecoration: 'none' }}>
-                <span style={{ fontSize: 11, color: '#64748b', letterSpacing: 2 }}>VIEW ALL</span>
+                <span style={{ fontSize: 11, color: 'var(--text-subtle)', letterSpacing: 2 }}>VIEW ALL</span>
               </Link>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {recentSessions.map(session => {
                 const workout = workouts.find(w => w.id === session.workoutId);
-                const accent = workout?.accentColor || WORKOUT_TYPE_COLORS[workout?.type || 'custom'] || '#8b5cf6';
+                const accent = workout?.accentColor || WORKOUT_TYPE_COLORS[workout?.type || 'custom'] || 'var(--violet)';
                 return (
                   <div key={session.id} style={{
-                    background: '#111', border: '1px solid rgba(255,255,255,0.07)',
+                    background: 'var(--surface-2)', border: '1px solid rgb(var(--ink-rgb) / 0.07)',
                     borderRadius: 8, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 16,
                   }}>
                     <div style={{ width: 4, height: 40, background: accent, borderRadius: 2, flexShrink: 0 }} />
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 16, fontWeight: 700, color: '#f1f5f9' }}>{workout?.name || 'Unknown Workout'}</div>
-                      <div style={{ fontSize: 11, color: '#64748b', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 2 }}>
+                      <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>{workout?.name || 'Unknown Workout'}</div>
+                      <div style={{ fontSize: 11, color: 'var(--text-subtle)', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 2 }}>
                         {formatDate(session.date)} · {session.durationMinutes}min · {session.exercises.length} exercises
                       </div>
                     </div>
@@ -429,8 +430,8 @@ export default function DashboardPage() {
         {totalSessions === 0 && (
           <div style={{ marginTop: 60, textAlign: 'center' }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>🏋️</div>
-            <div style={{ fontSize: 22, fontWeight: 900, color: '#475569', letterSpacing: 2 }}>NO SESSIONS YET</div>
-            <div style={{ fontSize: 14, color: '#334155', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 8 }}>Start a workout above to begin tracking your progress</div>
+            <div style={{ fontSize: 22, fontWeight: 900, color: 'var(--text-faint)', letterSpacing: 2 }}>NO SESSIONS YET</div>
+            <div style={{ fontSize: 14, color: 'var(--text-ghost)', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 8 }}>Start a workout above to begin tracking your progress</div>
           </div>
         )}
       </div>
@@ -445,8 +446,8 @@ function HomeTodoItem({ todo, onToggle }: { todo: BoardCard; onToggle: () => voi
     <div style={{
       display: 'flex', alignItems: 'center', gap: 12,
       padding: '10px 14px', borderRadius: 8,
-      background: '#111', border: '1px solid rgba(255,255,255,0.07)',
-      borderLeft: overdue ? '3px solid rgba(248,113,113,0.5)' : '3px solid transparent',
+      background: 'var(--surface-2)', border: '1px solid rgb(var(--ink-rgb) / 0.07)',
+      borderLeft: overdue ? '3px solid rgb(var(--danger-soft-rgb) / 0.5)' : '3px solid transparent',
       opacity: done ? 0.4 : 1, transition: 'opacity 0.2s',
     }}>
       <button
@@ -460,15 +461,15 @@ function HomeTodoItem({ todo, onToggle }: { todo: BoardCard; onToggle: () => voi
       >
         <div style={{
           width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-          border: `1.5px solid ${overdue ? '#f87171' : '#4a5568'}`,
+          border: `1.5px solid ${overdue ? 'var(--danger-soft)' : 'var(--text-faint)'}`,
           background: 'transparent',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           transition: 'all 0.15s',
         }} />
       </button>
-      <span style={{ flex: 1, fontSize: 14, color: '#cbd5e1' }}>{todo.title}</span>
+      <span style={{ flex: 1, fontSize: 14, color: 'var(--text-soft-2)' }}>{todo.title}</span>
       {todo.checklist.length > 0 && (
-        <span style={{ fontSize: 11, fontWeight: 700, color: '#64748b' }}>
+        <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-subtle)' }}>
           {todo.checklist.filter(i => i.done).length}/{todo.checklist.length}
         </span>
       )}

@@ -159,6 +159,8 @@ export interface BoardCard {
   completedAt?: string;    // ISO — repeating cards check this against the interval
   createdAt: string;       // ISO
   periodKey?: string;      // repeating cards: the calendar period they were last placed in
+  reminderTime?: string;   // HH:MM (24h, local) — opts this card into a push reminder
+  lastReminderKey?: string; // yyyy-MM-dd (local) the reminder last fired on, for dedup
 }
 
 export interface BoardList {

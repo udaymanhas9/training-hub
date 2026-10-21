@@ -7,7 +7,7 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { overflow-x: hidden; }
-html, body { background: #0a0a0a; color: #f1f5f9; }
+html, body { background: var(--bg); color: var(--text); }
 body { -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; }
 
 /* Prevent tiny tap delays on mobile */
@@ -21,7 +21,7 @@ button, a, input, select { touch-action: manipulation; }
 }
 
 .phase-header:hover { filter: brightness(1.1); }
-.ex-row:hover { background: rgba(255,255,255,0.04) !important; }
+.ex-row:hover { background: rgb(var(--ink-rgb) / 0.04) !important; }
 .check-btn { transition: all 0.15s; cursor: pointer; }
 .check-btn:hover { transform: scale(1.15); }
 .progress-bar { transition: width 0.5s cubic-bezier(.4,0,.2,1); }
@@ -54,15 +54,15 @@ input[type="number"] { -moz-appearance: textfield; }
   overflow-y: visible;
   padding: 4px 20px 24px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.12) transparent;
+  scrollbar-color: rgb(var(--ink-rgb) / 0.12) transparent;
 }
 .board-scroll::-webkit-scrollbar { height: 8px; }
-.board-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+.board-scroll::-webkit-scrollbar-thumb { background: rgb(var(--ink-rgb) / 0.12); border-radius: 4px; }
 .board-scroll::-webkit-scrollbar-track { background: transparent; }
 .board-col { width: 290px; flex-shrink: 0; }
-.board-cards { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; }
+.board-cards { scrollbar-width: thin; scrollbar-color: rgb(var(--ink-rgb) / 0.1) transparent; }
 .board-cards::-webkit-scrollbar { width: 6px; }
-.board-cards::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+.board-cards::-webkit-scrollbar-thumb { background: rgb(var(--ink-rgb) / 0.1); border-radius: 3px; }
 
 /* Phone: stack lists vertically, let the page scroll instead of the board */
 @media (max-width: 767px) {
@@ -97,17 +97,7 @@ input[type="number"] { -moz-appearance: textfield; }
 }
 @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-/* ── Blog (midnight Substack) ─────────────────────────────────────────────── */
-:root {
-  --blog-bg: #0b0b0d;
-  --blog-panel: #141416;
-  --blog-ink: #e9e6e1;      /* warm off-white */
-  --blog-dim: #9a9691;      /* warm gray */
-  --blog-faint: #6b6763;
-  --blog-line: rgba(255,255,255,0.09);
-  --blog-accent: #e0603b;   /* terracotta, echoes Substack's brick red */
-  --blog-serif: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
-}
+/* ── Blog (midnight Substack) — tokens live in styles/theme.css ── */
 .blog-serif { font-family: var(--blog-serif); }
 
 .blog-prose {
@@ -150,14 +140,14 @@ input[type="number"] { -moz-appearance: textfield; }
 .blog-prose hr { border: none; border-top: 1px solid var(--blog-line); margin: 2em 0; }
 .blog-prose code {
   font-family: 'JetBrains Mono', monospace; font-size: 0.85em;
-  background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px;
+  background: rgb(var(--ink-rgb) / 0.06); padding: 2px 6px; border-radius: 4px;
 }
 .blog-prose pre {
-  background: #08080a; border: 1px solid var(--blog-line); border-radius: 10px;
+  background: var(--blog-code-bg); border: 1px solid var(--blog-line); border-radius: 10px;
   padding: 14px 16px; overflow-x: auto; margin: 1.4em 0;
 }
 .blog-prose pre code { background: none; padding: 0; font-size: 0.8em; }
-.blog-prose strong { color: #fff; font-weight: 700; }
+.blog-prose strong { color: var(--text-strong); font-weight: 700; }
 
 .blog-home-grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 44px; }
 .blog-home-aside { border-left: 1px solid var(--blog-line); padding-left: 44px; }

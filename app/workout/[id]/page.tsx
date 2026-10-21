@@ -225,8 +225,8 @@ export default function WorkoutPage() {
 
   if (!workout) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#0a0a0a' }}>
-        <div style={{ fontSize: 16, color: '#475569', letterSpacing: 3 }}>LOADING...</div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg)' }}>
+        <div style={{ fontSize: 16, color: 'var(--text-faint)', letterSpacing: 3 }}>LOADING...</div>
       </div>
     );
   }
@@ -237,7 +237,7 @@ export default function WorkoutPage() {
   const canFinish = !isSubmitting && !hasSubmitted;
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 'calc(env(safe-area-inset-bottom) + 120px)' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingBottom: 'calc(env(safe-area-inset-bottom) + 120px)' }}>
       <style>{`
         @keyframes workout-blink {
           0%, 100% { opacity: 1; }
@@ -292,7 +292,7 @@ export default function WorkoutPage() {
         {/* Date picker */}
         <div style={{ padding: '20px 24px 0' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ fontSize: 10, letterSpacing: 3, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", whiteSpace: 'nowrap' }}>
+            <div style={{ fontSize: 10, letterSpacing: 3, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif", whiteSpace: 'nowrap' }}>
               SESSION DATE
             </div>
             <input
@@ -301,14 +301,14 @@ export default function WorkoutPage() {
               max={todayISO()}
               onChange={e => setSessionDate(e.target.value)}
               style={{
-                background: '#111', border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: 6, color: '#f1f5f9', padding: '6px 12px',
+                background: 'var(--surface-2)', border: '1px solid rgb(var(--ink-rgb) / 0.1)',
+                borderRadius: 6, color: 'var(--text)', padding: '6px 12px',
                 fontSize: 13, fontFamily: "'Barlow Condensed', sans-serif",
                 colorScheme: 'dark', cursor: 'pointer',
               }}
             />
             {sessionDate !== todayISO() && (
-              <span style={{ fontSize: 10, color: '#f59e0b', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 1 }}>
+              <span style={{ fontSize: 10, color: 'var(--warning)', fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: 1 }}>
                 LOGGING RETROSPECTIVELY
               </span>
             )}
@@ -329,7 +329,7 @@ export default function WorkoutPage() {
               }} />
               <span style={{
                 fontSize: 32, fontWeight: 900, letterSpacing: 6,
-                color: '#f1f5f9', fontFamily: "'Barlow Condensed', sans-serif",
+                color: 'var(--text)', fontFamily: "'Barlow Condensed', sans-serif",
                 fontStyle: 'italic', lineHeight: 1,
               }}>
                 {formatElapsed(elapsedSeconds)}
@@ -342,9 +342,9 @@ export default function WorkoutPage() {
             disabled={!canFinish}
             style={{
               width: '100%', padding: '16px',
-              background: canFinish ? workout.accentColor : '#1e293b',
+              background: canFinish ? workout.accentColor : 'var(--surface-blue)',
               border: 'none', borderRadius: 8, fontSize: 18, fontWeight: 900,
-              color: canFinish ? '#000' : '#475569',
+              color: canFinish ? 'var(--scrim)' : 'var(--text-faint)',
               letterSpacing: 3, cursor: canFinish ? 'pointer' : 'not-allowed',
               fontFamily: "'Barlow Condensed', sans-serif",
               transition: 'opacity 0.2s',

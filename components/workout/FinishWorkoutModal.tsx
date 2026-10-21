@@ -2,6 +2,7 @@
 
 import { WorkoutDefinition, ExerciseLog, PersonalBest } from '@/lib/types';
 import Modal from '@/components/ui/Modal';
+import { tint } from '@/lib/theme';
 
 interface FinishWorkoutModalProps {
   workout: WorkoutDefinition;
@@ -25,7 +26,7 @@ export default function FinishWorkoutModal({
     <Modal onClose={onClose} maxWidth={480}>
       {/* Header */}
       <div style={{
-        background: `linear-gradient(135deg, ${accent}20, #111)`,
+        background: `linear-gradient(135deg, ${tint(accent, 0.13)}, var(--surface-2))`,
         borderBottom: `2px solid ${accent}`,
         borderRadius: '12px 12px 0 0',
         padding: '28px 24px 20px',
@@ -33,7 +34,7 @@ export default function FinishWorkoutModal({
       }}>
         <div style={{ fontSize: 40, marginBottom: 8 }}>🔥</div>
         <div style={{ fontSize: 11, letterSpacing: 6, color: accent, fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 8 }}>WORKOUT COMPLETE</div>
-        <div style={{ fontSize: 32, fontWeight: 900, color: '#f1f5f9', fontStyle: 'italic' }}>{workout.name}</div>
+        <div style={{ fontSize: 32, fontWeight: 900, color: 'var(--text)', fontStyle: 'italic' }}>{workout.name}</div>
       </div>
 
       <div style={{ padding: '24px' }}>
@@ -41,15 +42,15 @@ export default function FinishWorkoutModal({
         <div style={{ display: 'flex', gap: 12, marginBottom: 24, justifyContent: 'center' }}>
           {[
             { label: 'DURATION', val: `${durationMinutes}min`, color: accent },
-            { label: 'EXERCISES', val: exerciseLogs.length, color: '#3b82f6' },
-            { label: 'SETS LOGGED', val: totalSets, color: '#10b981' },
+            { label: 'EXERCISES', val: exerciseLogs.length, color: 'var(--info)' },
+            { label: 'SETS LOGGED', val: totalSets, color: 'var(--success)' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{
-              flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
+              flex: 1, background: 'rgb(var(--ink-rgb) / 0.05)', border: '1px solid rgb(var(--ink-rgb) / 0.08)',
               borderRadius: 8, padding: '12px 8px', textAlign: 'center',
             }}>
               <div style={{ fontSize: 22, fontWeight: 900, color }}>{val}</div>
-              <div style={{ fontSize: 8, letterSpacing: 2, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 2 }}>{label}</div>
+              <div style={{ fontSize: 8, letterSpacing: 2, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 2 }}>{label}</div>
             </div>
           ))}
         </div>
@@ -57,17 +58,17 @@ export default function FinishWorkoutModal({
         {/* PB Notifications */}
         {newPBs.length > 0 && (
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 10, letterSpacing: 4, color: '#f59e0b', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 10 }}>NEW PERSONAL BESTS</div>
+            <div style={{ fontSize: 10, letterSpacing: 4, color: 'var(--warning)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 10 }}>NEW PERSONAL BESTS</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {newPBs.map(pb => (
                 <div key={pb.exerciseId} style={{
-                  background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.25)',
+                  background: 'rgb(var(--warning-rgb) / 0.08)', border: '1px solid rgb(var(--warning-rgb) / 0.25)',
                   borderRadius: 6, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10,
                 }}>
                   <span style={{ fontSize: 20 }}>🏆</span>
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#fbbf24' }}>{pb.exerciseName}</div>
-                    <div style={{ fontSize: 12, color: '#92400e', fontFamily: "'Barlow Condensed', sans-serif" }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--warning-2)' }}>{pb.exerciseName}</div>
+                    <div style={{ fontSize: 12, color: 'var(--orange-dark)', fontFamily: "'Barlow Condensed', sans-serif" }}>
                       {pb.weight}kg × {pb.reps} reps
                     </div>
                   </div>
@@ -80,15 +81,15 @@ export default function FinishWorkoutModal({
         {/* Exercise summary */}
         {exerciseLogs.length > 0 && (
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 10, letterSpacing: 4, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 10 }}>EXERCISES LOGGED</div>
+            <div style={{ fontSize: 10, letterSpacing: 4, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif", marginBottom: 10 }}>EXERCISES LOGGED</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {exerciseLogs.map(ex => (
                 <div key={ex.exerciseId} style={{
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  padding: '8px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 4,
+                  padding: '8px 12px', background: 'rgb(var(--ink-rgb) / 0.03)', borderRadius: 4,
                 }}>
-                  <span style={{ fontSize: 13, color: '#94a3b8', fontFamily: "'Barlow Condensed', sans-serif" }}>{ex.exerciseName}</span>
-                  <span style={{ fontSize: 11, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>{ex.sets.length} sets</span>
+                  <span style={{ fontSize: 13, color: 'var(--text-muted)', fontFamily: "'Barlow Condensed', sans-serif" }}>{ex.exerciseName}</span>
+                  <span style={{ fontSize: 11, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif" }}>{ex.sets.length} sets</span>
                 </div>
               ))}
             </div>
@@ -101,7 +102,7 @@ export default function FinishWorkoutModal({
           style={{
             width: '100%', padding: '14px', background: accent,
             border: 'none', borderRadius: 8, fontSize: 16, fontWeight: 900,
-            color: '#000', letterSpacing: 3, cursor: 'pointer',
+            color: 'var(--scrim)', letterSpacing: 3, cursor: 'pointer',
             fontFamily: "'Barlow Condensed', sans-serif",
           }}
         >

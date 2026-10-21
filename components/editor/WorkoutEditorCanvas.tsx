@@ -18,10 +18,11 @@ import {
   verticalListSortingStrategy,
   arrayMove,
 } from '@dnd-kit/sortable';
+import { tint, DEFAULT_CUSTOM_COLOR } from '@/lib/theme';
 
 const BLANK_PHASE: Omit<Phase, 'id'> = {
   label: 'NEW PHASE',
-  color: '#8b5cf6',
+  color: DEFAULT_CUSTOM_COLOR,
   time: '15 min',
   exercises: [],
 };
@@ -63,20 +64,20 @@ export default function WorkoutEditorCanvas({ workout, onChange }: WorkoutEditor
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <div style={{ fontSize: 11, letterSpacing: 5, color: '#475569', fontFamily: "'Barlow Condensed', sans-serif" }}>
+        <div style={{ fontSize: 11, letterSpacing: 5, color: 'var(--text-faint)', fontFamily: "'Barlow Condensed', sans-serif" }}>
           PHASES ({workout.phases.length})
         </div>
-        <span style={{ fontSize: 10, color: '#334155', fontFamily: "'Barlow Condensed', sans-serif" }}>Drag to reorder</span>
+        <span style={{ fontSize: 10, color: 'var(--text-ghost)', fontFamily: "'Barlow Condensed', sans-serif" }}>Drag to reorder</span>
       </div>
 
       {workout.phases.length === 0 && (
         <div style={{
-          background: '#111', border: '1px dashed rgba(255,255,255,0.08)', borderRadius: 10,
+          background: 'var(--surface-2)', border: '1px dashed rgb(var(--ink-rgb) / 0.08)', borderRadius: 10,
           padding: '40px 24px', textAlign: 'center', marginBottom: 16,
         }}>
           <div style={{ fontSize: 32, marginBottom: 12 }}>📋</div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#475569', letterSpacing: 2 }}>NO PHASES YET</div>
-          <div style={{ fontSize: 12, color: '#334155', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 6 }}>Add a phase below to structure your workout</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-faint)', letterSpacing: 2 }}>NO PHASES YET</div>
+          <div style={{ fontSize: 12, color: 'var(--text-ghost)', fontFamily: "'Barlow Condensed', sans-serif", marginTop: 6 }}>Add a phase below to structure your workout</div>
         </div>
       )}
 
@@ -98,14 +99,14 @@ export default function WorkoutEditorCanvas({ workout, onChange }: WorkoutEditor
         onClick={addPhase}
         style={{
           width: '100%', background: 'transparent',
-          border: `1px dashed ${workout.accentColor}50`,
+          border: `1px dashed ${tint(workout.accentColor, 0.31)}`,
           borderRadius: 8, color: workout.accentColor,
           fontSize: 13, fontWeight: 900, letterSpacing: 3,
           padding: '14px', cursor: 'pointer',
           fontFamily: "'Barlow Condensed', sans-serif",
           transition: 'border-color 0.15s, background 0.15s',
         }}
-        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = `${workout.accentColor}08`; }}
+        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = `${tint(workout.accentColor, 0.03)}`; }}
         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
       >
         + ADD PHASE

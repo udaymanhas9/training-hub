@@ -179,13 +179,13 @@ export default function GitHubPage() {
   const monthTotal = pushes.filter(p => parseISO(p.date) >= last30Days).reduce((s, p) => s + (p.commits.length || 1), 0);
 
   return (
-    <div style={{ minHeight: '100vh', background: '#000000', fontFamily: MONO }}>
+    <div style={{ minHeight: '100vh', background: 'var(--scrim)', fontFamily: MONO }}>
       {/* Header */}
-      <div style={{ borderBottom: '1px solid rgba(255,42,42,0.15)', padding: '28px 28px 20px' }}>
+      <div style={{ borderBottom: '1px solid rgb(var(--accent-rgb) / 0.15)', padding: '28px 28px 20px' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ fontSize: 9, color: '#737373', letterSpacing: 5, marginBottom: 8 }}>THE LAB / GITHUB</div>
+          <div style={{ fontSize: 9, color: 'var(--text-neutral)', letterSpacing: 5, marginBottom: 8 }}>THE LAB / GITHUB</div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-            <h1 style={{ fontSize: 28, fontWeight: 700, color: '#E5E5E5', letterSpacing: 4 }}>
+            <h1 style={{ fontSize: 28, fontWeight: 700, color: 'var(--text-soft)', letterSpacing: 4 }}>
               GIT.FEED —&nbsp;
               {editingUsername ? (
                 <input
@@ -200,17 +200,17 @@ export default function GitHubPage() {
                   placeholder={username}
                   style={{
                     background: 'transparent', border: 'none',
-                    borderBottom: '1px solid rgba(255,42,42,0.5)',
-                    color: '#FF2A2A', fontFamily: MONO, fontSize: 28,
+                    borderBottom: '1px solid rgb(var(--accent-rgb) / 0.5)',
+                    color: 'var(--accent)', fontFamily: MONO, fontSize: 28,
                     fontWeight: 700, letterSpacing: 4, outline: 'none',
                     width: 200,
                   }}
                 />
               ) : (
                 <span
-                  style={{ color: '#FF2A2A', cursor: 'pointer', borderBottom: '1px solid transparent', transition: 'border-color 0.15s' }}
+                  style={{ color: 'var(--accent)', cursor: 'pointer', borderBottom: '1px solid transparent', transition: 'border-color 0.15s' }}
                   onClick={() => { setUsernameInput(username); setEditingUsername(true); }}
-                  onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderBottomColor = 'rgba(255,42,42,0.4)'}
+                  onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderBottomColor = 'rgb(var(--accent-rgb) / 0.4)'}
                   onMouseLeave={e => (e.currentTarget as HTMLElement).style.borderBottomColor = 'transparent'}
                   title="Click to edit username"
                 >
@@ -231,16 +231,16 @@ export default function GitHubPage() {
                     onKeyDown={e => { if (e.key === 'Enter') handleSaveToken(); if (e.key === 'Escape') { setShowTokenForm(false); setTokenInput(''); } }}
                     placeholder="ghp_xxxxxxxxxxxx"
                     style={{
-                      background: '#0d0d0d', border: '1px solid rgba(255,42,42,0.4)',
-                      color: '#E5E5E5', fontFamily: MONO, fontSize: 10,
+                      background: 'var(--surface)', border: '1px solid rgb(var(--accent-rgb) / 0.4)',
+                      color: 'var(--text-soft)', fontFamily: MONO, fontSize: 10,
                       padding: '6px 10px', outline: 'none', width: 200, letterSpacing: 1,
                     }}
                   />
                   <button
                     onClick={handleSaveToken}
                     style={{
-                      background: 'transparent', border: '1px solid rgba(255,42,42,0.4)',
-                      color: '#FF2A2A', cursor: 'pointer', padding: '6px 12px',
+                      background: 'transparent', border: '1px solid rgb(var(--accent-rgb) / 0.4)',
+                      color: 'var(--accent)', cursor: 'pointer', padding: '6px 12px',
                       fontSize: 9, letterSpacing: 2, fontFamily: MONO,
                     }}
                   >
@@ -250,8 +250,8 @@ export default function GitHubPage() {
                     <button
                       onClick={() => { setTokenInput(''); handleSaveToken(); }}
                       style={{
-                        background: 'transparent', border: '1px solid rgba(255,255,255,0.1)',
-                        color: '#737373', cursor: 'pointer', padding: '6px 10px',
+                        background: 'transparent', border: '1px solid rgb(var(--ink-rgb) / 0.1)',
+                        color: 'var(--text-neutral)', cursor: 'pointer', padding: '6px 10px',
                         fontSize: 9, letterSpacing: 2, fontFamily: MONO,
                       }}
                     >
@@ -264,8 +264,8 @@ export default function GitHubPage() {
                   onClick={() => { setTokenInput(token || ''); setShowTokenForm(true); }}
                   style={{
                     background: 'transparent',
-                    border: `1px solid ${token ? 'rgba(16,185,129,0.4)' : 'rgba(255,255,255,0.1)'}`,
-                    color: token ? '#10b981' : '#737373',
+                    border: `1px solid ${token ? 'rgb(var(--success-rgb) / 0.4)' : 'rgb(var(--ink-rgb) / 0.1)'}`,
+                    color: token ? 'var(--success)' : 'var(--text-neutral)',
                     cursor: 'pointer', padding: '8px 14px',
                     fontSize: 9, letterSpacing: 3, fontFamily: MONO, transition: 'all 0.15s',
                   }}
@@ -279,13 +279,13 @@ export default function GitHubPage() {
                 onClick={handleRefresh}
                 disabled={refreshing}
                 style={{
-                  background: 'transparent', border: '1px solid rgba(255,42,42,0.3)',
-                  color: '#737373', cursor: 'pointer',
+                  background: 'transparent', border: '1px solid rgb(var(--accent-rgb) / 0.3)',
+                  color: 'var(--text-neutral)', cursor: 'pointer',
                   padding: '8px 16px', fontSize: 9, letterSpacing: 3, fontFamily: MONO,
                   transition: 'all 0.15s', opacity: refreshing ? 0.5 : 1,
                 }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#FF2A2A'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,42,42,0.6)'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#737373'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,42,42,0.3)'; }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--accent)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgb(var(--accent-rgb) / 0.6)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text-neutral)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgb(var(--accent-rgb) / 0.3)'; }}
               >
                 {refreshing ? 'REFRESHING...' : '↻ REFRESH'}
               </button>
@@ -296,11 +296,11 @@ export default function GitHubPage() {
 
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '28px 28px' }}>
         {loading ? (
-          <div style={{ color: '#737373', fontSize: 10, letterSpacing: 4, textAlign: 'center', paddingTop: 80 }}>
+          <div style={{ color: 'var(--text-neutral)', fontSize: 10, letterSpacing: 4, textAlign: 'center', paddingTop: 80 }}>
             LOADING...
           </div>
         ) : error ? (
-          <div style={{ color: '#ff375f', fontSize: 10, letterSpacing: 2, textAlign: 'center', paddingTop: 80 }}>
+          <div style={{ color: 'var(--pink)', fontSize: 10, letterSpacing: 2, textAlign: 'center', paddingTop: 80 }}>
             ERROR: {error}
           </div>
         ) : (
@@ -308,12 +308,12 @@ export default function GitHubPage() {
             {/* Totals */}
             <div style={{ display: 'flex', gap: 12, marginBottom: 40, flexWrap: 'wrap' }}>
               {[
-                { label: '7D.COMMITS',  value: weekTotal,  color: '#10b981' },
-                { label: '30D.COMMITS', value: monthTotal, color: '#10b981' },
-                { label: 'REPOS.ACTIVE', value: repoSummaries.length, color: '#E5E5E5' },
+                { label: '7D.COMMITS',  value: weekTotal,  color: 'var(--success)' },
+                { label: '30D.COMMITS', value: monthTotal, color: 'var(--success)' },
+                { label: 'REPOS.ACTIVE', value: repoSummaries.length, color: 'var(--text-soft)' },
               ].map(({ label, value, color }) => (
-                <div key={label} style={{ padding: '10px 16px', border: '1px solid rgba(255,42,42,0.15)', minWidth: 120 }}>
-                  <div style={{ fontSize: 8, color: '#737373', letterSpacing: 4 }}>{label}</div>
+                <div key={label} style={{ padding: '10px 16px', border: '1px solid rgb(var(--accent-rgb) / 0.15)', minWidth: 120 }}>
+                  <div style={{ fontSize: 8, color: 'var(--text-neutral)', letterSpacing: 4 }}>{label}</div>
                   <div style={{ fontSize: 20, fontWeight: 700, color, marginTop: 2 }}>{value}</div>
                 </div>
               ))}
@@ -323,8 +323,8 @@ export default function GitHubPage() {
             {todayPushes.length > 0 && (
               <div style={{ marginBottom: 40 }}>
                 <div style={{
-                  fontSize: 9, color: '#737373', letterSpacing: 5, marginBottom: 14,
-                  borderBottom: '1px solid rgba(255,42,42,0.1)', paddingBottom: 10,
+                  fontSize: 9, color: 'var(--text-neutral)', letterSpacing: 5, marginBottom: 14,
+                  borderBottom: '1px solid rgb(var(--accent-rgb) / 0.1)', paddingBottom: 10,
                 }}>
                   TODAY.COMMITS
                 </div>
@@ -332,18 +332,18 @@ export default function GitHubPage() {
                   {todayPushes.map((push, i) => (
                     <div key={i} style={{
                       padding: '10px 14px',
-                      border: '1px solid rgba(255,42,42,0.12)',
-                      background: 'rgba(255,42,42,0.02)',
+                      border: '1px solid rgb(var(--accent-rgb) / 0.12)',
+                      background: 'rgb(var(--accent-rgb) / 0.02)',
                     }}>
                       <a
                         href={push.repoUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{ color: '#FF2A2A', fontSize: 10, letterSpacing: 2, textDecoration: 'none' }}
+                        style={{ color: 'var(--accent)', fontSize: 10, letterSpacing: 2, textDecoration: 'none' }}
                       >
                         {push.repo}
                       </a>
-                      <span style={{ color: '#737373', fontSize: 9, marginLeft: 12 }}>
+                      <span style={{ color: 'var(--text-neutral)', fontSize: 9, marginLeft: 12 }}>
                         {push.commits.length} commit{push.commits.length !== 1 ? 's' : ''}
                       </span>
                     </div>
@@ -354,14 +354,14 @@ export default function GitHubPage() {
 
             {/* Per-repo blocks */}
             {repoSummaries.length === 0 ? (
-              <div style={{ color: '#737373', fontSize: 10, letterSpacing: 4, textAlign: 'center', paddingTop: 40 }}>
+              <div style={{ color: 'var(--text-neutral)', fontSize: 10, letterSpacing: 4, textAlign: 'center', paddingTop: 40 }}>
                 NO RECENT ACTIVITY
               </div>
             ) : (
               <div>
                 <div style={{
-                  fontSize: 9, color: '#737373', letterSpacing: 5, marginBottom: 14,
-                  borderBottom: '1px solid rgba(255,42,42,0.1)', paddingBottom: 10,
+                  fontSize: 9, color: 'var(--text-neutral)', letterSpacing: 5, marginBottom: 14,
+                  borderBottom: '1px solid rgb(var(--accent-rgb) / 0.1)', paddingBottom: 10,
                 }}>
                   REPO.ACTIVITY
                 </div>
@@ -369,13 +369,13 @@ export default function GitHubPage() {
                   {repoSummaries.map(repo => {
                     const isExpanded = expandedRepo === repo.repo;
                     return (
-                      <div key={repo.repo} style={{ border: '1px solid rgba(255,42,42,0.12)' }}>
+                      <div key={repo.repo} style={{ border: '1px solid rgb(var(--accent-rgb) / 0.12)' }}>
                         {/* Repo header */}
                         <div
                           style={{
                             padding: '14px 16px',
                             display: 'flex', alignItems: 'center', gap: 16,
-                            background: isExpanded ? 'rgba(255,42,42,0.04)' : 'transparent',
+                            background: isExpanded ? 'rgb(var(--accent-rgb) / 0.04)' : 'transparent',
                             cursor: 'pointer', flexWrap: 'wrap',
                           }}
                           onClick={() => setExpandedRepo(isExpanded ? null : repo.repo)}
@@ -386,16 +386,16 @@ export default function GitHubPage() {
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={e => e.stopPropagation()}
-                            style={{ color: '#FF2A2A', fontSize: 11, letterSpacing: 2, textDecoration: 'none', fontWeight: 700 }}
+                            style={{ color: 'var(--accent)', fontSize: 11, letterSpacing: 2, textDecoration: 'none', fontWeight: 700 }}
                           >
                             {repo.repo.split('/')[1] || repo.repo}
                           </a>
-                          <span style={{ color: '#4a4a4a', fontSize: 9 }}>
+                          <span style={{ color: 'var(--text-neutral-faint)', fontSize: 9 }}>
                             {repo.repo.split('/')[0]}
                           </span>
 
                           {/* 30-day commit count */}
-                          <span style={{ color: '#10b981', fontSize: 10, marginLeft: 'auto' }}>
+                          <span style={{ color: 'var(--success)', fontSize: 10, marginLeft: 'auto' }}>
                             {repo.last30Days} COMMITS / 30D
                           </span>
 
@@ -407,7 +407,7 @@ export default function GitHubPage() {
                                   {repo.sparkline.map((entry, idx) => (
                                     <Cell
                                       key={idx}
-                                      fill={entry.count > 0 ? '#10b981' : 'rgba(255,255,255,0.06)'}
+                                      fill={entry.count > 0 ? 'var(--success)' : 'rgb(var(--ink-rgb) / 0.06)'}
                                     />
                                   ))}
                                 </Bar>
@@ -416,7 +416,7 @@ export default function GitHubPage() {
                           </div>
 
                           {/* Expand chevron */}
-                          <span style={{ color: '#737373', fontSize: 10 }}>
+                          <span style={{ color: 'var(--text-neutral)', fontSize: 10 }}>
                             {isExpanded ? '▲' : '▼'}
                           </span>
                         </div>
@@ -424,24 +424,24 @@ export default function GitHubPage() {
                         {/* Expanded commit list */}
                         {isExpanded && (
                           <div style={{
-                            borderTop: '1px solid rgba(255,42,42,0.08)',
+                            borderTop: '1px solid rgb(var(--accent-rgb) / 0.08)',
                             padding: '12px 16px',
                             display: 'flex', flexDirection: 'column', gap: 4,
                           }}>
                             {repo.pushes.slice(0, 20).map((push, pi) => (
                               <div key={pi}>
-                                <div style={{ color: '#737373', fontSize: 8, letterSpacing: 2, marginBottom: 4 }}>
+                                <div style={{ color: 'var(--text-neutral)', fontSize: 8, letterSpacing: 2, marginBottom: 4 }}>
                                   {push.date}
                                 </div>
                                 {push.commits.map((c, ci) => (
                                   <div key={ci} style={{
                                     display: 'flex', gap: 10, padding: '3px 0',
-                                    borderBottom: '1px solid rgba(255,42,42,0.04)',
+                                    borderBottom: '1px solid rgb(var(--accent-rgb) / 0.04)',
                                   }}>
-                                    <span style={{ color: '#FF2A2A', fontSize: 9, fontFamily: MONO, flexShrink: 0 }}>
+                                    <span style={{ color: 'var(--accent)', fontSize: 9, fontFamily: MONO, flexShrink: 0 }}>
                                       [{c.sha}]
                                     </span>
-                                    <span style={{ color: '#E5E5E5', fontSize: 9 }}>
+                                    <span style={{ color: 'var(--text-soft)', fontSize: 9 }}>
                                       {c.message}
                                     </span>
                                   </div>
@@ -449,7 +449,7 @@ export default function GitHubPage() {
                               </div>
                             ))}
                             {repo.pushes.length > 20 && (
-                              <div style={{ color: '#737373', fontSize: 8, letterSpacing: 2, paddingTop: 4 }}>
+                              <div style={{ color: 'var(--text-neutral)', fontSize: 8, letterSpacing: 2, paddingTop: 4 }}>
                                 +{repo.pushes.length - 20} MORE PUSHES
                               </div>
                             )}

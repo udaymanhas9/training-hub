@@ -9,9 +9,9 @@ export default function BackButton() {
       onClick={() => router.back()}
       style={{
         background: 'transparent',
-        border: '1px solid rgba(255,255,255,0.1)',
+        border: '1px solid rgb(var(--ink-rgb) / 0.1)',
         borderRadius: 6,
-        color: '#94a3b8',
+        color: 'var(--text-muted)',
         padding: '6px 14px',
         fontSize: 12,
         fontWeight: 700,
@@ -23,8 +23,8 @@ export default function BackButton() {
         fontFamily: "'Barlow Condensed', sans-serif",
         transition: 'border-color 0.15s, color 0.15s',
       }}
-      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.25)'; (e.currentTarget as HTMLElement).style.color = '#f1f5f9'; }}
-      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.1)'; (e.currentTarget as HTMLElement).style.color = '#94a3b8'; }}
+      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgb(var(--ink-rgb) / 0.25)'; (e.currentTarget as HTMLElement).style.color = 'var(--text)'; }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgb(var(--ink-rgb) / 0.1)'; (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)'; }}
     >
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
         <line x1="19" y1="12" x2="5" y2="12" />

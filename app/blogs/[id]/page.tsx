@@ -63,7 +63,7 @@ export default function BlogReader() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '26px 0' }}>
           <div style={{
             width: 38, height: 38, borderRadius: '50%', flexShrink: 0, background: 'var(--blog-accent)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontFamily: SERIF, fontSize: 16,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-strong)', fontWeight: 700, fontFamily: SERIF, fontSize: 16,
           }}>{(post.author || 'A').charAt(0).toUpperCase()}</div>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 12, letterSpacing: 1, color: 'var(--blog-ink)', fontFamily: BC, fontWeight: 700 }}>
@@ -78,7 +78,7 @@ export default function BlogReader() {
           </button>
           {admin && <>
             <Link href={`/blogs/${post.id}/edit`} style={{ ...pill, textDecoration: 'none' }}>Edit</Link>
-            <button onClick={del} style={{ ...pill, color: '#f87171', borderColor: 'rgba(248,113,113,0.3)' }}>Delete</button>
+            <button onClick={del} style={{ ...pill, color: 'var(--danger-soft)', borderColor: 'rgb(var(--danger-soft-rgb) / 0.3)' }}>Delete</button>
           </>}
         </div>
 

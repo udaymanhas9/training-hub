@@ -1,4 +1,5 @@
 import { Board, BoardCard, BoardLabel, BoardList, TodoRepeat } from './types';
+import { DEFAULT_LABEL_COLORS as LC } from './theme';
 import { format, startOfWeek, startOfMonth } from 'date-fns';
 
 export function uid(): string {
@@ -10,14 +11,14 @@ function tomorrowStr() { return format(new Date(Date.now() + 86400000), 'yyyy-MM
 
 // Default label palette — Trello-ish colours, names blank until the user sets them.
 export const DEFAULT_LABELS: BoardLabel[] = [
-  { id: 'lbl-green',  name: '', color: '#22c55e' },
-  { id: 'lbl-yellow', name: '', color: '#eab308' },
-  { id: 'lbl-orange', name: '', color: '#f97316' },
-  { id: 'lbl-red',    name: '', color: '#ef4444' },
-  { id: 'lbl-purple', name: '', color: '#a855f7' },
-  { id: 'lbl-blue',   name: '', color: '#3b82f6' },
-  { id: 'lbl-sky',    name: '', color: '#38bdf8' },
-  { id: 'lbl-slate',  name: '', color: '#64748b' },
+  { id: 'lbl-green',  name: '', color: LC.green },
+  { id: 'lbl-yellow', name: '', color: LC.yellow },
+  { id: 'lbl-orange', name: '', color: LC.orange },
+  { id: 'lbl-red',    name: '', color: LC.red },
+  { id: 'lbl-purple', name: '', color: LC.purple },
+  { id: 'lbl-blue',   name: '', color: LC.blue },
+  { id: 'lbl-sky',    name: '', color: LC.sky },
+  { id: 'lbl-slate',  name: '', color: LC.slate },
 ];
 
 export function defaultBoard(): Board {
@@ -144,11 +145,11 @@ export function dueMeta(
     dueDate === today ? 'Today'
     : dueDate === tomorrow ? 'Tomorrow'
     : format(new Date(dueDate + 'T00:00:00'), 'MMM d');
-  if (done)                  return { text, bg: 'rgba(34,197,94,0.15)',  fg: '#4ade80' };
-  if (dueDate < today)       return { text, bg: 'rgba(239,68,68,0.15)',  fg: '#f87171' };
-  if (dueDate === today)     return { text, bg: 'rgba(249,115,22,0.16)', fg: '#fb923c' };
-  if (dueDate === tomorrow)  return { text, bg: 'rgba(234,179,8,0.14)',  fg: '#facc15' };
-  return { text, bg: 'rgba(255,255,255,0.06)', fg: '#94a3b8' };
+  if (done)                  return { text, bg: 'rgb(var(--success-2-rgb) / 0.15)',  fg: 'var(--success-3)' };
+  if (dueDate < today)       return { text, bg: 'rgb(var(--danger-rgb) / 0.15)',  fg: 'var(--danger-soft)' };
+  if (dueDate === today)     return { text, bg: 'rgb(var(--orange-rgb) / 0.16)', fg: 'var(--orange-2)' };
+  if (dueDate === tomorrow)  return { text, bg: 'rgb(var(--yellow-2-rgb) / 0.14)',  fg: 'var(--yellow)' };
+  return { text, bg: 'rgb(var(--ink-rgb) / 0.06)', fg: 'var(--text-muted)' };
 }
 
 export function checklistProgress(card: BoardCard): { done: number; total: number } {

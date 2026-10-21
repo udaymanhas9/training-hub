@@ -21,7 +21,7 @@ export default function Modal({ children, onClose, maxWidth = 480 }: ModalProps)
     <div
       style={{
         position: 'fixed', inset: 0, zIndex: 200,
-        background: 'rgba(0,0,0,0.8)',
+        background: 'rgb(var(--shadow-rgb) / 0.8)',
         display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
         padding: '0',
       }}
@@ -31,8 +31,8 @@ export default function Modal({ children, onClose, maxWidth = 480 }: ModalProps)
       <div
         className="animate-fade-in md:rounded-xl"
         style={{
-          background: '#111',
-          border: '1px solid rgba(255,255,255,0.1)',
+          background: 'var(--surface-2)',
+          border: '1px solid rgb(var(--ink-rgb) / 0.1)',
           borderRadius: '16px 16px 0 0',
           width: '100%',
           maxWidth,

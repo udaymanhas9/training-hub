@@ -42,7 +42,7 @@ export default function BlogHome() {
           {admin && (
             <Link href="/blogs/new" style={{
               display: 'inline-block', marginTop: 20, padding: '10px 20px', borderRadius: 8, textDecoration: 'none',
-              background: 'var(--blog-accent)', color: '#fff', fontSize: 12, fontWeight: 700, letterSpacing: 2, fontFamily: BC,
+              background: 'var(--blog-accent)', color: 'var(--text-strong)', fontSize: 12, fontWeight: 700, letterSpacing: 2, fontFamily: BC,
             }}>WRITE YOUR FIRST POST</Link>
           )}
         </div>
@@ -60,7 +60,7 @@ export default function BlogHome() {
           <Link href={`/blogs/${featured.id}`} style={{ textDecoration: 'none', display: 'block' }}>
             {featured.coverImage
               ? <img src={featured.coverImage} alt="" style={{ width: '100%', aspectRatio: '3 / 2', objectFit: 'cover', borderRadius: 6, display: 'block' }} />
-              : <div style={{ width: '100%', aspectRatio: '3 / 2', borderRadius: 6, background: 'linear-gradient(135deg,#1a1a1d,#0f0f11)' }} />}
+              : <div style={{ width: '100%', aspectRatio: '3 / 2', borderRadius: 6, background: 'linear-gradient(135deg,var(--surface-4),var(--surface-1))' }} />}
             <h2 style={{ fontFamily: SERIF, fontSize: 30, fontWeight: 700, color: 'var(--blog-ink)', lineHeight: 1.2, margin: '18px 0 10px' }}>
               {featured.title || 'Untitled'}
             </h2>

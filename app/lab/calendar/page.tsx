@@ -12,9 +12,9 @@ import UniversalHeatmap from '@/components/shared/UniversalHeatmap';
 const MONO = "'JetBrains Mono', monospace";
 
 const DIFF_COLORS: Record<Difficulty, string> = {
-  Easy:   '#00b8a3',
-  Medium: '#ffc01e',
-  Hard:   '#ff375f',
+  Easy:   'var(--brand-leetcode-teal)',
+  Medium: 'var(--brand-leetcode-yellow)',
+  Hard:   'var(--pink)',
 };
 
 interface GitHubEvent {
@@ -146,52 +146,52 @@ export default function LabCalendarPage() {
   const DAY_HEADERS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#000000', fontFamily: MONO }}>
+    <div style={{ minHeight: '100vh', background: 'var(--scrim)', fontFamily: MONO }}>
       {/* Header */}
-      <div style={{ borderBottom: '1px solid rgba(255,42,42,0.15)', padding: '28px 28px 20px' }}>
+      <div style={{ borderBottom: '1px solid rgb(var(--accent-rgb) / 0.15)', padding: '28px 28px 20px' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ fontSize: 9, color: '#737373', letterSpacing: 5, marginBottom: 8 }}>THE LAB / CALENDAR</div>
+          <div style={{ fontSize: 9, color: 'var(--text-neutral)', letterSpacing: 5, marginBottom: 8 }}>THE LAB / CALENDAR</div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <h1 style={{ fontSize: 28, fontWeight: 700, color: '#E5E5E5', letterSpacing: 4 }}>
+            <h1 style={{ fontSize: 28, fontWeight: 700, color: 'var(--text-soft)', letterSpacing: 4 }}>
               {format(currentMonth, 'MMMM yyyy').toUpperCase()}
             </h1>
             <div style={{ display: 'flex', gap: 8 }}>
               <button
                 onClick={() => setCurrentMonth(m => new Date(m.getFullYear(), m.getMonth() - 1, 1))}
                 style={{
-                  background: 'transparent', border: '1px solid rgba(255,42,42,0.25)',
-                  color: '#737373', cursor: 'pointer',
+                  background: 'transparent', border: '1px solid rgb(var(--accent-rgb) / 0.25)',
+                  color: 'var(--text-neutral)', cursor: 'pointer',
                   padding: '6px 14px', fontSize: 12, fontFamily: MONO,
                   transition: 'color 0.15s',
                 }}
-                onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#FF2A2A'}
-                onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#737373'}
+                onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'var(--accent)'}
+                onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'var(--text-neutral)'}
               >
                 ‹
               </button>
               <button
                 onClick={() => setCurrentMonth(new Date())}
                 style={{
-                  background: 'transparent', border: '1px solid rgba(255,42,42,0.25)',
-                  color: '#737373', cursor: 'pointer',
+                  background: 'transparent', border: '1px solid rgb(var(--accent-rgb) / 0.25)',
+                  color: 'var(--text-neutral)', cursor: 'pointer',
                   padding: '6px 14px', fontSize: 8, letterSpacing: 3, fontFamily: MONO,
                   transition: 'color 0.15s',
                 }}
-                onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#FF2A2A'}
-                onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#737373'}
+                onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'var(--accent)'}
+                onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'var(--text-neutral)'}
               >
                 TODAY
               </button>
               <button
                 onClick={() => setCurrentMonth(m => new Date(m.getFullYear(), m.getMonth() + 1, 1))}
                 style={{
-                  background: 'transparent', border: '1px solid rgba(255,42,42,0.25)',
-                  color: '#737373', cursor: 'pointer',
+                  background: 'transparent', border: '1px solid rgb(var(--accent-rgb) / 0.25)',
+                  color: 'var(--text-neutral)', cursor: 'pointer',
                   padding: '6px 14px', fontSize: 12, fontFamily: MONO,
                   transition: 'color 0.15s',
                 }}
-                onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#FF2A2A'}
-                onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#737373'}
+                onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'var(--accent)'}
+                onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'var(--text-neutral)'}
               >
                 ›
               </button>
@@ -202,7 +202,7 @@ export default function LabCalendarPage() {
 
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '28px 28px' }}>
         {loading ? (
-          <div style={{ color: '#737373', fontSize: 10, letterSpacing: 4, textAlign: 'center', paddingTop: 80 }}>
+          <div style={{ color: 'var(--text-neutral)', fontSize: 10, letterSpacing: 4, textAlign: 'center', paddingTop: 80 }}>
             LOADING...
           </div>
         ) : (
@@ -215,7 +215,7 @@ export default function LabCalendarPage() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 2, marginBottom: 2 }}>
                   {DAY_HEADERS.map(h => (
                     <div key={h} style={{
-                      textAlign: 'center', fontSize: 7, color: '#4a4a4a', letterSpacing: 3, padding: '4px 0',
+                      textAlign: 'center', fontSize: 7, color: 'var(--text-neutral-faint)', letterSpacing: 3, padding: '4px 0',
                     }}>
                       {h}
                     </div>
@@ -242,14 +242,14 @@ export default function LabCalendarPage() {
                           style={{
                             minHeight: 64,
                             border: isSelected
-                              ? '1px solid rgba(255,42,42,0.6)'
+                              ? '1px solid rgb(var(--accent-rgb) / 0.6)'
                               : todayFlag
-                                ? '1px solid rgba(255,42,42,0.3)'
-                                : '1px solid rgba(255,42,42,0.08)',
+                                ? '1px solid rgb(var(--accent-rgb) / 0.3)'
+                                : '1px solid rgb(var(--accent-rgb) / 0.08)',
                             background: isSelected
-                              ? 'rgba(255,42,42,0.08)'
+                              ? 'rgb(var(--accent-rgb) / 0.08)'
                               : todayFlag
-                                ? 'rgba(255,42,42,0.04)'
+                                ? 'rgb(var(--accent-rgb) / 0.04)'
                                 : 'transparent',
                             padding: '6px 8px',
                             cursor: inMonth ? 'pointer' : 'default',
@@ -258,18 +258,18 @@ export default function LabCalendarPage() {
                           }}
                           onMouseEnter={e => {
                             if (inMonth && !isSelected)
-                              (e.currentTarget as HTMLElement).style.background = 'rgba(255,42,42,0.04)';
+                              (e.currentTarget as HTMLElement).style.background = 'rgb(var(--accent-rgb) / 0.04)';
                           }}
                           onMouseLeave={e => {
                             if (!isSelected)
                               (e.currentTarget as HTMLElement).style.background = todayFlag
-                                ? 'rgba(255,42,42,0.04)'
+                                ? 'rgb(var(--accent-rgb) / 0.04)'
                                 : 'transparent';
                           }}
                         >
                           {/* Day number */}
                           <div style={{
-                            fontSize: 9, color: todayFlag ? '#FF2A2A' : '#737373',
+                            fontSize: 9, color: todayFlag ? 'var(--accent)' : 'var(--text-neutral)',
                             fontWeight: todayFlag ? 700 : 400, marginBottom: 6,
                           }}>
                             {format(day, 'd')}
@@ -279,13 +279,13 @@ export default function LabCalendarPage() {
                           {inMonth && (
                             <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
                               {lcCount > 0 && (
-                                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#00b8a3' }} title={`${lcCount} LC`} />
+                                <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--brand-leetcode-teal)' }} title={`${lcCount} LC`} />
                               )}
                               {qCount > 0 && (
-                                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#8b5cf6' }} title={`${qCount} Quant`} />
+                                <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--violet)' }} title={`${qCount} Quant`} />
                               )}
                               {ghCount > 0 && (
-                                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981' }} title={`${ghCount} commits`} />
+                                <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--success)' }} title={`${ghCount} commits`} />
                               )}
                             </div>
                           )}
@@ -300,20 +300,20 @@ export default function LabCalendarPage() {
               {selectedDay && dayDetail && (
                 <div style={{
                   width: 300,
-                  border: '1px solid rgba(255,42,42,0.2)',
-                  background: 'rgba(255,42,42,0.02)',
+                  border: '1px solid rgb(var(--accent-rgb) / 0.2)',
+                  background: 'rgb(var(--accent-rgb) / 0.02)',
                   padding: 20,
                   flexShrink: 0,
                   position: 'sticky',
                   top: 60,
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                    <div style={{ fontSize: 10, color: '#FF2A2A', letterSpacing: 3 }}>
+                    <div style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: 3 }}>
                       {format(parseISO(selectedDay), 'dd MMM yyyy').toUpperCase()}
                     </div>
                     <button
                       onClick={() => setSelectedDay(null)}
-                      style={{ background: 'none', border: 'none', color: '#4a4a4a', cursor: 'pointer', fontSize: 16 }}
+                      style={{ background: 'none', border: 'none', color: 'var(--text-neutral-faint)', cursor: 'pointer', fontSize: 16 }}
                     >
                       ×
                     </button>
@@ -322,19 +322,19 @@ export default function LabCalendarPage() {
                   {/* LeetCode */}
                   {dayDetail.leetcode.length > 0 && (
                     <div style={{ marginBottom: 16 }}>
-                      <div style={{ fontSize: 7, color: '#00b8a3', letterSpacing: 4, marginBottom: 8 }}>LEETCODE</div>
+                      <div style={{ fontSize: 7, color: 'var(--brand-leetcode-teal)', letterSpacing: 4, marginBottom: 8 }}>LEETCODE</div>
                       {dayDetail.leetcode.map(e => (
                         <div key={e.id} style={{
-                          padding: '6px 0', borderBottom: '1px solid rgba(255,42,42,0.06)',
+                          padding: '6px 0', borderBottom: '1px solid rgb(var(--accent-rgb) / 0.06)',
                         }}>
-                          <div style={{ color: '#E5E5E5', fontSize: 9 }}>
+                          <div style={{ color: 'var(--text-soft)', fontSize: 9 }}>
                             #{e.problemNumber} {e.problemName}
                           </div>
                           <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
                             <span style={{ color: DIFF_COLORS[e.difficulty], fontSize: 7, letterSpacing: 2 }}>
                               {e.difficulty.toUpperCase()}
                             </span>
-                            <span style={{ color: '#737373', fontSize: 7 }}>{e.status}</span>
+                            <span style={{ color: 'var(--text-neutral)', fontSize: 7 }}>{e.status}</span>
                           </div>
                         </div>
                       ))}
@@ -344,17 +344,17 @@ export default function LabCalendarPage() {
                   {/* Quant */}
                   {dayDetail.quant.length > 0 && (
                     <div style={{ marginBottom: 16 }}>
-                      <div style={{ fontSize: 7, color: '#8b5cf6', letterSpacing: 4, marginBottom: 8 }}>QUANT</div>
+                      <div style={{ fontSize: 7, color: 'var(--violet)', letterSpacing: 4, marginBottom: 8 }}>QUANT</div>
                       {dayDetail.quant.map(e => (
                         <div key={e.id} style={{
-                          padding: '6px 0', borderBottom: '1px solid rgba(255,42,42,0.06)',
+                          padding: '6px 0', borderBottom: '1px solid rgb(var(--accent-rgb) / 0.06)',
                         }}>
-                          <div style={{ color: '#E5E5E5', fontSize: 9 }}>{e.name}</div>
+                          <div style={{ color: 'var(--text-soft)', fontSize: 9 }}>{e.name}</div>
                           <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
                             <span style={{ color: DIFF_COLORS[e.difficulty], fontSize: 7, letterSpacing: 2 }}>
                               {e.difficulty.toUpperCase()}
                             </span>
-                            <span style={{ color: '#737373', fontSize: 7 }}>{e.source}</span>
+                            <span style={{ color: 'var(--text-neutral)', fontSize: 7 }}>{e.source}</span>
                           </div>
                         </div>
                       ))}
@@ -364,15 +364,15 @@ export default function LabCalendarPage() {
                   {/* GitHub commits */}
                   {dayDetail.commits.length > 0 && (
                     <div>
-                      <div style={{ fontSize: 7, color: '#10b981', letterSpacing: 4, marginBottom: 8 }}>GITHUB</div>
+                      <div style={{ fontSize: 7, color: 'var(--success)', letterSpacing: 4, marginBottom: 8 }}>GITHUB</div>
                       {dayDetail.commits.map(c => (
                         <div key={c.repo} style={{
-                          padding: '6px 0', borderBottom: '1px solid rgba(255,42,42,0.06)',
+                          padding: '6px 0', borderBottom: '1px solid rgb(var(--accent-rgb) / 0.06)',
                         }}>
-                          <div style={{ color: '#E5E5E5', fontSize: 9 }}>{c.repo}</div>
-                          <div style={{ color: '#10b981', fontSize: 8, marginTop: 2 }}>{c.count} commit{c.count !== 1 ? 's' : ''}</div>
+                          <div style={{ color: 'var(--text-soft)', fontSize: 9 }}>{c.repo}</div>
+                          <div style={{ color: 'var(--success)', fontSize: 8, marginTop: 2 }}>{c.count} commit{c.count !== 1 ? 's' : ''}</div>
                           {c.messages.map((msg, mi) => (
-                            <div key={mi} style={{ color: '#737373', fontSize: 7, marginTop: 2 }}>— {msg}</div>
+                            <div key={mi} style={{ color: 'var(--text-neutral)', fontSize: 7, marginTop: 2 }}>— {msg}</div>
                           ))}
                         </div>
                       ))}
@@ -380,7 +380,7 @@ export default function LabCalendarPage() {
                   )}
 
                   {dayDetail.leetcode.length === 0 && dayDetail.quant.length === 0 && dayDetail.commits.length === 0 && (
-                    <div style={{ color: '#4a4a4a', fontSize: 9, letterSpacing: 3, textAlign: 'center', paddingTop: 20 }}>
+                    <div style={{ color: 'var(--text-neutral-faint)', fontSize: 9, letterSpacing: 3, textAlign: 'center', paddingTop: 20 }}>
                       NO ACTIVITY
                     </div>
                   )}
@@ -391,8 +391,8 @@ export default function LabCalendarPage() {
             {/* Universal heatmap */}
             <div>
               <div style={{
-                fontSize: 9, color: '#737373', letterSpacing: 5, marginBottom: 16,
-                borderBottom: '1px solid rgba(255,42,42,0.1)', paddingBottom: 10,
+                fontSize: 9, color: 'var(--text-neutral)', letterSpacing: 5, marginBottom: 16,
+                borderBottom: '1px solid rgb(var(--accent-rgb) / 0.1)', paddingBottom: 10,
               }}>
                 ACTIVITY MATRIX
               </div>

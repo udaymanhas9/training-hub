@@ -13,10 +13,10 @@ interface UniversalHeatmapProps {
 }
 
 const ACTIVITY_COLORS = {
-  training: { r: 239, g: 68,  b: 68  },  // #ef4444
-  leetcode: { r: 0,   g: 184, b: 163 },  // #00b8a3
-  quant:    { r: 139, g: 92,  b: 246 },  // #8b5cf6
-  github:   { r: 245, g: 158, b: 11  },  // #f59e0b
+  training: { r: 239, g: 68,  b: 68  },  // var(--danger)
+  leetcode: { r: 0,   g: 184, b: 163 },  // var(--brand-leetcode-teal)
+  quant:    { r: 139, g: 92,  b: 246 },  // var(--violet)
+  github:   { r: 245, g: 158, b: 11  },  // var(--warning)
 };
 
 function blendColors(
@@ -102,19 +102,19 @@ export default function UniversalHeatmap({
     }
   });
 
-  const bg = isLab ? '#000000' : '#0a0a0a';
-  const emptyColor = isLab ? 'rgba(255,42,42,0.06)' : 'rgba(255,255,255,0.04)';
-  const borderColor = isLab ? 'rgba(255,42,42,0.2)' : 'rgba(255,255,255,0.07)';
-  const labelColor = isLab ? '#737373' : '#475569';
+  const bg = isLab ? 'var(--scrim)' : 'var(--bg)';
+  const emptyColor = isLab ? 'rgb(var(--accent-rgb) / 0.06)' : 'rgb(var(--ink-rgb) / 0.04)';
+  const borderColor = isLab ? 'rgb(var(--accent-rgb) / 0.2)' : 'rgb(var(--ink-rgb) / 0.07)';
+  const labelColor = isLab ? 'var(--text-neutral)' : 'var(--text-faint)';
   const font = isLab ? "'JetBrains Mono', monospace" : "'Barlow Condensed', sans-serif";
-  const titleColor = isLab ? '#E5E5E5' : '#f1f5f9';
-  const todayBorder = isLab ? '#FF2A2A' : '#3b82f6';
+  const titleColor = isLab ? 'var(--text-soft)' : 'var(--text)';
+  const todayBorder = isLab ? 'var(--accent)' : 'var(--info)';
 
   const legend = [
-    { label: 'TRAINING', color: '#ef4444' },
-    { label: 'LEETCODE', color: '#00b8a3' },
-    { label: 'QUANT',    color: '#8b5cf6' },
-    { label: 'COMMITS',  color: '#f59e0b' },
+    { label: 'TRAINING', color: 'var(--danger)' },
+    { label: 'LEETCODE', color: 'var(--brand-leetcode-teal)' },
+    { label: 'QUANT',    color: 'var(--violet)' },
+    { label: 'COMMITS',  color: 'var(--warning)' },
   ];
 
   return (

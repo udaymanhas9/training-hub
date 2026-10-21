@@ -169,7 +169,7 @@ export default function TodoPage() {
 
   // ── Render ─────────────────────────────────────────────────────────────────
   if (loading) {
-    return <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#334155' }}>Loading…</div>;
+    return <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-ghost)' }}>Loading…</div>;
   }
 
   if (needsSetup || !board) {
@@ -177,15 +177,15 @@ export default function TodoPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', paddingBottom: 100, overflowX: 'hidden' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingBottom: 100, overflowX: 'hidden' }}>
       {/* Header */}
-      <div style={{ padding: '28px 20px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', background: '#0f0f0f' }}>
-        <div style={{ fontSize: 10, letterSpacing: 6, color: '#475569', fontFamily: BC, marginBottom: 6 }}>
+      <div style={{ padding: '28px 20px 16px', borderBottom: '1px solid rgb(var(--ink-rgb) / 0.06)', background: 'var(--surface-1)' }}>
+        <div style={{ fontSize: 10, letterSpacing: 6, color: 'var(--text-faint)', fontFamily: BC, marginBottom: 6 }}>
           {format(new Date(), 'EEEE, MMMM d').toUpperCase()}
         </div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
-          <h1 style={{ fontSize: 34, fontWeight: 900, color: '#f1f5f9', letterSpacing: -1, fontStyle: 'italic', margin: 0 }}>BOARD</h1>
-          <span style={{ fontSize: 13, color: '#475569', fontFamily: BC }}>
+          <h1 style={{ fontSize: 34, fontWeight: 900, color: 'var(--text)', letterSpacing: -1, fontStyle: 'italic', margin: 0 }}>BOARD</h1>
+          <span style={{ fontSize: 13, color: 'var(--text-faint)', fontFamily: BC }}>
             {totalCards} card{totalCards === 1 ? '' : 's'}{doneCards > 0 ? ` · ${doneCards} done` : ''}
           </span>
         </div>
@@ -193,7 +193,7 @@ export default function TodoPage() {
         {/* Label filter */}
         {filterLabels.length > 0 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 14, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 9, letterSpacing: 2, color: '#334155', fontFamily: BC, fontWeight: 700, marginRight: 2 }}>FILTER</span>
+            <span style={{ fontSize: 9, letterSpacing: 2, color: 'var(--text-ghost)', fontFamily: BC, fontWeight: 700, marginRight: 2 }}>FILTER</span>
             {filterLabels.map(l => {
               const on = filter.includes(l.id);
               return (
@@ -202,8 +202,8 @@ export default function TodoPage() {
                   style={{
                     height: 24, padding: '0 10px', borderRadius: 6, cursor: 'pointer', fontFamily: 'inherit',
                     fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 5,
-                    border: on ? '1.5px solid #fff' : '1.5px solid transparent',
-                    background: l.color, color: '#0a0a0a',
+                    border: on ? '1.5px solid var(--text-strong)' : '1.5px solid transparent',
+                    background: l.color, color: 'var(--bg)',
                   }}>
                   {l.name || '  '}
                 </button>
@@ -211,8 +211,8 @@ export default function TodoPage() {
             })}
             {filter.length > 0 && (
               <button onClick={() => setFilter([])} style={{
-                height: 24, padding: '0 8px', borderRadius: 6, border: '1px solid rgba(255,255,255,0.1)',
-                background: 'transparent', color: '#64748b', fontSize: 10, fontWeight: 700, letterSpacing: 1,
+                height: 24, padding: '0 8px', borderRadius: 6, border: '1px solid rgb(var(--ink-rgb) / 0.1)',
+                background: 'transparent', color: 'var(--text-subtle)', fontSize: 10, fontWeight: 700, letterSpacing: 1,
                 cursor: 'pointer', fontFamily: BC,
               }}>CLEAR</button>
             )}
@@ -241,8 +241,8 @@ export default function TodoPage() {
           <button onClick={addList} className="board-add-list" style={{
             width: 200, flexShrink: 0, alignSelf: 'flex-start', marginTop: 4,
             padding: '14px', borderRadius: 12, cursor: 'pointer', fontFamily: BC,
-            border: '1px dashed rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.02)',
-            color: '#64748b', fontSize: 12, fontWeight: 700, letterSpacing: 2,
+            border: '1px dashed rgb(var(--ink-rgb) / 0.12)', background: 'rgb(var(--ink-rgb) / 0.02)',
+            color: 'var(--text-subtle)', fontSize: 12, fontWeight: 700, letterSpacing: 2,
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
           }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -301,7 +301,7 @@ function ListColumn({ list, labels, filter, isFirst, isLast, onOpenCard, onAddCa
 
   return (
     <div className="board-col" style={{
-      background: '#111214', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12,
+      background: 'var(--surface-2)', border: '1px solid rgb(var(--ink-rgb) / 0.06)', borderRadius: 12,
       display: 'flex', flexDirection: 'column', maxHeight: 'calc(100vh - 200px)',
     }}>
       {/* Header */}
@@ -312,25 +312,25 @@ function ListColumn({ list, labels, filter, isFirst, isLast, onOpenCard, onAddCa
             onChange={e => setTitleDraft(e.target.value)}
             onBlur={() => { setEditingTitle(false); const t = titleDraft.trim(); if (t) onRename(list.id, t); else setTitleDraft(list.title); }}
             onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); if (e.key === 'Escape') { setEditingTitle(false); setTitleDraft(list.title); } }}
-            style={{ flex: 1, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 5, color: '#f1f5f9', fontSize: 13, fontWeight: 700, padding: '4px 8px', fontFamily: 'inherit', outline: 'none' }}
+            style={{ flex: 1, background: 'rgb(var(--ink-rgb) / 0.06)', border: '1px solid rgb(var(--ink-rgb) / 0.15)', borderRadius: 5, color: 'var(--text)', fontSize: 13, fontWeight: 700, padding: '4px 8px', fontFamily: 'inherit', outline: 'none' }}
           />
         ) : (
-          <span onClick={() => { setTitleDraft(list.title); setEditingTitle(true); }} style={{ flex: 1, fontSize: 13, fontWeight: 700, color: '#e2e8f0', letterSpacing: 0.5, cursor: 'text' }}>
+          <span onClick={() => { setTitleDraft(list.title); setEditingTitle(true); }} style={{ flex: 1, fontSize: 13, fontWeight: 700, color: 'var(--text)', letterSpacing: 0.5, cursor: 'text' }}>
             {list.title}
           </span>
         )}
-        <span style={{ fontSize: 11, color: '#475569', fontFamily: BC, fontWeight: 700, minWidth: 16, textAlign: 'center' }}>{list.cards.length}</span>
-        <button onClick={() => setMenu(m => !m)} style={{ width: 26, height: 26, borderRadius: 6, border: 'none', background: 'transparent', color: '#64748b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <span style={{ fontSize: 11, color: 'var(--text-faint)', fontFamily: BC, fontWeight: 700, minWidth: 16, textAlign: 'center' }}>{list.cards.length}</span>
+        <button onClick={() => setMenu(m => !m)} style={{ width: 26, height: 26, borderRadius: 6, border: 'none', background: 'transparent', color: 'var(--text-subtle)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
         </button>
         {menu && (
           <>
             <div style={{ position: 'fixed', inset: 0, zIndex: 40 }} onClick={() => setMenu(false)} />
-            <div style={{ position: 'absolute', top: 40, right: 8, zIndex: 50, background: '#1c1e22', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: 6, minWidth: 150, boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}>
+            <div style={{ position: 'absolute', top: 40, right: 8, zIndex: 50, background: 'var(--surface-4)', border: '1px solid rgb(var(--ink-rgb) / 0.1)', borderRadius: 10, padding: 6, minWidth: 150, boxShadow: '0 8px 24px rgb(var(--shadow-rgb) / 0.4)' }}>
               <MenuItem disabled={isFirst} onClick={() => { onMove(list.id, -1); setMenu(false); }}>Move left</MenuItem>
               <MenuItem disabled={isLast} onClick={() => { onMove(list.id, 1); setMenu(false); }}>Move right</MenuItem>
               <MenuItem onClick={() => { setTitleDraft(list.title); setEditingTitle(true); setMenu(false); }}>Rename</MenuItem>
-              <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '4px 0' }} />
+              <div style={{ height: 1, background: 'rgb(var(--ink-rgb) / 0.07)', margin: '4px 0' }} />
               <MenuItem danger onClick={() => { if (list.cards.length === 0 || confirm(`Delete "${list.title}" and its ${list.cards.length} card(s)?`)) onDelete(list.id); setMenu(false); }}>Delete list</MenuItem>
             </div>
           </>
@@ -340,7 +340,7 @@ function ListColumn({ list, labels, filter, isFirst, isLast, onOpenCard, onAddCa
       {/* Cards */}
       <div ref={setNodeRef} className="board-cards" style={{
         flex: 1, overflowY: 'auto', padding: '2px 8px 8px', minHeight: 12,
-        background: isOver ? 'rgba(59,130,246,0.05)' : 'transparent', transition: 'background 0.15s',
+        background: isOver ? 'rgb(var(--info-rgb) / 0.05)' : 'transparent', transition: 'background 0.15s',
       }}>
         <SortableContext items={cards.map(c => c.id)} strategy={verticalListSortingStrategy}>
           {cards.map(card => (
@@ -355,20 +355,20 @@ function ListColumn({ list, labels, filter, isFirst, isLast, onOpenCard, onAddCa
               onChange={e => setText(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); submit(); } if (e.key === 'Escape') { setComposing(false); setText(''); } }}
               placeholder="Card title…"
-              style={{ width: '100%', background: '#0c0d0f', border: '1px solid rgba(59,130,246,0.4)', borderRadius: 8, color: '#f1f5f9', fontSize: 13, padding: '8px 10px', fontFamily: 'inherit', outline: 'none', resize: 'none', lineHeight: 1.4 }}
+              style={{ width: '100%', background: 'var(--surface)', border: '1px solid rgb(var(--info-rgb) / 0.4)', borderRadius: 8, color: 'var(--text)', fontSize: 13, padding: '8px 10px', fontFamily: 'inherit', outline: 'none', resize: 'none', lineHeight: 1.4 }}
             />
             <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
-              <button onClick={submit} style={{ padding: '6px 14px', borderRadius: 6, border: 'none', background: '#3b82f6', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Add card</button>
-              <button onClick={() => { setComposing(false); setText(''); }} style={{ padding: '6px 10px', borderRadius: 6, border: 'none', background: 'transparent', color: '#64748b', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
+              <button onClick={submit} style={{ padding: '6px 14px', borderRadius: 6, border: 'none', background: 'var(--info)', color: 'var(--text-strong)', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Add card</button>
+              <button onClick={() => { setComposing(false); setText(''); }} style={{ padding: '6px 10px', borderRadius: 6, border: 'none', background: 'transparent', color: 'var(--text-subtle)', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit' }}>Cancel</button>
             </div>
           </div>
         ) : (
           <button onClick={() => setComposing(true)} style={{
             width: '100%', marginTop: 6, padding: '9px 10px', borderRadius: 8, border: 'none', textAlign: 'left',
-            background: 'transparent', color: '#64748b', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit',
+            background: 'transparent', color: 'var(--text-subtle)', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit',
             display: 'flex', alignItems: 'center', gap: 8,
           }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
+            onMouseEnter={e => (e.currentTarget.style.background = 'rgb(var(--ink-rgb) / 0.04)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -384,7 +384,7 @@ function MenuItem({ children, onClick, disabled, danger }: { children: React.Rea
   return (
     <button disabled={disabled} onClick={onClick} style={{
       display: 'block', width: '100%', textAlign: 'left', padding: '8px 10px', borderRadius: 6, border: 'none',
-      background: 'transparent', color: disabled ? '#334155' : danger ? '#f87171' : '#cbd5e1',
+      background: 'transparent', color: disabled ? 'var(--text-ghost)' : danger ? 'var(--danger-soft)' : 'var(--text-soft-2)',
       fontSize: 13, cursor: disabled ? 'default' : 'pointer', fontFamily: 'inherit',
     }}>{children}</button>
   );
@@ -418,8 +418,8 @@ function CardFace({ card, labels, dragging }: { card: BoardCard; labels: BoardLa
 
   return (
     <div style={{
-      background: '#191b1f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8,
-      padding: '9px 11px', cursor: 'pointer', boxShadow: dragging ? '0 12px 28px rgba(0,0,0,0.5)' : 'none',
+      background: 'var(--surface-4)', border: '1px solid rgb(var(--ink-rgb) / 0.07)', borderRadius: 8,
+      padding: '9px 11px', cursor: 'pointer', boxShadow: dragging ? '0 12px 28px rgb(var(--shadow-rgb) / 0.5)' : 'none',
       transform: dragging ? 'rotate(2deg)' : 'none', opacity: done ? 0.6 : 1,
     }}>
       {cardLabels.length > 0 && (
@@ -427,7 +427,7 @@ function CardFace({ card, labels, dragging }: { card: BoardCard; labels: BoardLa
           {cardLabels.map(l => (
             <span key={l.id} title={l.name} style={{
               height: l.name ? 18 : 7, minWidth: 34, padding: l.name ? '0 7px' : 0, borderRadius: 4,
-              background: l.color, color: '#0a0a0a', fontSize: 10, fontWeight: 800,
+              background: l.color, color: 'var(--bg)', fontSize: 10, fontWeight: 800,
               display: 'flex', alignItems: 'center', overflow: 'hidden', whiteSpace: 'nowrap',
             }}>{l.name}</span>
           ))}
@@ -436,11 +436,11 @@ function CardFace({ card, labels, dragging }: { card: BoardCard; labels: BoardLa
 
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
         {done && (
-          <div style={{ width: 16, height: 16, borderRadius: '50%', background: '#22c55e', flexShrink: 0, marginTop: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="#0a0a0a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="2,7 5.5,10.5 12,3.5"/></svg>
+          <div style={{ width: 16, height: 16, borderRadius: '50%', background: 'var(--success-2)', flexShrink: 0, marginTop: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="var(--bg)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="2,7 5.5,10.5 12,3.5"/></svg>
           </div>
         )}
-        <span style={{ flex: 1, fontSize: 13.5, lineHeight: 1.4, color: done ? '#64748b' : '#e2e8f0', textDecoration: done ? 'line-through' : 'none' }}>{card.title}</span>
+        <span style={{ flex: 1, fontSize: 13.5, lineHeight: 1.4, color: done ? 'var(--text-subtle)' : 'var(--text)', textDecoration: done ? 'line-through' : 'none' }}>{card.title}</span>
       </div>
 
       {hasFooter && (
@@ -452,19 +452,19 @@ function CardFace({ card, labels, dragging }: { card: BoardCard; labels: BoardLa
             </span>
           )}
           {card.repeat && (
-            <span style={{ fontSize: 10, fontWeight: 700, color: '#10b981', fontFamily: BC, letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 3 }}>
+            <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--success)', fontFamily: BC, letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 3 }}>
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
               {repeatLabel(card.repeat).toUpperCase()}
             </span>
           )}
           {prog.total > 0 && (
-            <span style={{ fontSize: 11, fontWeight: 700, color: prog.done === prog.total ? '#22c55e' : '#64748b', display: 'flex', alignItems: 'center', gap: 3 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: prog.done === prog.total ? 'var(--success-2)' : 'var(--text-subtle)', display: 'flex', alignItems: 'center', gap: 3 }}>
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
               {prog.done}/{prog.total}
             </span>
           )}
           {card.description && (
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2" strokeLinecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="14" y2="17"/></svg>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" strokeWidth="2" strokeLinecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="14" y2="17"/></svg>
           )}
         </div>
       )}
@@ -478,19 +478,19 @@ function SetupBanner() {
   const [copied, setCopied] = useState(false);
   return (
     <div style={{ maxWidth: 640, margin: '0 auto', padding: '48px 24px' }}>
-      <h1 style={{ fontSize: 28, fontWeight: 900, color: '#f1f5f9', fontStyle: 'italic', letterSpacing: -0.5 }}>ONE-TIME SETUP</h1>
-      <p style={{ color: '#94a3b8', fontSize: 14, lineHeight: 1.6, marginTop: 12 }}>
-        The board needs a <code style={{ color: '#93c5fd' }}>todo_board</code> table. Open your Supabase project → <b>SQL Editor</b>, paste this, and run it. Then reload.
+      <h1 style={{ fontSize: 28, fontWeight: 900, color: 'var(--text)', fontStyle: 'italic', letterSpacing: -0.5 }}>ONE-TIME SETUP</h1>
+      <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.6, marginTop: 12 }}>
+        The board needs a <code style={{ color: 'var(--info-3)' }}>todo_board</code> table. Open your Supabase project → <b>SQL Editor</b>, paste this, and run it. Then reload.
       </p>
       <div style={{ position: 'relative', marginTop: 16 }}>
-        <pre style={{ background: '#0c0d0f', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: 16, overflowX: 'auto', fontSize: 12, color: '#cbd5e1', fontFamily: "'JetBrains Mono', monospace", lineHeight: 1.6 }}>{SETUP_SQL}</pre>
+        <pre style={{ background: 'var(--surface)', border: '1px solid rgb(var(--ink-rgb) / 0.1)', borderRadius: 10, padding: 16, overflowX: 'auto', fontSize: 12, color: 'var(--text-soft-2)', fontFamily: "'JetBrains Mono', monospace", lineHeight: 1.6 }}>{SETUP_SQL}</pre>
         <button onClick={() => { navigator.clipboard.writeText(SETUP_SQL); setCopied(true); setTimeout(() => setCopied(false), 1500); }} style={{
-          position: 'absolute', top: 10, right: 10, padding: '5px 12px', borderRadius: 6, border: '1px solid rgba(255,255,255,0.15)',
-          background: '#1c1e22', color: copied ? '#4ade80' : '#cbd5e1', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: BC, letterSpacing: 1,
+          position: 'absolute', top: 10, right: 10, padding: '5px 12px', borderRadius: 6, border: '1px solid rgb(var(--ink-rgb) / 0.15)',
+          background: 'var(--surface-4)', color: copied ? 'var(--success-3)' : 'var(--text-soft-2)', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: BC, letterSpacing: 1,
         }}>{copied ? 'COPIED' : 'COPY'}</button>
       </div>
       <button onClick={() => location.reload()} style={{
-        marginTop: 20, padding: '10px 20px', borderRadius: 8, border: 'none', background: '#3b82f6', color: '#fff',
+        marginTop: 20, padding: '10px 20px', borderRadius: 8, border: 'none', background: 'var(--info)', color: 'var(--text-strong)',
         fontSize: 12, fontWeight: 700, letterSpacing: 2, cursor: 'pointer', fontFamily: BC,
       }}>I&apos;VE RUN IT — RELOAD</button>
     </div>

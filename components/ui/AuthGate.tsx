@@ -29,8 +29,8 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', background: '#0f0f0f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ fontSize: 13, color: '#334155' }}>Loading...</div>
+      <div style={{ minHeight: '100vh', background: 'var(--surface-1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ fontSize: 13, color: 'var(--text-ghost)' }}>Loading...</div>
       </div>
     );
   }
@@ -38,11 +38,11 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
   // Signed in but hit an admin-only route — show brief denial while redirect fires
   if (user && !admin && isAdminPath(pathname)) {
     return (
-      <div style={{ minHeight: '100vh', background: '#0f0f0f', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+      <div style={{ minHeight: '100vh', background: 'var(--surface-1)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
         <div style={{ textAlign: 'center', maxWidth: 320 }}>
           <div style={{ fontSize: 36, marginBottom: 16 }}>🔒</div>
-          <div style={{ fontSize: 18, fontWeight: 600, color: '#fff', marginBottom: 8 }}>Access restricted</div>
-          <div style={{ fontSize: 14, color: '#555', marginBottom: 24 }}>
+          <div style={{ fontSize: 18, fontWeight: 600, color: 'var(--text-strong)', marginBottom: 8 }}>Access restricted</div>
+          <div style={{ fontSize: 14, color: 'var(--text-neutral-dim)', marginBottom: 24 }}>
             This section is only available to the admin account.
           </div>
         </div>

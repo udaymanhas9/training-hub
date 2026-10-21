@@ -1,0 +1,15 @@
+name: Todo reminders
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger reminder check
+        run: |
+          curl -sf -X POST "https://training-hub-eta.vercel.app/api/todo/remind" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"

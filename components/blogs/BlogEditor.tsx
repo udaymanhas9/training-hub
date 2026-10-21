@@ -44,13 +44,13 @@ export default function BlogEditor({ initial, mode }: { initial: BlogPost; mode:
               <button key={t} onClick={() => setTab(t)} style={{
                 padding: '5px 14px', borderRadius: 6, border: 'none', cursor: 'pointer', fontFamily: BC, fontSize: 11,
                 fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase',
-                background: tab === t ? 'var(--blog-accent)' : 'transparent', color: tab === t ? '#fff' : 'var(--blog-dim)',
+                background: tab === t ? 'var(--blog-accent)' : 'transparent', color: tab === t ? 'var(--text-strong)' : 'var(--blog-dim)',
               }}>{t}</button>
             ))}
           </div>
-          {mode === 'edit' && <button onClick={del} style={{ ...ghost, color: '#f87171', borderColor: 'rgba(248,113,113,0.3)' }}>Delete</button>}
+          {mode === 'edit' && <button onClick={del} style={{ ...ghost, color: 'var(--danger-soft)', borderColor: 'rgb(var(--danger-soft-rgb) / 0.3)' }}>Delete</button>}
           <button onClick={save} disabled={saving} style={{
-            padding: '7px 18px', borderRadius: 8, border: 'none', background: 'var(--blog-accent)', color: '#fff',
+            padding: '7px 18px', borderRadius: 8, border: 'none', background: 'var(--blog-accent)', color: 'var(--text-strong)',
             fontSize: 12, fontWeight: 700, letterSpacing: 1.5, fontFamily: BC, cursor: 'pointer', opacity: saving ? 0.6 : 1,
           }}>{saving ? 'SAVING…' : 'PUBLISH'}</button>
         </div>
