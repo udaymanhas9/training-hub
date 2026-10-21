@@ -18,15 +18,6 @@ const TRAINING_NAV = [
   { href: '/review', label: 'REVIEW', icon: ReviewIcon },
 ];
 
-// Max 5 items on the mobile tab bar to avoid cramping
-const MOBILE_TRAINING_NAV = [
-  { href: '/', label: 'Home', icon: HomeIcon },
-  { href: '/todo', label: 'Tasks', icon: TodoIcon },
-  { href: '/runs', label: 'Runs', icon: RunIcon },
-  { href: '/progress', label: 'Progress', icon: ProgressIcon },
-  { href: '/stats', label: 'Stats', icon: StatsIcon },
-];
-
 // ── Lab nav ───────────────────────────────────────────────────────────────────
 
 const LAB_NAV = [
@@ -175,7 +166,7 @@ export default function NavBar() {
   const isAdminMode = pathname.startsWith('/admin');
   const isTrainingMode = !isLabMode && !isBlogMode && !isAdminMode;
   const navItems       = isLabMode ? LAB_NAV : TRAINING_NAV;
-  const mobileNavItems = isLabMode ? LAB_NAV : MOBILE_TRAINING_NAV;
+  const mobileNavItems = navItems;
 
   function isActive(href: string) {
     if (href === '/' || href === '/lab') return pathname === href;
@@ -343,13 +334,18 @@ export default function NavBar() {
 
       {/* ── Mobile bottom tab bar ──────────────────────────────────────────── */}
       <nav
-        className="md:hidden"
+        className="md:hidden tab-strip"
         style={{
           position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 100,
           background: isLabMode ? '#000000' : '#0d0d0d',
           borderTop: isLabMode ? '1px solid rgba(255,42,42,0.2)' : '1px solid rgba(255,255,255,0.08)',
           display: 'flex', alignItems: 'stretch',
           paddingBottom: 'env(safe-area-inset-bottom)',
+          // Swipeable icon strip: every tab reachable, no cramped labels
+          overflowX: 'auto', overflowY: 'hidden',
+          scrollSnapType: 'x proximity',
+          scrollbarWidth: 'none',
+          WebkitOverflowScrolling: 'touch',
         }}
       >
         {mobileNavItems.map(({ href, label, icon: Icon }) => {
@@ -358,11 +354,14 @@ export default function NavBar() {
             <Link
               key={href}
               href={href}
+              aria-label={label}
+              ref={el => { if (active && el) el.scrollIntoView({ inline: 'center', block: 'nearest' }); }}
               style={{
-                flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
-                justifyContent: 'center', padding: '8px 2px', textDecoration: 'none',
+                flex: '0 0 20%', scrollSnapAlign: 'center',
+                display: 'flex', flexDirection: 'column', alignItems: 'center',
+                justifyContent: 'center', padding: '12px 2px', textDecoration: 'none',
                 color: isLabMode ? (active ? '#FF2A2A' : '#4a4a4a') : (active ? '#f1f5f9' : '#475569'),
-                position: 'relative', gap: 3, minWidth: 0,
+                position: 'relative', minWidth: 0,
               }}
             >
               {active && (
@@ -374,14 +373,6 @@ export default function NavBar() {
                 }} />
               )}
               <Icon active={active} />
-              <span style={{
-                fontSize: 9, letterSpacing: 0.5,
-                fontWeight: active ? 700 : 500,
-                fontFamily: isLabMode ? "'JetBrains Mono', monospace" : "'Barlow Condensed', sans-serif",
-                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%',
-              }}>
-                {label}
-              </span>
             </Link>
           );
         })}

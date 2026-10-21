@@ -107,15 +107,24 @@ export default function WorkoutPage() {
   useEffect(() => {
     if (!startTimestamp) return;
     setElapsedSeconds(Math.floor((Date.now() - startTimestamp) / 1000));
-    const interval = setInterval(() => {
-      setElapsedSeconds(Math.floor((Date.now() - startTimestamp) / 1000));
-    }, 1000);
-    return () => clearInterval(interval);
+    const tick = () => setElapsedSeconds(Math.floor((Date.now() - startTimestamp) / 1000));
+    const interval = setInterval(tick, 1000);
+    // Mobile browsers freeze timers in the background — resync as soon as we're back
+    const onVisible = () => { if (document.visibilityState === 'visible') tick(); };
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('pageshow', tick);
+    window.addEventListener('focus', tick);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('pageshow', tick);
+      window.removeEventListener('focus', tick);
+    };
   }, [startTimestamp]);
 
   // Persist draft so state survives iOS Safari backgrounding
   useEffect(() => {
-    if (!sessionId || !startTimestamp) return;
+    if (!sessionId || !startTimestamp || hasSubmitted) return;
     const draft: WorkoutDraft = {
       sessionId,
       startTimestamp,
@@ -127,7 +136,7 @@ export default function WorkoutPage() {
     try {
       localStorage.setItem(draftKey(id), JSON.stringify(draft));
     } catch { /* storage full — non-critical */ }
-  }, [id, sessionId, startTimestamp, exerciseLogs, checked, sessionDate]);
+  }, [id, sessionId, startTimestamp, exerciseLogs, checked, sessionDate, hasSubmitted]);
 
   function toggle(phaseId: string, exId: string) {
     const key = `${phaseId}-${exId}`;
@@ -157,10 +166,13 @@ export default function WorkoutPage() {
   }
 
   async function handleFinish() {
-    if (!workout || isSubmitting || hasSubmitted) return;
+    if (!workout || isSubmitting || hasSubmitted || !sessionId) return;
     setIsSubmitting(true);
 
-    const durationMinutes = Math.max(1, Math.round(elapsedSeconds / 60));
+    // Use wall clock, not the (possibly frozen) displayed counter
+    const finalSeconds = Math.max(0, Math.floor((Date.now() - startTimestamp) / 1000));
+    setElapsedSeconds(finalSeconds);
+    const durationMinutes = Math.max(1, Math.round(finalSeconds / 60));
     const exercises = Object.values(exerciseLogs).filter(e => e.sets.length > 0);
 
     const session: SessionLog = {
@@ -197,8 +209,9 @@ export default function WorkoutPage() {
         });
       });
 
-      await savePBs(currentPBs);
+      // Session first: it's idempotent (upsert by id), so a retry after a dropped connection is safe
       await saveSession(session);
+      await savePBs(currentPBs);
 
       try { localStorage.removeItem(draftKey(id)); } catch { /* ok */ }
       setNewPBs(detectedPBs);

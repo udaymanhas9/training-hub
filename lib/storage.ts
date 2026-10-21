@@ -9,7 +9,12 @@ let _userIdPromise: Promise<string | null> | null = null;
 
 async function getUserId(): Promise<string | null> {
   if (!_userIdPromise) {
-    _userIdPromise = supabase.auth.getUser().then(({ data }) => data.user?.id ?? null);
+    _userIdPromise = supabase.auth.getUser().then(({ data }) => {
+      const id = data.user?.id ?? null;
+      // Don't cache a failed lookup (e.g. offline right after resume)
+      if (!id) _userIdPromise = null;
+      return id;
+    }).catch(() => { _userIdPromise = null; return null; });
     // Expire after 60 s so long-lived sessions still refresh
     setTimeout(() => { _userIdPromise = null; }, 60_000);
   }
@@ -95,8 +100,8 @@ export async function getSessions(): Promise<SessionLog[]> {
 
 export async function saveSession(s: SessionLog): Promise<void> {
   const userId = await getUserId();
-  if (!userId) return;
-  await supabase.from('session_log').upsert({
+  if (!userId) throw new Error('Not signed in');
+  const { error } = await supabase.from('session_log').upsert({
     id: s.id,
     user_id: userId,
     workout_id: s.workoutId,
@@ -104,6 +109,7 @@ export async function saveSession(s: SessionLog): Promise<void> {
     duration_minutes: s.durationMinutes,
     exercises: s.exercises,
   }, { onConflict: 'id' });
+  if (error) throw error;
   notifyDataChanged();
 }
 
@@ -212,9 +218,9 @@ export async function getPBs(): Promise<PersonalBest[]> {
 }
 
 export async function savePBs(pbs: PersonalBest[]): Promise<void> {
-  const userId = await getUserId();
-  if (!userId) return;
   if (pbs.length === 0) return;
+  const userId = await getUserId();
+  if (!userId) throw new Error('Not signed in');
   const rows = pbs.map(pb => ({
     exercise_id: pb.exerciseId,
     user_id: userId,
@@ -224,7 +230,8 @@ export async function savePBs(pbs: PersonalBest[]): Promise<void> {
     date: pb.date,
     workout_id: pb.workoutId,
   }));
-  await supabase.from('personal_bests').upsert(rows, { onConflict: 'exercise_id,user_id' });
+  const { error } = await supabase.from('personal_bests').upsert(rows, { onConflict: 'exercise_id,user_id' });
+  if (error) throw error;
 }
 
 // ── Health Stats ──────────────────────────────────────────────────────────────

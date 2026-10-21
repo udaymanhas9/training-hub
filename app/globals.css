@@ -165,3 +165,4 @@ input[type="number"] { -moz-appearance: textfield; }
   .blog-home-grid { grid-template-columns: 1fr; gap: 28px; }
   .blog-home-aside { border-left: none; padding-left: 0; padding-top: 8px; border-top: 1px solid var(--blog-line); }
 }
+.tab-strip::-webkit-scrollbar { display: none; }
